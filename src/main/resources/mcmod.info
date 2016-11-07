@@ -1,0 +1,16 @@
+[
+{
+  "modid": "bonfires",
+  "name": "Bonfires",
+  "description": "Bonfires from Dark Souls.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Wehavecookies56"],
+  "credits": "FromSoftware and Bandai Namco for Dark Souls",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
