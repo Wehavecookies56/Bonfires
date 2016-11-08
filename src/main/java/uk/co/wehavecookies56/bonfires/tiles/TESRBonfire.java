@@ -1,15 +1,13 @@
-package uk.co.wehavecookies56.bonfires;
+package uk.co.wehavecookies56.bonfires.tiles;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.RenderItemFrame;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 
 /**
  * Created by Toby on 06/11/2016.

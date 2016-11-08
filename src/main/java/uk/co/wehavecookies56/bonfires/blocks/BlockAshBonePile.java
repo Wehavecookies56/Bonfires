@@ -14,10 +14,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
-import uk.co.wehavecookies56.bonfires.PacketDispatcher;
-import uk.co.wehavecookies56.bonfires.SyncBonfire;
-import uk.co.wehavecookies56.bonfires.TileEntityBonfire;
+import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
+import uk.co.wehavecookies56.bonfires.packets.SyncBonfire;
+import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
 
 import javax.annotation.Nullable;
@@ -59,14 +60,17 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 System.out.println(te.isLit());
                 if (!te.isLit()) {
                     //OPEN LIGHTING GUI
+                    UUID id = UUID.fromString("0c3d4b03-250d-4ec5-bea5-032e61ab6c76");
                     if (!worldIn.isRemote) {
                         System.out.println("NOT LIT");
                         te.setLit(true);
-                        te.setName("TEST");
-                        te.setPos(te.getPos());
-                        te.setID(UUID.randomUUID());
+                        te.createBonfire("TEST", id, playerIn.getPersistentID(), true);
+                        te.setID(id);
                     } else {
-                        playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, worldIn, pos.getX(), pos.getY(), pos.getZ());
+                        if(BonfireRegistry.INSTANCE.getBonfire(id) != null) {
+                            System.out.println("NAME:" + BonfireRegistry.INSTANCE.getBonfire(id).getName() + " DIM:" + BonfireRegistry.INSTANCE.getBonfire(id).getDimension() + " OWNER:" + BonfireRegistry.INSTANCE.getBonfire(id).getOwner() + " POS:" + BonfireRegistry.INSTANCE.getBonfire(id).getPos() + " PUBLIC:" + BonfireRegistry.INSTANCE.getBonfire(id).isPublic());
+                        }
+                        //playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, worldIn, pos.getX(), pos.getY(), pos.getZ());
                     }
                 } else {
                     //OPEN MAIN GUI

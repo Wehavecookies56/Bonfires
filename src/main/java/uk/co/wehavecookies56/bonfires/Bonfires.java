@@ -9,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -24,6 +23,9 @@ import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
 import uk.co.wehavecookies56.bonfires.items.ItemAshPile;
 import uk.co.wehavecookies56.bonfires.items.ItemCoiledSword;
 import uk.co.wehavecookies56.bonfires.items.ItemEstusFlask;
+import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
+import uk.co.wehavecookies56.bonfires.proxies.CommonProxy;
+import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -31,7 +33,7 @@ import uk.co.wehavecookies56.bonfires.items.ItemEstusFlask;
 @Mod(modid = Bonfires.modid, name = Bonfires.name, version = Bonfires.version, dependencies = "required-after:llibrary@[1.7.1]")
 public class Bonfires {
 
-    @SidedProxy(clientSide = "uk.co.wehavecookies56.bonfires.ClientProxy", serverSide = "uk.co.wehavecookies56.bonfires.CommonProxy")
+    @SidedProxy(clientSide = "uk.co.wehavecookies56.bonfires.proxies.ClientProxy", serverSide = "uk.co.wehavecookies56.bonfires.proxies.CommonProxy")
     public static CommonProxy proxy;
 
     public static final String modid = "bonfires", name = "Bonfires", version = "1.0";

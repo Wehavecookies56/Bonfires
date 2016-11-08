@@ -1,4 +1,4 @@
-package uk.co.wehavecookies56.bonfires;
+package uk.co.wehavecookies56.bonfires.packets;
 
 import com.google.common.base.Throwables;
 import io.netty.buffer.ByteBuf;
@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 
 import java.io.IOException;
 

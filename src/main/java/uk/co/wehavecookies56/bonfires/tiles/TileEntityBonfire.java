@@ -1,4 +1,4 @@
-package uk.co.wehavecookies56.bonfires;
+package uk.co.wehavecookies56.bonfires.tiles;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -9,6 +9,9 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
+import uk.co.wehavecookies56.bonfires.Bonfire;
+import uk.co.wehavecookies56.bonfires.BonfireRegistry;
+import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -18,10 +21,9 @@ import java.util.UUID;
  */
 public class TileEntityBonfire extends TileEntity implements ITickable {
 
+
     boolean bonfire;
     boolean lit;
-    String name = "none";
-    BlockPos pos = new BlockPos(0, 0, 0);
     UUID id = UUID.randomUUID();
 
     @Override
@@ -34,10 +36,6 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
         super.writeToNBT(compound);
         compound.setBoolean("bonfire", bonfire);
         compound.setBoolean("lit", lit);
-        compound.setString("name", name);
-        compound.setInteger("posX", pos.getX());
-        compound.setInteger("posY", pos.getY());
-        compound.setInteger("posZ", pos.getZ());
         compound.setUniqueId("id", id);
         return compound;
     }
@@ -47,9 +45,12 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
         super.readFromNBT(compound);
         bonfire = compound.getBoolean("bonfire");
         lit = compound.getBoolean("lit");
-        name = compound.getString("name");
-        pos = new BlockPos(compound.getInteger("posX"), compound.getInteger("posY"), compound.getInteger("posZ"));
         id = compound.getUniqueId("id");
+    }
+
+    public void createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
+        Bonfire bonfire = new Bonfire(name, id, owner, this.getPos(), this.getWorld().provider.getDimension(), isPublic);
+        BonfireWorldSavedData.get(getWorld()).addBonfire(bonfire);
     }
 
     public boolean isBonfire() {
@@ -67,29 +68,6 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
 
     public void setLit(boolean lit) {
         this.lit = lit;
-        markDirty();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-        markDirty();
-    }
-
-    public BlockPos getBonfirePos() {
-        return pos;
-    }
-
-    public void setBonfirePos(BlockPos pos) {
-        this.pos = pos;
-        markDirty();
-    }
-
-    public void setBonfirePos(int x, int y, int z) {
-        this.pos = new BlockPos(x, y, z);
         markDirty();
     }
 

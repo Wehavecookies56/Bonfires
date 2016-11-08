@@ -1,15 +1,17 @@
-package uk.co.wehavecookies56.bonfires;
+package uk.co.wehavecookies56.bonfires.proxies;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.tiles.TESRBonfire;
+import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
 /**
  * Created by Toby on 05/11/2016.

@@ -1,9 +1,10 @@
-package uk.co.wehavecookies56.bonfires;
+package uk.co.wehavecookies56.bonfires.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
+import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
 import java.io.IOException;
 

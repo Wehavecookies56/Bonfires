@@ -1,4 +1,4 @@
-package uk.co.wehavecookies56.bonfires;
+package uk.co.wehavecookies56.bonfires.proxies;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
