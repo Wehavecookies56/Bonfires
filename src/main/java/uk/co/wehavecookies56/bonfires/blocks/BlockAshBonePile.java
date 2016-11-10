@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,14 +13,19 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.gui.GuiBonfire;
+import uk.co.wehavecookies56.bonfires.gui.GuiCreateBonfire;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.SyncBonfire;
+import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
-import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
+import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -54,25 +60,25 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+        BonfireWorldSavedData.get(worldIn).markDirty();
         if (worldIn.getTileEntity(pos) instanceof TileEntityBonfire) {
             TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
             if (te.isBonfire()) {
-                System.out.println(te.isLit());
                 if (!te.isLit()) {
                     //OPEN LIGHTING GUI
-                    UUID id = UUID.fromString("0c3d4b03-250d-4ec5-bea5-032e61ab6c76");
                     if (!worldIn.isRemote) {
-                        System.out.println("NOT LIT");
-                        te.setLit(true);
-                        te.createBonfire("TEST", id, playerIn.getPersistentID(), true);
-                        te.setID(id);
+
                     } else {
-                        if(BonfireRegistry.INSTANCE.getBonfire(id) != null) {
-                            System.out.println("NAME:" + BonfireRegistry.INSTANCE.getBonfire(id).getName() + " DIM:" + BonfireRegistry.INSTANCE.getBonfire(id).getDimension() + " OWNER:" + BonfireRegistry.INSTANCE.getBonfire(id).getOwner() + " POS:" + BonfireRegistry.INSTANCE.getBonfire(id).getPos() + " PUBLIC:" + BonfireRegistry.INSTANCE.getBonfire(id).isPublic());
+                        if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
+                            System.out.println("ID:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getId() + " NAME:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getName() + " DIM:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getDimension() + " OWNER:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getOwner() + " POS:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getPos() + " PUBLIC:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).isPublic());
                         }
                         //playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, worldIn, pos.getX(), pos.getY(), pos.getZ());
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiCreateBonfire(te));
                     }
                 } else {
+                    if (!worldIn.isRemote)
+                        if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null)
+                            System.out.println("ID:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getId() + " NAME:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getName() + " DIM:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getDimension() + " OWNER:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getOwner() + " POS:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getPos() + " PUBLIC:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).isPublic());
                     //OPEN MAIN GUI
                 }
             } else {
@@ -82,13 +88,38 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                             playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
                             te.setBonfire(true);
                             te.setLit(false);
-                            PacketDispatcher.sendToAllAround(new SyncBonfire(true, te), new NetworkRegistry.TargetPoint(worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+                            PacketDispatcher.sendToAllAround(new SyncBonfire(te.isBonfire(), te.isLit(), null, te), new NetworkRegistry.TargetPoint(worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
                         }
                     }
                 }
             }
         }
         return true;
+    }
+
+    @Override
+    public void onBlockDestroyedByPlayer(World worldIn, BlockPos pos, IBlockState state) {
+
+        super.onBlockDestroyedByPlayer(worldIn, pos, state);
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
+        if (te != null) {
+            if (te.isLit()) {
+                te.destroyBonfire(te.getID());
+                BonfireRegistry.INSTANCE.getBonfires().remove(te.getID());
+                BonfireWorldSavedData.get(worldIn).markDirty();
+                System.out.println("Destroyed bonfire: " + te.getID());
+                System.out.println("All registered bonfires: ");
+                for (Bonfire b : BonfireRegistry.INSTANCE.getBonfires().values()) {
+                    System.out.println("NAME:" + b.getName() + " ID:" + b.getId());
+                }
+                PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));
+            }
+            worldIn.removeTileEntity(pos);
+        }
     }
 
     @Override

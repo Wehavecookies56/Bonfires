@@ -26,7 +26,7 @@ public class GuiHandler implements IGuiHandler {
         BlockPos xyz = new BlockPos(x, y, z);
         TileEntity te = world.getTileEntity(xyz);
         if (ID == GUI_BONFIRECREATION)
-            return new GuiBonfireCreation();
+            return new GuiBonfire();
         return null;
     }
 }

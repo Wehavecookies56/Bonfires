@@ -1,12 +1,11 @@
 package uk.co.wehavecookies56.bonfires.tiles;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.opengl.GL11;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 
 /**
@@ -38,6 +37,9 @@ public class TESRBonfire extends TileEntitySpecialRenderer<TileEntityBonfire> {
                 GlStateManager.popMatrix();
                 GlStateManager.popMatrix();
                 GlStateManager.popAttrib();
+            }
+            if (te.isLit()) {
+
             }
         }
 

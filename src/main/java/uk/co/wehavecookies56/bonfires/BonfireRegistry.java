@@ -5,10 +5,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Toby on 07/11/2016.
@@ -40,13 +37,53 @@ public class BonfireRegistry {
         }
     }
 
+    public List getBonfiresByOwner(UUID owner) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        bonfires.forEach((id, bonfire) -> {
+            if (bonfire.getId().equals(owner)) {
+                list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
+    public List getBonfiresByName(String name) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        bonfires.forEach((id, bonfire) -> {
+            if (bonfire.getName().toLowerCase().equals(name.toLowerCase())) {
+                list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
+    public List getBonfiresByPublic(boolean isPublic) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        bonfires.forEach((id, bonfire) -> {
+            if (bonfire.isPublic() == isPublic) {
+                list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
+    public List getBonfiresByDimension(int dimension) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        bonfires.forEach((id, bonfire) -> {
+            if (bonfire.getDimension() == dimension) {
+                list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
     public boolean addBonfire(Bonfire bonfire) {
         if (bonfires.containsKey(bonfire.getId())) {
-            System.out.print("Attempted to register bonfire with UUID: " + bonfire.getId().toString());
+            System.out.println("Attempted to register bonfire with UUID: " + bonfire.getId().toString());
             return false;
         } else {
             bonfires.put(bonfire.getId(), bonfire);
-            System.out.print("Successfully registered bonfire with UUID: " + bonfire.getId().toString());
+            System.out.println("Successfully registered bonfire with UUID: " + bonfire.getId().toString());
             return true;
         }
     }
@@ -64,14 +101,14 @@ public class BonfireRegistry {
         while (it.hasNext()) {
             Map.Entry<UUID, Bonfire> pair = (Map.Entry<UUID, Bonfire>) it.next();
             NBTTagCompound bonfireCompound = new NBTTagCompound();
-            bonfireCompound.setUniqueId("ID:"+pair.getKey().toString(), pair.getValue().getId());
-            bonfireCompound.setString("NAME:"+pair.getKey().toString(), pair.getValue().getName());
-            bonfireCompound.setUniqueId("OWNER:"+pair.getKey().toString(), pair.getValue().getOwner());
-            bonfireCompound.setBoolean("PUBLIC:"+pair.getKey().toString(), pair.getValue().isPublic());
-            bonfireCompound.setInteger("DIM:"+pair.getKey().toString(), pair.getValue().getDimension());
-            bonfireCompound.setDouble("POSX:"+pair.getKey().toString(), pair.getValue().getPos().getX());
-            bonfireCompound.setDouble("POSY:"+pair.getKey().toString(), pair.getValue().getPos().getY());
-            bonfireCompound.setDouble("POSZ:"+pair.getKey().toString(), pair.getValue().getPos().getZ());
+            bonfireCompound.setUniqueId("ID", pair.getValue().getId());
+            bonfireCompound.setString("NAME", pair.getValue().getName());
+            bonfireCompound.setUniqueId("OWNER", pair.getValue().getOwner());
+            bonfireCompound.setBoolean("PUBLIC", pair.getValue().isPublic());
+            bonfireCompound.setInteger("DIM", pair.getValue().getDimension());
+            bonfireCompound.setDouble("POSX", pair.getValue().getPos().getX());
+            bonfireCompound.setDouble("POSY", pair.getValue().getPos().getY());
+            bonfireCompound.setDouble("POSZ", pair.getValue().getPos().getZ());
             tagCompound.setTag(pair.getKey().toString(), bonfireCompound);
             System.out.println("Wrote bonfire to NBT " + pair.getKey().toString());
         }
@@ -79,14 +116,15 @@ public class BonfireRegistry {
     }
 
     public void readFromNBT(NBTTagCompound tagCompound) {
+        bonfires.clear();
         for (String key : tagCompound.getKeySet()) {
             NBTTagCompound compound = tagCompound.getCompoundTag(key);
-            String name = compound.getString("NAME:"+key);
-            UUID id = compound.getUniqueId("ID:"+key);
-            UUID owner = compound.getUniqueId("OWNER:"+key);
-            BlockPos pos = new BlockPos(compound.getDouble("POSX:"+key), compound.getDouble("POSY:"+key), compound.getDouble("POSZ:"+key));
-            int dimension = compound.getInteger("DIM:"+key);
-            boolean isPublic = compound.getBoolean("PUBLIC:"+key);
+            String name = compound.getString("NAME");
+            UUID id = compound.getUniqueId("ID");
+            UUID owner = compound.getUniqueId("OWNER");
+            BlockPos pos = new BlockPos(compound.getDouble("POSX"), compound.getDouble("POSY"), compound.getDouble("POSZ"));
+            int dimension = compound.getInteger("DIM");
+            boolean isPublic = compound.getBoolean("PUBLIC");
             Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic);
             bonfires.put(id, bonfire);
             System.out.println("Loaded bonfire from NBT " + key);

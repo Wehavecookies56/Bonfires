@@ -21,7 +21,6 @@ import java.util.UUID;
  */
 public class TileEntityBonfire extends TileEntity implements ITickable {
 
-
     boolean bonfire;
     boolean lit;
     UUID id = UUID.randomUUID();
@@ -51,6 +50,10 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
     public void createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
         Bonfire bonfire = new Bonfire(name, id, owner, this.getPos(), this.getWorld().provider.getDimension(), isPublic);
         BonfireWorldSavedData.get(getWorld()).addBonfire(bonfire);
+    }
+
+    public void destroyBonfire(UUID id) {
+        BonfireWorldSavedData.get(getWorld()).removeBonfire(id);
     }
 
     public boolean isBonfire() {
