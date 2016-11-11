@@ -13,7 +13,6 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfire;
@@ -29,7 +28,6 @@ import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
 import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -76,10 +74,12 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                         Minecraft.getMinecraft().displayGuiScreen(new GuiCreateBonfire(te));
                     }
                 } else {
-                    if (!worldIn.isRemote)
-                        if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null)
+                    if (!worldIn.isRemote) {
+                        if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null)
                             System.out.println("ID:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getId() + " NAME:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getName() + " DIM:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getDimension() + " OWNER:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getOwner() + " POS:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getPos() + " PUBLIC:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).isPublic());
-                    //OPEN MAIN GUI
+                    } else {
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiBonfire(te));
+                    }
                 }
             } else {
                 if (heldItem != null) {

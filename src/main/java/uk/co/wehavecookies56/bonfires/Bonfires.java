@@ -1,5 +1,6 @@
 package uk.co.wehavecookies56.bonfires;
 
+import com.mojang.authlib.GameProfile;
 import net.ilexiconn.llibrary.server.command.Command;
 import net.ilexiconn.llibrary.server.command.CommandHandler;
 import net.ilexiconn.llibrary.server.command.ICommandExecutor;
@@ -12,6 +13,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.server.MinecraftServer;
@@ -20,12 +22,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
@@ -35,6 +39,7 @@ import uk.co.wehavecookies56.bonfires.items.ItemAshPile;
 import uk.co.wehavecookies56.bonfires.items.ItemCoiledSword;
 import uk.co.wehavecookies56.bonfires.items.ItemEstusFlask;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
+import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
 import uk.co.wehavecookies56.bonfires.proxies.CommonProxy;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
@@ -107,6 +112,14 @@ public class Bonfires {
         Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(modid + ":" + name, "inventory"));
     }
 
+    @SubscribeEvent
+    public void entityJoinWorld(EntityJoinWorldEvent event) {
+        if (!event.getWorld().isRemote) {
+            if (event.getEntity() instanceof EntityPlayer)
+                PacketDispatcher.sendTo(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()), (EntityPlayerMP) event.getEntity());
+        }
+    }
+
     @Mod.EventHandler
     public static void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(Bonfires.instance);
@@ -137,7 +150,14 @@ public class Bonfires {
                             sender.addChatMessage(new TextComponentString("No bonfires found with Dim ID: " + arguments.getArgument("parameter")));
                         } else {
                             sender.addChatMessage(new TextComponentString("Found " + query.size() + " bonfires in dimension " + sender.getServer().worldServerForDimension(Integer.parseInt(arguments.getArgument("parameter"))).provider.getDimensionType().getName() + "(" + arguments.getArgument("parameter") + ")"));
-                            query.forEach((bonfires -> sender.addChatMessage(new TextComponentString("Name:" + bonfires.getName() + "; ID:" + bonfires.getId() + "; Owner:" + sender.getServer().getPlayerList().getPlayerByUUID(bonfires.getOwner()).getName() + "(" + bonfires.getOwner().getMostSignificantBits() + "); Pos:" + "[X:"+bonfires.getPos().getX()+" Y:"+bonfires.getPos().getY()+" Z:"+bonfires.getPos().getZ()+"]"))));
+                            query.forEach((bonfires -> {
+                                GameProfile owner = sender.getServer().getPlayerProfileCache().getProfileByUUID(bonfires.getOwner());
+                                String name = "N/A";
+                                if(owner != null) {
+                                    name = owner.getName();
+                                }
+                                sender.addChatMessage(new TextComponentString("Name:" + bonfires.getName() + "; ID:" + bonfires.getId() + "; Owner:" + name + "(" + bonfires.getOwner().getMostSignificantBits() + "); Pos:" + "[X:"+bonfires.getPos().getX()+", Y:"+bonfires.getPos().getY()+", Z:"+bonfires.getPos().getZ()+"]"));
+                            }));
                         }
                     }
                 }

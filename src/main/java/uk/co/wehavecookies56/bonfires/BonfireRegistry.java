@@ -37,7 +37,7 @@ public class BonfireRegistry {
         }
     }
 
-    public List getBonfiresByOwner(UUID owner) {
+    public List<Bonfire> getBonfiresByOwner(UUID owner) {
         List<Bonfire> list = new ArrayList<Bonfire>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getId().equals(owner)) {
@@ -47,7 +47,7 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List getBonfiresByName(String name) {
+    public List<Bonfire> getBonfiresByName(String name) {
         List<Bonfire> list = new ArrayList<Bonfire>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getName().toLowerCase().equals(name.toLowerCase())) {
@@ -57,7 +57,7 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List getBonfiresByPublic(boolean isPublic) {
+    public List<Bonfire> getBonfiresByPublic(boolean isPublic) {
         List<Bonfire> list = new ArrayList<Bonfire>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.isPublic() == isPublic) {
@@ -67,7 +67,7 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List getBonfiresByDimension(int dimension) {
+    public List<Bonfire> getBonfiresByDimension(int dimension) {
         List<Bonfire> list = new ArrayList<Bonfire>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getDimension() == dimension) {
