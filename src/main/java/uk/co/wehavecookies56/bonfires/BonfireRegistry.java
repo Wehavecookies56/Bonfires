@@ -1,5 +1,6 @@
 package uk.co.wehavecookies56.bonfires;
 
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -12,16 +13,20 @@ import java.util.*;
  */
 public class BonfireRegistry {
 
-    public static final BonfireRegistry INSTANCE = new BonfireRegistry();
+    public static BonfireRegistry INSTANCE = new BonfireRegistry();
 
-    public Map<UUID, Bonfire> bonfires;
+    private static Map<UUID, Bonfire> bonfires;
 
     public BonfireRegistry() {
         bonfires = new HashMap<>();
     }
 
     public Map<UUID, Bonfire> getBonfires() {
-        return bonfires;
+        return ImmutableMap.copyOf(bonfires);
+    }
+
+    public void clearBonfires() {
+        bonfires.clear();
     }
 
     public void setBonfires(Map<UUID, Bonfire> bonfires) {

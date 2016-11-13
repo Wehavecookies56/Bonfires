@@ -62,7 +62,7 @@ public class SyncSaveData extends AbstractMessage.AbstractClientMessage<SyncSave
 
     @Override
     public void process(EntityPlayer player, Side side) {
-        BonfireRegistry.INSTANCE.bonfires.clear();
+        BonfireRegistry.INSTANCE.clearBonfires();
         Iterator<Map.Entry<UUID, Bonfire>> it = bonfires.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<UUID, Bonfire> pair = (Map.Entry<UUID, Bonfire>) it.next();

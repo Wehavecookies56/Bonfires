@@ -3,26 +3,21 @@ package uk.co.wehavecookies56.bonfires;
 import com.mojang.authlib.GameProfile;
 import net.ilexiconn.llibrary.server.command.Command;
 import net.ilexiconn.llibrary.server.command.CommandHandler;
-import net.ilexiconn.llibrary.server.command.ICommandExecutor;
-import net.ilexiconn.llibrary.server.command.argument.CommandArguments;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -33,7 +28,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
-import uk.co.wehavecookies56.bonfires.blocks.BlockBonfire;
 import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
 import uk.co.wehavecookies56.bonfires.items.ItemAshPile;
 import uk.co.wehavecookies56.bonfires.items.ItemCoiledSword;
@@ -62,7 +56,7 @@ public class Bonfires {
     @Mod.Instance (modid)
     public static Bonfires instance;
 
-    public static Block bonfire, ashBonePile;
+    public static Block ashBonePile;
     public static Block[] blocks;
 
     public static Item ashPile, coiledSword, estusFlask;
@@ -75,7 +69,6 @@ public class Bonfires {
         PacketDispatcher.registerPackets();
         tabBonfires = new TabBonfires("tabBonfires");
         blocks = new Block[] {
-                bonfire = new BlockBonfire(Material.IRON).setRegistryName(modid, "bonfire").setUnlocalizedName("bonfire"),
                 ashBonePile = new BlockAshBonePile(Material.SNOW).setRegistryName(modid, "ash_bone_pile").setUnlocalizedName("ash_bone_pile")
         };
         items = new Item[] {
@@ -118,6 +111,16 @@ public class Bonfires {
             if (event.getEntity() instanceof EntityPlayer)
                 PacketDispatcher.sendTo(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()), (EntityPlayerMP) event.getEntity());
         }
+    }
+
+    @SubscribeEvent
+    public void unloadWorld(WorldEvent.Unload event) {
+        BonfireRegistry.INSTANCE.clearBonfires();
+    }
+
+    @SubscribeEvent
+    public void loadWorld(WorldEvent.Load event) {
+        BonfireWorldSavedData.get(event.getWorld());
     }
 
     @Mod.EventHandler
