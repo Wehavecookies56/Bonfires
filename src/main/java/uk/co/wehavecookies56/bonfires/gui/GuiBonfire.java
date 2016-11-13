@@ -123,16 +123,14 @@ public class GuiBonfire extends GuiScreen {
         buttonList.clear();
         buttonList.add(travel = new GuiButton(TRAVEL, (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 20, 80, 20, "Travel"));
         buttonList.add(leave = new GuiButton(LEAVE, (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, "Leave"));
-        if (travelOpen) {
-            updateBonfires(0);
-            bonfires.forEach((b -> {
-                String name = b.getName();
-                if (name.length() > 7) {
-                    name = name.substring(0, 7) + "...";
-                }
-                buttonList.add(new GuiButtonBonfire(this, b, 100 + bonfires.indexOf(b), (width / 2) - 85, (height / 2) + (mc.fontRendererObj.FONT_HEIGHT + 2) * bonfires.indexOf(b) - 45, name));
-            }));
-        }
+        updateBonfires(0);
+        bonfires.forEach((b -> {
+            String name = b.getName();
+            if (name.length() > 7) {
+                name = name.substring(0, 7) + "...";
+            }
+            buttonList.add(new GuiButtonBonfire(this, b, 100 + bonfires.indexOf(b), (width / 2) - 85, (height / 2) + (mc.fontRendererObj.FONT_HEIGHT + 2) * bonfires.indexOf(b) - 45, name));
+        }));
         updateButtons();
         super.initGui();
     }

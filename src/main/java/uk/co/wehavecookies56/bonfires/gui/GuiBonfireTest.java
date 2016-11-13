@@ -29,8 +29,7 @@ public class GuiBonfireTest extends ElementGUI {
 
     @Override
     public void drawScreen(float mouseX, float mouseY, float partialTicks) {
-        drawWorldBackground(0);
-        drawDefaultBackground();
+
     }
 
     @Override
