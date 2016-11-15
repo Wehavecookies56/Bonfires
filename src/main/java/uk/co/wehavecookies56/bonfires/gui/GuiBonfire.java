@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.DimensionManager;
+import org.lwjgl.Sys;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
@@ -14,8 +15,7 @@ import uk.co.wehavecookies56.bonfires.packets.Travel;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -27,7 +27,11 @@ public class GuiBonfire extends GuiScreen {
 
     GuiButton travel, leave, back;
 
-    List<Bonfire> bonfires;
+    Map<Integer, List<Bonfire>> bonfires;
+
+    List<Integer> buttonIDs;
+
+    int dimTabSelected = 0;
 
     TileEntityBonfire bonfire;
     public boolean travelOpen;
@@ -51,35 +55,42 @@ public class GuiBonfire extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        drawDefaultBackground();
         Minecraft.getMinecraft().renderEngine.bindTexture(MENU);
         if (travelOpen) {
             drawTravelMenu(mouseX, mouseY, partialTicks);
+            fontRendererObj.drawString(DimensionManager.getProvider(dimTabSelected).getDimensionType().getName(), (width / 2) - 88, (height / 2) - 62, 1184274);
             if (selected != null) {
+                super.drawScreen(mouseX, mouseY, partialTicks);
                 drawSelectedBonfire(mouseX, mouseY, partialTicks);
+            } else {
+                super.drawScreen(mouseX, mouseY, partialTicks);
             }
         } else {
             drawTexturedModalRect((width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
+            super.drawScreen(mouseX, mouseY, partialTicks);
             drawCenteredStringNoShadow(mc.fontRendererObj, BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()).getName(), (width / 4), (height / 2) - (tex_height / 2) + 6, 4210752);
         }
-        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     public void drawSelectedBonfire(int mouseX, int mouseY, float partialTicks) {
         if (selected != null) {
             Bonfire b = BonfireRegistry.INSTANCE.getBonfire(selected);
             if (b != null) {
-                drawCenteredStringNoShadow(mc.fontRendererObj, b.getName(), (width / 2), (height / 2), 4210752);
+                fontRendererObj.drawString(b.getName(), (width / 2) - 25, (height / 2) - 45, 4210752);
+                fontRendererObj.drawString("X:" + b.getPos().getX() + " Y:" + b.getPos().getY() + " Z:" + b.getPos().getZ(), (width / 2) - 25, (height / 2) - 35, 4210752);
+                if (mouseX >= (width / 2) - 25 && mouseX <= (width / 2) - 25 + fontRendererObj.getStringWidth(b.getName()) && mouseY >= (height / 2) - 45 && mouseY <= (height / 2) - 45 + fontRendererObj.FONT_HEIGHT) {
+                    List<String> lines = new ArrayList<>();
+                    lines.add("ID: " + b.getId());
+                    drawHoveringText(lines, mouseX, mouseY);
+                }
             }
         }
     }
 
     public void drawTravelMenu(int mouseX, int mouseY, float partialTicks) {
-        drawDefaultBackground();
         Minecraft.getMinecraft().renderEngine.bindTexture(TRAVEL_TEX);
         drawTexturedModalRect((width / 2) - (travel_width / 2), (height / 2) - (travel_height / 2), 0, 0, travel_width, travel_height);
-        for (int dim : DimensionManager.getIDs()) {
-            //System.out.println(dim);
-        }
     }
 
     @Override
@@ -108,6 +119,10 @@ public class GuiBonfire extends GuiScreen {
         if (travelOpen) {
             if (selected != null) {
                 travel.visible = true;
+                travel.xPosition = (width / 2) - 20;
+                travel.yPosition = (height / 2) + 38;
+            } else {
+                travel.visible = false;
             }
             leave.visible = false;
         } else {
@@ -118,25 +133,35 @@ public class GuiBonfire extends GuiScreen {
         }
     }
 
+    public int addButton(int id) {
+        buttonIDs.add(id);
+        System.out.println("Button ID: " + id + " registered");
+        return id;
+    }
+
     @Override
     public void initGui() {
         buttonList.clear();
-        buttonList.add(travel = new GuiButton(TRAVEL, (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 20, 80, 20, "Travel"));
-        buttonList.add(leave = new GuiButton(LEAVE, (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, "Leave"));
-        updateBonfires(0);
-        bonfires.forEach((b -> {
-            String name = b.getName();
-            if (name.length() > 7) {
-                name = name.substring(0, 7) + "...";
-            }
-            buttonList.add(new GuiButtonBonfire(this, b, 100 + bonfires.indexOf(b), (width / 2) - 85, (height / 2) + (mc.fontRendererObj.FONT_HEIGHT + 2) * bonfires.indexOf(b) - 45, name));
-        }));
+        bonfires = new HashMap<>();
+        buttonIDs = new ArrayList<>();
+        buttonList.add(travel = new GuiButton(addButton(TRAVEL), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 20, 80, 20, "Travel"));
+        buttonList.add(leave = new GuiButton(addButton(LEAVE), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, "Leave"));
+        for (int dim : DimensionManager.getIDs()) {
+            updateBonfires(dim);
+            bonfires.get(dim).forEach((b -> {
+                String name = b.getName();
+                if (name.length() > 7) {
+                    name = name.substring(0, 7) + "...";
+                }
+                buttonList.add(new GuiButtonBonfire(this, b, addButton(buttonIDs.size() + 1), (width / 2) - 85, (height / 2) + (mc.fontRendererObj.FONT_HEIGHT + 2) * bonfires.get(dim).indexOf(b) - 45, name, 0));
+            }));
+        }
         updateButtons();
         super.initGui();
     }
 
     public void updateBonfires(int dimension) {
-        bonfires = BonfireRegistry.INSTANCE.getBonfiresByDimension(dimension);
+        bonfires.put(dimension, BonfireRegistry.INSTANCE.getBonfiresByDimension(dimension));
     }
 
     @Override
@@ -151,6 +176,6 @@ public class GuiBonfire extends GuiScreen {
 
     @Override
     public boolean doesGuiPauseGame() {
-        return super.doesGuiPauseGame();
+        return false;
     }
 }
