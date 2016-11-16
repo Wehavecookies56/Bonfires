@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -55,10 +56,13 @@ public class EstusHandler {
     public interface IEstusHandler {
         int uses();
         void setUses(int uses);
+        UUID lastRestedAt();
+        void setLastRestedAt(UUID bonfire);
     }
 
     public static class DefaultEstusHandler implements IEstusHandler {
         private int uses = 3;
+        private UUID bonfire = null;
 
         @Override
         public int uses() {
@@ -69,6 +73,16 @@ public class EstusHandler {
         public void setUses(int uses) {
             this.uses = uses;
         }
+
+        @Override
+        public UUID lastRestedAt() {
+            return this.bonfire;
+        }
+
+        @Override
+        public void setLastRestedAt(@Nullable UUID bonfire) {
+            this.bonfire = bonfire;
+        }
     }
 
     public static class Storage implements Capability.IStorage<IEstusHandler> {
@@ -77,6 +91,7 @@ public class EstusHandler {
         public NBTBase writeNBT(Capability<IEstusHandler> capability, IEstusHandler instance, EnumFacing side) {
             final NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("uses", instance.uses());
+            tag.setUniqueId("id", instance.lastRestedAt());
             return tag;
         }
 
@@ -84,6 +99,7 @@ public class EstusHandler {
         public void readNBT(Capability<IEstusHandler> capability, IEstusHandler instance, EnumFacing side, NBTBase nbt) {
             final NBTTagCompound tag = (NBTTagCompound) nbt;
             instance.setUses(tag.getInteger("uses"));
+            instance.setLastRestedAt(tag.getUniqueId("id"));
         }
     }
 

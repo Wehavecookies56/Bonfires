@@ -45,7 +45,7 @@ public class BonfireRegistry {
     public List<Bonfire> getBonfiresByOwner(UUID owner) {
         List<Bonfire> list = new ArrayList<Bonfire>();
         bonfires.forEach((id, bonfire) -> {
-            if (bonfire.getId().equals(owner)) {
+            if (bonfire.getOwner().compareTo(owner) == 0) {
                 list.add(bonfire);
             }
         });
@@ -55,8 +55,30 @@ public class BonfireRegistry {
     public List<Bonfire> getBonfiresByName(String name) {
         List<Bonfire> list = new ArrayList<Bonfire>();
         bonfires.forEach((id, bonfire) -> {
-            if (bonfire.getName().toLowerCase().equals(name.toLowerCase())) {
+            if (bonfire.getName().toLowerCase().contains(name.toLowerCase())) {
                 list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
+    public List<Bonfire> getBonfiresInRadius(BlockPos pos, int radius, int dimension) {
+        List<Bonfire> list = getBonfiresByDimension(dimension);
+        bonfires.forEach((id, bonfire) -> {
+            int cx = pos.getX();
+            int cz = pos.getZ();
+            int cy = pos.getY();
+            int fx = bonfire.getPos().getX();
+            int fz = bonfire.getPos().getZ();
+            int fy = bonfire.getPos().getY();
+            int tx = cx + radius;
+            int bx = cx - radius;
+            int tz = cz + radius;
+            int bz = cz - radius;
+            int ty = cy + radius;
+            int by = cy - radius;
+            if (!((fx <= tx && fx >= bx) && (fz <= tz && fz >= bz) && (fy <= ty && fy >= by))) {
+                list.remove(bonfire);
             }
         });
         return list;
@@ -84,11 +106,9 @@ public class BonfireRegistry {
 
     public boolean addBonfire(Bonfire bonfire) {
         if (bonfires.containsKey(bonfire.getId())) {
-            System.out.println("Attempted to register bonfire with UUID: " + bonfire.getId().toString());
             return false;
         } else {
             bonfires.put(bonfire.getId(), bonfire);
-            System.out.println("Successfully registered bonfire with UUID: " + bonfire.getId().toString());
             return true;
         }
     }
@@ -115,7 +135,6 @@ public class BonfireRegistry {
             bonfireCompound.setDouble("POSY", pair.getValue().getPos().getY());
             bonfireCompound.setDouble("POSZ", pair.getValue().getPos().getZ());
             tagCompound.setTag(pair.getKey().toString(), bonfireCompound);
-            System.out.println("Wrote bonfire to NBT " + pair.getKey().toString());
         }
         return tagCompound;
     }
@@ -132,7 +151,6 @@ public class BonfireRegistry {
             boolean isPublic = compound.getBoolean("PUBLIC");
             Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic);
             bonfires.put(id, bonfire);
-            System.out.println("Loaded bonfire from NBT " + key);
         }
     }
 

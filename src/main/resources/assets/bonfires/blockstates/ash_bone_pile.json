@@ -1,5 +1,34 @@
 {
+	"forge_marker": 1,
+	"defaults": {
+		"textures": {
+			"particle": "bonfires:blocks/ash"
+		},
+		"model": "bonfires:ash_bone_pile",
+		"uvlock": true
+	},
   "variants": {
-    "normal": { "model": "bonfires:ash_bone_pile" }
+    "normal": [{}],
+    "inventory": [{}],
+    "facing":
+    	{
+    		"north": {
+    			"y": 0
+    		},
+    		"east": {
+    			"y": 90
+    		},
+    		"south": {
+    			"y": 180
+    		},
+    		"west": {
+    			"y": 270
+    		}
+    	},
+    "lit": 
+    	{
+    		"true": {},
+    		"false": {}
+    	}
   }
 }

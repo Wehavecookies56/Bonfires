@@ -1,10 +1,17 @@
 package uk.co.wehavecookies56.bonfires.blocks;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EnumFaceDirection;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,11 +21,13 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.EstusHandler;
 import uk.co.wehavecookies56.bonfires.gui.GuiBonfire;
 import uk.co.wehavecookies56.bonfires.gui.GuiCreateBonfire;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
@@ -35,8 +44,28 @@ import java.util.Random;
  */
 public class BlockAshBonePile extends Block implements ITileEntityProvider {
 
+    public static final PropertyDirection FACING = BlockHorizontal.FACING;
+    public static final PropertyBool LIT = PropertyBool.create("lit");
+
     public BlockAshBonePile(Material blockMaterialIn) {
         super(blockMaterialIn);
+        this.setTickRandomly(true);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(LIT, false));
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING, LIT);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(FACING).getHorizontalIndex() + (state.getValue(LIT) ? 4 : 0);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta - (meta > 3 ? 4 : 0))).withProperty(LIT, meta > 3);
     }
 
     @Override
@@ -64,18 +93,19 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 if (!te.isLit()) {
                     //OPEN LIGHTING GUI
                     if (!worldIn.isRemote) {
-
                     } else {
                         if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
-                            System.out.println("ID:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getId() + " NAME:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getName() + " DIM:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getDimension() + " OWNER:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getOwner() + " POS:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getPos() + " PUBLIC:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).isPublic());
+
                         }
                         //playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, worldIn, pos.getX(), pos.getY(), pos.getZ());
                         Minecraft.getMinecraft().displayGuiScreen(new GuiCreateBonfire(te));
                     }
                 } else {
                     if (!worldIn.isRemote) {
-                        if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null)
-                            System.out.println("ID:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getId() + " NAME:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getName() + " DIM:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getDimension() + " OWNER:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getOwner() + " POS:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).getPos() + " PUBLIC:" + BonfireRegistry.INSTANCE.getBonfire(te.getID()).isPublic());
+                        if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
+                            playerIn.getCapability(EstusHandler.CAPABILITY_ESTUS, null).setLastRestedAt(te.getID());
+                            playerIn.heal(playerIn.getMaxHealth());
+                        }
                     } else {
                         Minecraft.getMinecraft().displayGuiScreen(new GuiBonfire(te));
                     }
@@ -84,7 +114,8 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 if (heldItem != null) {
                     if (heldItem.getItem() == Bonfires.coiledSword) {
                         if (!worldIn.isRemote) {
-                            playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
+                            if (!playerIn.capabilities.isCreativeMode)
+                                playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
                             te.setBonfire(true);
                             te.setLit(false);
                             PacketDispatcher.sendToAllAround(new SyncBonfire(te.isBonfire(), te.isLit(), null, te), new NetworkRegistry.TargetPoint(worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
@@ -93,7 +124,22 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 }
             }
         }
+        worldIn.markAndNotifyBlock(pos, worldIn.getChunkFromBlockCoords(pos), state, state, 1);
         return true;
+    }
+
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(LIT, false), 2);
+    }
+
+    @Override
+    public int getLightValue(IBlockState state) {
+        if (state.getValue(LIT)) {
+            return 8;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -110,11 +156,6 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 te.destroyBonfire(te.getID());
                 BonfireRegistry.INSTANCE.getBonfires().remove(te.getID());
                 BonfireWorldSavedData.get(worldIn).markDirty();
-                System.out.println("Destroyed bonfire: " + te.getID());
-                System.out.println("All registered bonfires: ");
-                for (Bonfire b : BonfireRegistry.INSTANCE.getBonfires().values()) {
-                    System.out.println("NAME:" + b.getName() + " ID:" + b.getId());
-                }
                 PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));
             }
             worldIn.removeTileEntity(pos);

@@ -7,6 +7,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
+import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
 import java.io.IOException;
@@ -57,6 +58,7 @@ public class LightBonfire extends AbstractMessage.AbstractServerMessage<LightBon
         UUID id = UUID.randomUUID();
         te.createBonfire(name, id, player.getPersistentID(), true);
         te.setID(id);
+        player.worldObj.setBlockState(pos, player.worldObj.getBlockState(pos).withProperty(BlockAshBonePile.LIT, true), 2);
         player.addChatComponentMessage(new TextComponentString("BONFIRE LIT"));
         PacketDispatcher.sendToAllAround(new SyncBonfire(te.isBonfire(), te.isLit(), te.getID(), te), new NetworkRegistry.TargetPoint(player.worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));

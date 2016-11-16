@@ -2,8 +2,10 @@ package uk.co.wehavecookies56.bonfires.gui;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.packets.LightBonfire;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
@@ -27,7 +29,7 @@ public class GuiCreateBonfire extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        drawString(mc.fontRendererObj, "Enter a name for the bonfire", (width / 2) - mc.fontRendererObj.getStringWidth("Enter a name for the bonfire") / 2, (height / 2) - (mc.fontRendererObj.FONT_HEIGHT / 2) - 20, 0xFFFFFF);
+        drawString(mc.fontRendererObj, I18n.format(LocalStrings.TEXT_NAME), (width / 2) - mc.fontRendererObj.getStringWidth(I18n.format(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (mc.fontRendererObj.FONT_HEIGHT / 2) - 20, 0xFFFFFF);
         nameBox.drawTextBox();
     }
 
@@ -73,7 +75,7 @@ public class GuiCreateBonfire extends GuiScreen {
         super.initGui();
         nameBox = new GuiNameTextField(0, mc.fontRendererObj, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15);
         buttonList.clear();
-        buttonList.add(accept = new GuiButton(0, (width / 2) - (80 / 2), (height / 2) - (20 / 2) + 25, 80, 20, "Accept"));
+        buttonList.add(accept = new GuiButton(0, (width / 2) - (80 / 2), (height / 2) - (20 / 2) + 25, 80, 20, I18n.format(LocalStrings.BUTTON_ACCEPT)));
         nameBox.setMax(20);
     }
 }

@@ -15,10 +15,7 @@ import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
  */
 public class ItemAshPile extends Item {
 
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
-        //if (!worldIn.isRemote)
-            //worldIn.getMinecraftServer().getPlayerList().transferPlayerToDimension((EntityPlayerMP) playerIn, 0, new Teleporter(worldIn.getMinecraftServer().worldServerForDimension(1)));
-        return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand);
+    public ItemAshPile() {
+
     }
 }

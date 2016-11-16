@@ -6,3 +6,27 @@ tile.ash_bone_pile.name=Pile of Bone and Ash
 item.ash_pile.name=Pile of Ash
 item.coiled_sword.name=Coiled Sword
 item.estus_flask.name=Estus Flask
+item.homeward_bone.name=Homeward Bone
+item.coiled_sword_fragment.name=Coiled Sword Fragment
+
+command.match=Found %1$s bonfire(s) found matching %2$s
+command.nomatch=No bonfires found matching %1$s
+command.nouser=Error: No user with name %1%s exists
+command.dim.match=Found %1$s bonfire(s) in dimension %2$s 
+command.dim.nomatch=No bonfires found in dimension %1$s
+command.dim.nodim=Error: Dimension %1$s is not a dimension
+command.radius.match=Found %1$s bonfire(s) within a radius of %2$s blocks
+command.radius.nomatch=No bonfires found within a radius of %1$s blocks
+
+command.name=Name: %1$s;
+command.id=ID: %1$s;
+command.owner=Owner: %1$s;
+command.pos=Pos: [X:%1$s,Y:%2$s,Z:%3$s];
+command.na=N/A;
+
+button.travel=Travel
+button.leave=Leave
+button.accept=Accept
+
+text.name=Enter a name for the bonfire
+text.lit=BONFIRE LIT
