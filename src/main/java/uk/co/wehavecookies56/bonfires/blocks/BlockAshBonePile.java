@@ -103,8 +103,9 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 } else {
                     if (!worldIn.isRemote) {
                         if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
-                            playerIn.getCapability(EstusHandler.CAPABILITY_ESTUS, null).setLastRestedAt(te.getID());
+                            //.getCapability(EstusHandler.CAPABILITY_ESTUS, null).setLastRestedAt(te.getID());
                             playerIn.heal(playerIn.getMaxHealth());
+                            playerIn.setSpawnPoint(pos, true);
                         }
                     } else {
                         Minecraft.getMinecraft().displayGuiScreen(new GuiBonfire(te));

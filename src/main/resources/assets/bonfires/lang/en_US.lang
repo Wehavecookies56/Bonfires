@@ -1,6 +1,6 @@
 itemGroup.tabBonfires=Bonfires
 
-tile.bonfire.name=Bonfire
+tile.ash_block.name=Block of Ash
 tile.ash_bone_pile.name=Pile of Bone and Ash
 
 item.ash_pile.name=Pile of Ash
@@ -8,6 +8,7 @@ item.coiled_sword.name=Coiled Sword
 item.estus_flask.name=Estus Flask
 item.homeward_bone.name=Homeward Bone
 item.coiled_sword_fragment.name=Coiled Sword Fragment
+item.estus_shard.name=Estus Shard
 
 command.match=Found %1$s bonfire(s) found matching %2$s
 command.nomatch=No bonfires found matching %1$s
