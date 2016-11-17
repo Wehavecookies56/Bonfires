@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EnumFaceDirection;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -155,7 +156,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
         if (te != null) {
             if (te.isLit()) {
                 te.destroyBonfire(te.getID());
-                BonfireRegistry.INSTANCE.getBonfires().remove(te.getID());
+                BonfireRegistry.INSTANCE.removeBonfire(te.getID());
                 BonfireWorldSavedData.get(worldIn).markDirty();
                 PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));
             }

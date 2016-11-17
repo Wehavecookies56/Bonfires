@@ -24,22 +24,26 @@ public class GuiButtonBonfire extends GuiButton {
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        if (parent.dimTabSelected == dim) {
+        if (parent.tabs[parent.dimTabSelected-5].getDimension() == dim) {
             if (parent.travelOpen) {
+                this.visible = true;
                 FontRenderer fontrenderer = mc.fontRendererObj;
                 int colour = 4210752;
                 if (parent.bonfire.getID().compareTo(bonfire.getId()) == 0) {
                     colour = 46339                                                                                                                                                                                                                                                                                           ;
                 }
                 fontrenderer.drawString(this.displayString, this.xPosition, this.yPosition, colour);
+            } else {
+                this.visible = false;
             }
+        } else {
+            this.visible = false;
         }
     }
 
     @Override
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
         if (this.enabled && this.visible && mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height) {
-            System.out.println(id + " pressed");
             parent.selected = bonfire.getId();
         }
         return super.mousePressed(mc, mouseX, mouseY);
