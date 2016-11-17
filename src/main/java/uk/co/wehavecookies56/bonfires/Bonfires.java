@@ -141,9 +141,11 @@ public class Bonfires {
         }
     }
 
+
     @SubscribeEvent
-    public void unloadWorld(WorldEvent.Unload event) {
-        BonfireRegistry.INSTANCE.clearBonfires();
+    public void quit(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.player.worldObj.isRemote)
+            BonfireRegistry.INSTANCE.clearBonfires();
     }
 
     @SubscribeEvent
