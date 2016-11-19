@@ -76,6 +76,6 @@ public class GuiCreateBonfire extends GuiScreen {
         nameBox = new GuiNameTextField(0, mc.fontRendererObj, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15);
         buttonList.clear();
         buttonList.add(accept = new GuiButton(0, (width / 2) - (80 / 2), (height / 2) - (20 / 2) + 25, 80, 20, I18n.format(LocalStrings.BUTTON_ACCEPT)));
-        nameBox.setMax(20);
+        nameBox.setMax(14);
     }
 }

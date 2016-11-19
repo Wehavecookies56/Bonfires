@@ -13,39 +13,44 @@ public class GuiButtonBonfire extends GuiButton {
 
     GuiBonfire parent;
     Bonfire bonfire;
-    int dim;
 
-    public GuiButtonBonfire(GuiBonfire parent, Bonfire bonfire, int buttonId, int x, int y, String buttonText, int dim) {
-        super(buttonId, x, y, Minecraft.getMinecraft().fontRendererObj.getStringWidth(buttonText), Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, buttonText);
+    public GuiButtonBonfire(GuiBonfire parent, int buttonId, int x, int y) {
+        super(buttonId, x, y, 69, Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT+2, "");
         this.parent = parent;
+    }
+
+    public Bonfire getBonfire() {
+        return bonfire;
+    }
+
+    public void setBonfire(Bonfire bonfire) {
         this.bonfire = bonfire;
-        this.dim = dim;
     }
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        if (parent.tabs[parent.dimTabSelected-5].getDimension() == dim) {
-            if (parent.travelOpen) {
-                this.visible = true;
-                FontRenderer fontrenderer = mc.fontRendererObj;
-                int colour = 4210752;
-                if (parent.bonfire.getID().compareTo(bonfire.getId()) == 0) {
-                    colour = 46339                                                                                                                                                                                                                                                                                           ;
+        if (bonfire != null) {
+            if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
+                displayString = bonfire.getName();
+                if (visible) {
+                    FontRenderer fontrenderer = mc.fontRendererObj;
+                    int colour = 4210752;
+                    if (parent.bonfireSelected >= parent.BONFIRE1) {
+                        if (parent.bonfires != null) {
+                            if (parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()) != null) {
+                                Bonfire b = parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11);
+                                if (bonfire == b) {
+                                    colour = 46339;
+                                }
+                            }
+                        }
+                    }
+                    parent.drawCenteredStringNoShadow(fontrenderer, this.displayString, this.xPosition + width / 2, this.yPosition + 1, colour);
                 }
-                fontrenderer.drawString(this.displayString, this.xPosition, this.yPosition, colour);
-            } else {
-                this.visible = false;
             }
         } else {
-            this.visible = false;
+            visible = false;
+            displayString = "";
         }
-    }
-
-    @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-        if (this.enabled && this.visible && mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height) {
-            parent.selected = bonfire.getId();
-        }
-        return super.mousePressed(mc, mouseX, mouseY);
     }
 }

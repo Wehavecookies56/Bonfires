@@ -29,26 +29,25 @@ public class GuiBonfire extends GuiScreen {
 
     GuiButton travel, leave, back, next, prev;
 
-    GuiButtonDimensionTab tab1, tab2, tab3, tab4, tab5, tab6;
-
-    Map<Integer, List<Bonfire>> bonfires;
+    Map<Integer, List<List<Bonfire>>> bonfires;
 
     List<Integer> buttonIDs;
     List<Integer> dimensions;
     List<List<Integer>> pages;
 
     int currentPage = 0;
+    int bonfirePage = 0;
 
     TileEntityBonfire bonfire;
     public boolean travelOpen;
 
-    public UUID selected;
-
-    public final int TRAVEL = 0, LEAVE = 1, BACK = 2, NEXT = 3, PREV = 4, TAB1 = 5, TAB2 = 6, TAB3 = 7, TAB4 = 8, TAB5 = 9, TAB6 = 10;
+    public final int TRAVEL = 0, LEAVE = 1, BACK = 2, NEXT = 3, PREV = 4, TAB1 = 5, TAB2 = 6, TAB3 = 7, TAB4 = 8, TAB5 = 9, TAB6 = 10, BONFIRE1 = 11, BONFIRE2 = 12, BONFIRE3 = 13, BONFIRE4 = 14, BONFIRE5 = 15, BONFIRE6 = 16, BONFIRE7 = 17, BONFIRE8 = 18, BONFIRE9 = 19;
 
     int dimTabSelected = TAB1;
+    int bonfireSelected = 0;
 
     GuiButtonDimensionTab[] tabs;
+    GuiButtonBonfire[] bonfireButtons;
 
     public final int tex_width = 90;
     public final int tex_height = 166;
@@ -63,14 +62,46 @@ public class GuiBonfire extends GuiScreen {
         fr.drawString(text, (x - fr.getStringWidth(text) / 2), y, color);
     }
 
+    public static Map<Integer, List<List<Bonfire>>> createSeries(int dimension) {
+        List<Bonfire> bonfires = BonfireRegistry.INSTANCE.getBonfiresByDimension(dimension);
+
+        if (!bonfires.isEmpty()) {
+            System.out.println("Bonfires in dimension " + dimension);
+            List<List<Bonfire>> book = new ArrayList<>();
+
+            int plus = 1;
+            if (bonfires.size() < 9) {
+                plus = bonfires.size();
+            }
+
+            for (int i = 0; i < (bonfires.size() / 9) + plus; i++) {
+                List<Bonfire> page;
+                int start = i * 9;
+                if (bonfires.size() < 9)
+                    start = 0;
+                if ((start) + 8 > bonfires.size())
+                    page = bonfires.subList(start, bonfires.size());
+                else
+                    page = bonfires.subList(start, (start) + 8);
+                book.add(page);
+                System.out.println("Added page " + page.get(i).getName());
+            }
+            Map<Integer, List<List<Bonfire>>> series = new HashMap<>();
+            series.put(dimension, book);
+            return series;
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
         Minecraft.getMinecraft().renderEngine.bindTexture(MENU);
         if (travelOpen) {
             drawTravelMenu(mouseX, mouseY, partialTicks);
-            fontRendererObj.drawString(DimensionManager.getProvider(tabs[dimTabSelected-5].getDimension()).getDimensionType().getName(), (width / 2) - 88, (height / 2) - 62, 1184274);
-            if (selected != null) {
+            fontRendererObj.drawString(DimensionManager.getProvider(tabs[dimTabSelected - 5].getDimension()).getDimensionType().getName(), (width / 2) - 88, (height / 2) - 62, 1184274);
+            if (bonfireSelected >= BONFIRE1) {
                 super.drawScreen(mouseX, mouseY, partialTicks);
                 drawSelectedBonfire(mouseX, mouseY, partialTicks);
             } else {
@@ -88,15 +119,23 @@ public class GuiBonfire extends GuiScreen {
     }
 
     public void drawSelectedBonfire(int mouseX, int mouseY, float partialTicks) {
-        if (selected != null) {
-            Bonfire b = BonfireRegistry.INSTANCE.getBonfire(selected);
-            if (b != null) {
-                fontRendererObj.drawString(b.getName(), (width / 2) - 25, (height / 2) - 45, 4210752);
-                fontRendererObj.drawString("X:" + b.getPos().getX() + " Y:" + b.getPos().getY() + " Z:" + b.getPos().getZ(), (width / 2) - 25, (height / 2) - 35, 4210752);
-                if (mouseX >= (width / 2) - 25 && mouseX <= (width / 2) - 25 + fontRendererObj.getStringWidth(b.getName()) && mouseY >= (height / 2) - 45 && mouseY <= (height / 2) - 45 + fontRendererObj.FONT_HEIGHT) {
-                    List<String> lines = new ArrayList<>();
-                    lines.add("ID: " + b.getId());
-                    drawHoveringText(lines, mouseX, mouseY);
+        if (bonfireSelected >= BONFIRE1) {
+            if (bonfires != null) {
+                if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
+                    Bonfire b = bonfires.get(tabs[dimTabSelected-5].getDimension()).get(bonfirePage).get(bonfireSelected-11);
+                    if (b != null) {
+                        int nameX = (width / 2) - 10;
+                        int nameY = (height / 2) - 45;
+                        int nameEndX = nameX + fontRendererObj.getStringWidth(b.getName());
+                        int nameEndY = nameY + fontRendererObj.FONT_HEIGHT;
+                        fontRendererObj.drawString(b.getName(), nameX, nameY, 4210752);
+                        fontRendererObj.drawString("X:" + b.getPos().getX() + " Y:" + b.getPos().getY() + " Z:" + b.getPos().getZ(), nameX, nameY + 12, 4210752);
+                        if (mouseX >= nameX && mouseX <= nameEndX && mouseY >= nameY && mouseY <= nameEndY) {
+                            List<String> lines = new ArrayList<>();
+                            lines.add("ID: " + b.getId());
+                            drawHoveringText(lines, mouseX, mouseY);
+                        }
+                    }
                 }
             }
         }
@@ -119,9 +158,14 @@ public class GuiBonfire extends GuiScreen {
                     travelOpen = true;
                     updateBonfires(tabs[dimTabSelected-5].getDimension());
                 } else {
-                    if (selected != null) {
-                        PacketDispatcher.sendToServer(new Travel(BonfireRegistry.INSTANCE.getBonfire(selected)));
-                        mc.displayGuiScreen(null);
+                    if (bonfireSelected >= BONFIRE1) {
+                        if (bonfires != null) {
+                            if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
+                                Bonfire b = bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(bonfireSelected - 11);
+                                PacketDispatcher.sendToServer(new Travel(b));
+                                mc.displayGuiScreen(null);
+                            }
+                        }
                     }
                 }
                 break;
@@ -154,6 +198,34 @@ public class GuiBonfire extends GuiScreen {
             case TAB6:
                 dimTabSelected = TAB6;
                 break;
+            case BONFIRE1:
+                bonfireSelected = BONFIRE1;
+                break;
+            case BONFIRE2:
+                bonfireSelected = BONFIRE2;
+                break;
+            case BONFIRE3:
+                bonfireSelected = BONFIRE3;
+                break;
+            case BONFIRE4:
+                bonfireSelected = BONFIRE4;
+                break;
+            case BONFIRE5:
+                bonfireSelected = BONFIRE5;
+                break;
+            case BONFIRE6:
+                bonfireSelected = BONFIRE6;
+                break;
+            case BONFIRE7:
+                bonfireSelected = BONFIRE7;
+                break;
+            case BONFIRE8:
+                bonfireSelected = BONFIRE8;
+                break;
+            case BONFIRE9:
+                bonfireSelected = BONFIRE9;
+                break;
+
         }
         updateButtons();
         super.actionPerformed(button);
@@ -161,9 +233,9 @@ public class GuiBonfire extends GuiScreen {
 
     public void updateButtons() {
         if (travelOpen) {
-            if (selected != null) {
+            if (bonfireSelected >= BONFIRE1) {
                 travel.visible = true;
-                travel.xPosition = (width / 2) - 20;
+                travel.xPosition = (width / 2) - 5;
                 travel.yPosition = (height / 2) + 38;
             } else {
                 travel.visible = false;
@@ -172,6 +244,20 @@ public class GuiBonfire extends GuiScreen {
                 if (i < pages.get(currentPage).size()) {
                     tabs[i].visible = true;
                     tabs[i].setDimension(pages.get(currentPage).get(i));
+                }
+            }
+            for (int i = 0; i < bonfireButtons.length; i++) {
+                if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
+                    System.out.println("Stuff");
+                    if (i < bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).size()) {
+                        System.out.println(bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(i));
+                        bonfireButtons[i].visible = true;
+                        bonfireButtons[i].setBonfire(bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(i));
+                    } else {
+                        bonfireButtons[i].visible = false;
+                    }
+                } else {
+                    bonfireButtons[i].visible = false;
                 }
             }
             leave.visible = false;
@@ -197,6 +283,9 @@ public class GuiBonfire extends GuiScreen {
             for (GuiButtonDimensionTab tab : tabs) {
                 tab.visible = false;
             }
+            for (GuiButtonBonfire bonfire : bonfireButtons) {
+                bonfire.visible = false;
+            }
         }
     }
 
@@ -208,7 +297,6 @@ public class GuiBonfire extends GuiScreen {
     @Override
     public void initGui() {
         buttonList.clear();
-        bonfires = new HashMap<>();
         buttonIDs = new ArrayList<>();
         dimensions = new ArrayList<>();
         pages = new ArrayList<>();
@@ -224,21 +312,40 @@ public class GuiBonfire extends GuiScreen {
                 new GuiButtonDimensionTab(this, addButton(TAB5), 0, 0),
                 new GuiButtonDimensionTab(this, addButton(TAB6), 0, 0)
         };
+        bonfireButtons = new GuiButtonBonfire[] {
+                new GuiButtonBonfire(this, addButton(BONFIRE1), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE2), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE3), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE4), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE5), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE6), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE7), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE8), 0, 0),
+                new GuiButtonBonfire(this, addButton(BONFIRE9), 0, 0)
+        };
         for (int i = 0; i < tabs.length; i++) {
             buttonList.add(tabs[i]);
-            tabs[i].xPosition = ((width) / 2 - (travel_width / 2) + (i * 28)) + ((travel_width - 28) / 2);
-            tabs[i].yPosition = (height / 2) - (travel_width / 2);
+            int sixTabs = 6 * 28;
+            int gap = travel_width - sixTabs;
+            tabs[i].xPosition = ((width) / 2 - (travel_width / 2) + (i * 28) + gap / 2);
+            tabs[i].yPosition = (height / 2) - (travel_width / 2) + 1;
+        }
+        for (int i = 0; i < bonfireButtons.length; i++) {
+            buttonList.add(bonfireButtons[i]);
+            bonfireButtons[i].xPosition = (width / 2) - 88;
+            bonfireButtons[i].yPosition = (height / 2) + (bonfireButtons[i].height+2) * i - 51;
         }
         for (int dim : DimensionManager.getIDs()) {
             updateBonfires(dim);
-            bonfires.get(dim).forEach((b -> {
+            /*bonfires.get(dim).forEach((b -> {
                 String name = b.getName();
                 if (name.length() > 10) {
                     name = name.substring(0, 10) + "...";
                 }
-                buttonList.add(new GuiButtonBonfire(this, b, addButton(buttonIDs.size() + 1), (width / 2) - 85, (height / 2) + (mc.fontRendererObj.FONT_HEIGHT + 2) * bonfires.get(dim).indexOf(b) - 45, name, 0));
             }));
+            */
             dimensions.add(dim);
+
         }
         for (int i = 0; i < (dimensions.size() / 6)+1; i++) {
             if ((i*6)+5 > dimensions.size())
@@ -251,7 +358,7 @@ public class GuiBonfire extends GuiScreen {
     }
 
     public void updateBonfires(int dimension) {
-        bonfires.put(dimension, BonfireRegistry.INSTANCE.getBonfiresByDimension(dimension));
+        bonfires = createSeries(dimension);
     }
 
     @Override

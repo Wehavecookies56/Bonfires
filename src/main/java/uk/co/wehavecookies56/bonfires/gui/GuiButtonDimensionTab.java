@@ -13,7 +13,7 @@ public class GuiButtonDimensionTab extends GuiButton {
 
     GuiBonfire parent;
     int dimension;
-    Item icon = Items.MAP;
+    Item icon = Items.FILLED_MAP;
 
     public GuiButtonDimensionTab(GuiBonfire parent, int buttonId, int x, int y) {
         super(buttonId, x, y, 28, 30, "");
@@ -42,15 +42,18 @@ public class GuiButtonDimensionTab extends GuiButton {
         if (visible) {
             int tab_width = 28;
             int tab_height = 30;
-            int tab_u = 0;
+            int tab_u = 28;
             int tab_v = parent.travel_height;
+            Minecraft.getMinecraft().renderEngine.bindTexture(parent.TRAVEL_TEX);
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
+                drawTexturedModalRect(xPosition, yPosition, tab_u, tab_v, tab_width, tab_height);
+                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon), xPosition + (tab_width / 2) - 8, yPosition + (tab_height / 2) - 8);
+            } else {
+                drawTexturedModalRect(xPosition, yPosition-1, tab_u, tab_v, tab_width, tab_height);
+                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon), xPosition + (tab_width / 2) - 8, yPosition + (tab_height / 2) - 8 -1);
             }
-            Minecraft.getMinecraft().renderEngine.bindTexture(parent.TRAVEL_TEX);
-            drawTexturedModalRect(xPosition, yPosition, tab_u, tab_v, tab_width, tab_height);
-            Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon),xPosition, yPosition);
         }
     }
 }

@@ -1,9 +1,6 @@
 package uk.co.wehavecookies56.bonfires.blocks;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
-import net.minecraft.block.BlockSand;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
