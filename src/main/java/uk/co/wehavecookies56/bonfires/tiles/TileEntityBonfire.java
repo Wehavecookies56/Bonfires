@@ -8,14 +8,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -112,4 +118,16 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
         this.writeToNBT(compound);
         return new SPacketUpdateTileEntity(getPos(), 1, compound);
     }
+
+    @Nullable
+    @Override
+    public ITextComponent getDisplayName() {
+        if (getID() != null) {
+            if (BonfireRegistry.INSTANCE.getBonfire(getID()) != null) {
+                return new TextComponentTranslation(BonfireRegistry.INSTANCE.getBonfire(getID()).getName());
+            }
+        }
+        return null;
+    }
+
 }
