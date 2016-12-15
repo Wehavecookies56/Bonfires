@@ -1,5 +1,6 @@
 package uk.co.wehavecookies56.bonfires.gui;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -83,9 +84,8 @@ public class GuiBonfire extends GuiScreen {
                 if ((start) + 8 > bonfires.size())
                     page = bonfires.subList(start, bonfires.size());
                 else
-                    page = bonfires.subList(start, (start) + 8);
+                    page = bonfires.subList(start, (start) + 9);
                 book.add(page);
-                System.out.println("Added page " + page.get(i).getName());
             }
             Map<Integer, List<List<Bonfire>>> series = new HashMap<>();
             series.put(dimension, book);
@@ -108,7 +108,7 @@ public class GuiBonfire extends GuiScreen {
                 dimensionsF.setAccessible(true);
                 Object dimIDs = dimensionsF.get(new DimensionManager());
                 Hashtable<Integer, DimensionType> dimensionIDs = (Hashtable<Integer, DimensionType>)dimIDs ;
-                fontRendererObj.drawString(dimensionIDs.get(tabs[dimTabSelected - 5].getDimension()).getName(), (width / 2) - 88, (height / 2) - 62, 1184274);
+                fontRendererObj.drawString(dimensionIDs.get(tabs[dimTabSelected - 5].getDimension()).getName() + " (" + tabs[dimTabSelected - 5].getDimension() + ")", (width / 2) - 88, (height / 2) - 62, 1184274);
                 dimensionsF.setAccessible(false);
             } catch (IllegalAccessException e) {
 
@@ -191,12 +191,18 @@ public class GuiBonfire extends GuiScreen {
                 mc.displayGuiScreen(null);
                 break;
             case NEXT:
-                if (currentPage != pages.size()-1)
+                if (currentPage != pages.size()-1) {
                     currentPage++;
+                    dimTabSelected = TAB1;
+                    bonfireSelected = 0;
+                }
                 break;
             case PREV:
-                if (currentPage != 0)
+                if (currentPage != 0) {
                     currentPage--;
+                    dimTabSelected = TAB1;
+                    bonfireSelected = 0;
+                }
                 break;
             case TAB1:
                 dimTabSelected = TAB1;
@@ -364,13 +370,21 @@ public class GuiBonfire extends GuiScreen {
             bonfireButtons[i].xPosition = (width / 2) - 88;
             bonfireButtons[i].yPosition = (height / 2) + (bonfireButtons[i].height+2) * i - 48;
         }
+        prev.xPosition = ((width) / 2 - (travel_width / 2)) - 8;
+        prev.yPosition = (height / 2) - (travel_width / 2) + 6;
+        int sixTabs = 6 * 28;
+        int gap = travel_width - sixTabs;
+        next.xPosition = ((width) / 2 - (travel_width / 2) + (6 * 28) + gap / 2);
+        next.yPosition = (height / 2) - (travel_width / 2) + 6;
         updateBonfires();
         try {
             Field dimensionsF = ReflectionHelper.findField(DimensionManager.class, "dimensions");
             dimensionsF.setAccessible(true);
             Object dimIDs = dimensionsF.get(new DimensionManager());
             Hashtable<Integer, DimensionType> dimensionIDs = (Hashtable<Integer, DimensionType>)dimIDs ;
-            for (int dim : dimensionIDs.keySet()) {
+            List<Integer> dimList = new ArrayList<>(dimensionIDs.keySet());
+            dimList = Lists.reverse(dimList);
+            for (int dim : dimList) {
                 dimensions.add(dim);
             }
             dimensionsF.setAccessible(false);
@@ -380,8 +394,9 @@ public class GuiBonfire extends GuiScreen {
         for (int i = 0; i < (dimensions.size() / 6)+1; i++) {
             if ((i*6)+5 > dimensions.size())
                 pages.add(dimensions.subList(i*6, dimensions.size()));
-            else
-                pages.add(dimensions.subList(i*6, (i*6)+5));
+            else {
+                pages.add(dimensions.subList(i * 6, (i * 6) + 6));
+            }
         }
         updateButtons();
         super.initGui();
