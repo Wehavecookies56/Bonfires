@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import org.lwjgl.Sys;
+import org.lwjgl.opengl.GL11;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 
 /**
@@ -38,9 +39,13 @@ public class GuiButtonBonfire extends GuiButton {
                     if (parent.bonfireSelected >= parent.BONFIRE1) {
                         if (parent.bonfires != null) {
                             if (parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()) != null) {
-                                Bonfire b = parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11);
-                                if (bonfire == b) {
-                                    colour = 46339;
+                                if (parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage) != null) {
+                                    if (parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11) != null) {
+                                        Bonfire b = parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11);
+                                        if (bonfire == b) {
+                                            colour = 46339;
+                                        }
+                                    }
                                 }
                             }
                         }

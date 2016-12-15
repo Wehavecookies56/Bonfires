@@ -6,8 +6,10 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.DimensionManager;
-import org.lwjgl.Sys;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.lwjgl.opengl.GL11;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
@@ -15,8 +17,8 @@ import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.Travel;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
-
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -96,10 +98,22 @@ public class GuiBonfire extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
+        GL11.glPushMatrix();
+        GL11.glColor4f(1, 1, 1, 1);
         Minecraft.getMinecraft().renderEngine.bindTexture(MENU);
         if (travelOpen) {
             drawTravelMenu(mouseX, mouseY, partialTicks);
-            fontRendererObj.drawString(DimensionManager.getProviderType(tabs[dimTabSelected - 5].getDimension()).getName(), (width / 2) - 88, (height / 2) - 62, 1184274);
+            try {
+                Field dimensionsF = ReflectionHelper.findField(DimensionManager.class, "dimensions");
+                dimensionsF.setAccessible(true);
+                Object dimIDs = dimensionsF.get(new DimensionManager());
+                Hashtable<Integer, DimensionType> dimensionIDs = (Hashtable<Integer, DimensionType>)dimIDs ;
+                fontRendererObj.drawString(dimensionIDs.get(tabs[dimTabSelected - 5].getDimension()).getName(), (width / 2) - 88, (height / 2) - 62, 1184274);
+                dimensionsF.setAccessible(false);
+            } catch (IllegalAccessException e) {
+
+            }
+
             if (bonfireSelected >= BONFIRE1) {
                 super.drawScreen(mouseX, mouseY, partialTicks);
                 drawSelectedBonfire(mouseX, mouseY, partialTicks);
@@ -115,6 +129,7 @@ public class GuiBonfire extends GuiScreen {
             }
             drawCenteredStringNoShadow(mc.fontRendererObj, name, (width / 4), (height / 2) - (tex_height / 2) + 6, 4210752);
         }
+        GL11.glPopMatrix();
     }
 
     public void drawSelectedBonfire(int mouseX, int mouseY, float partialTicks) {
@@ -138,6 +153,10 @@ public class GuiBonfire extends GuiScreen {
                 }
             }
         }
+    }
+
+    public void drawHovering(List<String> lines, int x, int y) {
+        drawHoveringText(lines, x, y);
     }
 
     public void drawTravelMenu(int mouseX, int mouseY, float partialTicks) {
@@ -181,21 +200,27 @@ public class GuiBonfire extends GuiScreen {
                 break;
             case TAB1:
                 dimTabSelected = TAB1;
+                bonfireSelected = 0;
                 break;
             case TAB2:
                 dimTabSelected = TAB2;
+                bonfireSelected = 0;
                 break;
             case TAB3:
                 dimTabSelected = TAB3;
+                bonfireSelected = 0;
                 break;
             case TAB4:
                 dimTabSelected = TAB4;
+                bonfireSelected = 0;
                 break;
             case TAB5:
                 dimTabSelected = TAB5;
+                bonfireSelected = 0;
                 break;
             case TAB6:
                 dimTabSelected = TAB6;
+                bonfireSelected = 0;
                 break;
             case BONFIRE1:
                 bonfireSelected = BONFIRE1;
@@ -231,6 +256,9 @@ public class GuiBonfire extends GuiScreen {
     }
 
     public void updateButtons() {
+        for (GuiButtonDimensionTab tab : tabs) {
+            tab.visible = false;
+        }
         if (travelOpen) {
             if (bonfireSelected >= BONFIRE1) {
                 travel.visible = true;
@@ -250,7 +278,6 @@ public class GuiBonfire extends GuiScreen {
                     if (bonfires != null) {
                         if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
                             if (i < bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).size()) {
-                                System.out.println(bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(i));
                                 bonfireButtons[i].visible = true;
                                 bonfireButtons[i].setBonfire(bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(i));
                             } else {
@@ -335,11 +362,20 @@ public class GuiBonfire extends GuiScreen {
         for (int i = 0; i < bonfireButtons.length; i++) {
             buttonList.add(bonfireButtons[i]);
             bonfireButtons[i].xPosition = (width / 2) - 88;
-            bonfireButtons[i].yPosition = (height / 2) + (bonfireButtons[i].height+2) * i - 51;
+            bonfireButtons[i].yPosition = (height / 2) + (bonfireButtons[i].height+2) * i - 48;
         }
         updateBonfires();
-        for (int dim : DimensionManager.getIDs()) {
-            dimensions.add(dim);
+        try {
+            Field dimensionsF = ReflectionHelper.findField(DimensionManager.class, "dimensions");
+            dimensionsF.setAccessible(true);
+            Object dimIDs = dimensionsF.get(new DimensionManager());
+            Hashtable<Integer, DimensionType> dimensionIDs = (Hashtable<Integer, DimensionType>)dimIDs ;
+            for (int dim : dimensionIDs.keySet()) {
+                dimensions.add(dim);
+            }
+            dimensionsF.setAccessible(false);
+        } catch (IllegalAccessException e) {
+
         }
         for (int i = 0; i < (dimensions.size() / 6)+1; i++) {
             if ((i*6)+5 > dimensions.size())
@@ -353,11 +389,20 @@ public class GuiBonfire extends GuiScreen {
 
     public void updateBonfires() {
         bonfires = new HashMap<>();
-        for (int dim : DimensionManager.getIDs()) {
-            Map<Integer, List<List<Bonfire>>> series = createSeries(dim);
-            if (series != null)
-                if (series.get(dim) != null)
-                    bonfires.put(dim, series.get(dim));
+        try {
+            Field dimensionsF = ReflectionHelper.findField(DimensionManager.class, "dimensions");
+            dimensionsF.setAccessible(true);
+            Object dimIDs = dimensionsF.get(new DimensionManager());
+            Hashtable<Integer, DimensionType> dimensionIDs = (Hashtable<Integer, DimensionType>)dimIDs ;
+            for (int dim : dimensionIDs.keySet()) {
+                Map<Integer, List<List<Bonfire>>> series = createSeries(dim);
+                if (series != null)
+                    if (series.get(dim) != null)
+                        bonfires.put(dim, series.get(dim));
+            }
+            dimensionsF.setAccessible(false);
+        } catch (IllegalAccessException e) {
+
         }
     }
 

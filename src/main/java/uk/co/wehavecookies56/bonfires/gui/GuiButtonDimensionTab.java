@@ -5,6 +5,15 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.DimensionType;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.lwjgl.opengl.GL11;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Created by Toby on 14/11/2016.
@@ -39,12 +48,14 @@ public class GuiButtonDimensionTab extends GuiButton {
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+        GL11.glPushMatrix();
         if (visible) {
             int tab_width = 28;
             int tab_height = 30;
             int tab_u = 28;
             int tab_v = parent.travel_height;
             Minecraft.getMinecraft().renderEngine.bindTexture(parent.TRAVEL_TEX);
+            GL11.glColor4f(1, 1, 1, 1);
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
@@ -55,5 +66,6 @@ public class GuiButtonDimensionTab extends GuiButton {
                 Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon), xPosition + (tab_width / 2) - 8, yPosition + (tab_height / 2) - 8 -1);
             }
         }
+        GL11.glPopMatrix();
     }
 }
