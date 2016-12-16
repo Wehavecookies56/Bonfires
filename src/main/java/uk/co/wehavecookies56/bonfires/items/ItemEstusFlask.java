@@ -26,14 +26,319 @@ public class ItemEstusFlask extends ItemFood {
     @Override
     public int getMetadata(ItemStack stack) {
         if (stack.hasTagCompound()) {
-            if(stack.getTagCompound().getInteger("estus") == 0) {
-                return 0;
-            } else if (stack.getTagCompound().getInteger("estus") == stack.getTagCompound().getInteger("uses") || stack.getTagCompound().getInteger("estus") >= stack.getTagCompound().getInteger("uses") / 2) {
-                return 3;
-            } else if ((stack.getTagCompound().getInteger("estus") <= stack.getTagCompound().getInteger("uses") / 2) && (stack.getTagCompound().getInteger("estus") > stack.getTagCompound().getInteger("uses") / 4)) {
-                return 2;
-            } else if (stack.getTagCompound().getInteger("estus") <= stack.getTagCompound().getInteger("uses") / 4) {
-                return 1;
+            switch (stack.getTagCompound().getInteger("uses")) {
+                case 3:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 3:
+                            return 3;
+                        case 2:
+                            return 2;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 4:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 4:
+                            return 3;
+                        case 3:
+                            return 2;
+                        case 2:
+                            return 2;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 5:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 5:
+                            return 3;
+                        case 4:
+                            return 3;
+                        case 3:
+                            return 2;
+                        case 2:
+                            return 2;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 6:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 6:
+                            return 3;
+                        case 5:
+                            return 3;
+                        case 4:
+                            return 2;
+                        case 3:
+                            return 2;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 7:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 7:
+                            return 3;
+                        case 6:
+                            return 3;
+                        case 5:
+                            return 3;
+                        case 4:
+                            return 2;
+                        case 3:
+                            return 2;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 8:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 8:
+                            return 3;
+                        case 7:
+                            return 3;
+                        case 6:
+                            return 3;
+                        case 5:
+                            return 2;
+                        case 4:
+                            return 2;
+                        case 3:
+                            return 2;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 9:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 9:
+                            return 3;
+                        case 8:
+                            return 3;
+                        case 7:
+                            return 3;
+                        case 6:
+                            return 2;
+                        case 5:
+                            return 2;
+                        case 4:
+                            return 2;
+                        case 3:
+                            return 1;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 10:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 10:
+                            return 3;
+                        case 9:
+                            return 3;
+                        case 8:
+                            return 3;
+                        case 7:
+                            return 3;
+                        case 6:
+                            return 2;
+                        case 5:
+                            return 2;
+                        case 4:
+                            return 2;
+                        case 3:
+                            return 1;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 11:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 11:
+                            return 3;
+                        case 10:
+                            return 3;
+                        case 9:
+                            return 3;
+                        case 8:
+                            return 3;
+                        case 7:
+                            return 2;
+                        case 6:
+                            return 2;
+                        case 5:
+                            return 2;
+                        case 4:
+                            return 2;
+                        case 3:
+                            return 1;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 12:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 12:
+                            return 3;
+                        case 11:
+                            return 3;
+                        case 10:
+                            return 3;
+                        case 9:
+                            return 3;
+                        case 8:
+                            return 2;
+                        case 7:
+                            return 2;
+                        case 6:
+                            return 2;
+                        case 5:
+                            return 2;
+                        case 4:
+                            return 1;
+                        case 3:
+                            return 1;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 13:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 13:
+                            return 3;
+                        case 12:
+                            return 3;
+                        case 11:
+                            return 3;
+                        case 10:
+                            return 3;
+                        case 9:
+                            return 3;
+                        case 8:
+                            return 2;
+                        case 7:
+                            return 2;
+                        case 6:
+                            return 2;
+                        case 5:
+                            return 2;
+                        case 4:
+                            return 1;
+                        case 3:
+                            return 1;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 14:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 14:
+                            return 3;
+                        case 13:
+                            return 3;
+                        case 12:
+                            return 3;
+                        case 11:
+                            return 3;
+                        case 10:
+                            return 3;
+                        case 9:
+                            return 2;
+                        case 8:
+                            return 2;
+                        case 7:
+                            return 2;
+                        case 6:
+                            return 2;
+                        case 5:
+                            return 2;
+                        case 4:
+                            return 1;
+                        case 3:
+                            return 1;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
+                case 15:
+                    switch (stack.getTagCompound().getInteger("estus")) {
+                        case 15:
+                            return 3;
+                        case 14:
+                            return 3;
+                        case 13:
+                            return 3;
+                        case 12:
+                            return 3;
+                        case 11:
+                            return 3;
+                        case 10:
+                            return 2;
+                        case 9:
+                            return 2;
+                        case 8:
+                            return 2;
+                        case 7:
+                            return 2;
+                        case 6:
+                            return 2;
+                        case 5:
+                            return 1;
+                        case 4:
+                            return 1;
+                        case 3:
+                            return 1;
+                        case 2:
+                            return 1;
+                        case 1:
+                            return 1;
+                        case 0:
+                            return 0;
+                    }
+                    break;
             }
         }
         return 0;
@@ -47,10 +352,12 @@ public class ItemEstusFlask extends ItemFood {
     @Nullable
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
-        if (stack.hasTagCompound()) {
-            if (stack.getTagCompound().getInteger("estus") > 0) {
-                stack.getTagCompound().setInteger("estus", stack.getTagCompound().getInteger("estus")-1);
-                entityLiving.heal(6);
+        if (!worldIn.isRemote) {
+            if (stack.hasTagCompound()) {
+                if (stack.getTagCompound().getInteger("estus") > 0) {
+                    stack.getTagCompound().setInteger("estus", stack.getTagCompound().getInteger("estus") - 1);
+                    entityLiving.heal(6);
+                }
             }
         }
         return stack;

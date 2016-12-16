@@ -16,7 +16,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -64,6 +66,11 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
 
     @Override
     public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
         return false;
     }
 
@@ -160,6 +167,15 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
 
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        if (state.getValue(LIT)) {
+            return new AxisAlignedBB(0.2, 0, 0.2, 0.8, 1.0, 0.8);
+        } else {
+            return new AxisAlignedBB(0.2, 0, 0.2, 0.8, 0.2, 0.8);
+        }
     }
 
     @Override
