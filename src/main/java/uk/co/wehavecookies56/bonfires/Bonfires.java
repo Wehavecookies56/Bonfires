@@ -17,6 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -69,7 +70,7 @@ public class Bonfires {
         tabBonfires = new TabBonfires("tabBonfires");
         blocks = new Block[] {
                 ashBlock = new BlockAshBlock(Material.SAND).setRegistryName(modid, "ash_block").setUnlocalizedName("ash_block"),
-                ashBonePile = new BlockAshBonePile(Material.SNOW).setRegistryName(modid, "ash_bone_pile").setUnlocalizedName("ash_bone_pile")
+                ashBonePile = new BlockAshBonePile(Material.CIRCUITS).setRegistryName(modid, "ash_bone_pile").setUnlocalizedName("ash_bone_pile")
         };
         items = new Item[] {
                 ashPile = new ItemAshPile().setRegistryName(modid, "ash_pile").setUnlocalizedName("ash_pile"),
@@ -110,7 +111,7 @@ public class Bonfires {
 
     @SubscribeEvent
     public void entityDeath(LivingDropsEvent event) {
-        if (event.getSource().isFireDamage()) {
+        if (event.getSource().isFireDamage() || event.getEntity().isBurning()) {
             Random r = new Random();
             double percent = r.nextDouble() * 100;
             if (percent > 65) {

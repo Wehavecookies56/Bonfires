@@ -30,6 +30,8 @@ import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -76,10 +78,12 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
         return EnumBlockRenderType.MODEL;
     }
 
-    @Nullable
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return super.getItemDropped(state, rand, fortune);
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        List<ItemStack> stacks = new ArrayList<>();
+        stacks.add(new ItemStack(getItemDropped(state, new Random(), fortune)));
+        stacks.add(new ItemStack(Bonfires.coiledSwordFragment));
+        return stacks;
     }
 
     @Override
