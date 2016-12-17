@@ -49,7 +49,7 @@ public class Bonfires {
     @SidedProxy(clientSide = "uk.co.wehavecookies56.bonfires.proxies.ClientProxy", serverSide = "uk.co.wehavecookies56.bonfires.proxies.CommonProxy")
     public static CommonProxy proxy;
 
-    public static final String modid = "bonfires", name = "Bonfires", version = "1.0";
+    public static final String modid = "bonfires", name = "Bonfires", version = "1.0.0";
 
     @Mod.Instance (modid)
     public static Bonfires instance;
