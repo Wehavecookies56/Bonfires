@@ -65,6 +65,7 @@ public class Bonfires {
     @Mod.EventHandler
     public static void preInit(FMLPreInitializationEvent event) {
         PacketDispatcher.registerPackets();
+        BonfiresConfig.init(event.getSuggestedConfigurationFile());
         tabBonfires = new TabBonfires("tabBonfires");
         blocks = new Block[] {
                 ashBlock = new BlockAshBlock(Material.SAND).setRegistryName(modid, "ash_block").setUnlocalizedName("ash_block"),

@@ -18,6 +18,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.BonfiresConfig;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
@@ -122,7 +123,7 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
     @Nullable
     @Override
     public ITextComponent getDisplayName() {
-        if (getID() != null) {
+        if (getID() != null && BonfiresConfig.renderTextAboveBonfire) {
             if (BonfireRegistry.INSTANCE.getBonfire(getID()) != null) {
                 return new TextComponentTranslation(BonfireRegistry.INSTANCE.getBonfire(getID()).getName());
             }
