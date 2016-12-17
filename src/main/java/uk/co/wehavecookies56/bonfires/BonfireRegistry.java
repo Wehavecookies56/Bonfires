@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
+import org.apache.logging.log4j.Level;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import java.util.*;

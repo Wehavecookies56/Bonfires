@@ -73,10 +73,6 @@ public class GuiBonfire extends GuiScreen {
             List<List<Bonfire>> book = new ArrayList<>();
 
             int plus = 1;
-            if (bonfires.size() < 7) {
-                plus = bonfires.size();
-            }
-
             for (int i = 0; i < (bonfires.size() / 7) + plus; i++) {
                 List<Bonfire> page;
                 int start = i * 7;
@@ -372,6 +368,7 @@ public class GuiBonfire extends GuiScreen {
         buttonIDs = new ArrayList<>();
         dimensions = new ArrayList<>();
         pages = new ArrayList<>();
+        bonfires = new HashMap<>();
         buttonList.add(travel = new GuiButton(addButton(TRAVEL), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 20, 80, 20, I18n.format(LocalStrings.BUTTON_TRAVEL)));
         buttonList.add(leave = new GuiButton(addButton(LEAVE), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, I18n.format(LocalStrings.BUTTON_LEAVE)));
         buttonList.add(next = new GuiButton(addButton(NEXT), 0, 0, 20, 20, ">"));
@@ -444,7 +441,7 @@ public class GuiBonfire extends GuiScreen {
     }
 
     public void updateBonfires() {
-        bonfires = new HashMap<>();
+        bonfires.clear();
         try {
             Field dimensionsF = ReflectionHelper.findField(DimensionManager.class, "dimensions");
             dimensionsF.setAccessible(true);

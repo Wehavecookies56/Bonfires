@@ -1,13 +1,42 @@
 package uk.co.wehavecookies56.bonfires.items;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 
 /**
  * Created by Toby on 05/11/2016.
  */
 public class ItemEstusShard extends Item {
 
-    public ItemEstusShard() {
+    public ItemEstusShard() {}
 
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
+        if (!worldIn.isRemote) {
+            for (int i = 0; i < playerIn.inventory.getSizeInventory(); i++) {
+                if (itemStackIn != null) {
+                    if (playerIn.inventory.getStackInSlot(i) != null) {
+                        if (playerIn.inventory.getStackInSlot(i).getItem() == Bonfires.estusFlask) {
+                            if (playerIn.inventory.getStackInSlot(i).hasTagCompound()) {
+                                if (playerIn.inventory.getStackInSlot(i).getTagCompound().getInteger("uses")+itemStackIn.stackSize <= 15) {
+                                    playerIn.inventory.getStackInSlot(i).getTagCompound().setInteger("uses", playerIn.inventory.getStackInSlot(i).getTagCompound().getInteger("uses") + itemStackIn.stackSize);
+                                    playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
+                                } else if (playerIn.inventory.getStackInSlot(i).getTagCompound().getInteger("uses") < 15) {
+                                    int remaining = itemStackIn.stackSize - (15 - playerIn.inventory.getStackInSlot(i).getTagCompound().getInteger("uses"));
+                                    playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, new ItemStack(this, remaining));
+                                    playerIn.inventory.getStackInSlot(i).getTagCompound().setInteger("uses", 15);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand);
     }
 }

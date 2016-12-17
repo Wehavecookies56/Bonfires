@@ -5,9 +5,12 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.Level;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
@@ -64,5 +67,6 @@ public class LightBonfire extends AbstractMessage.AbstractServerMessage<LightBon
         player.sendMessage(new TextComponentTranslation(LocalStrings.TEXT_LIT));
         PacketDispatcher.sendToAll(new SyncBonfire(te.isBonfire(), te.isLit(), te.getID(), te));
         PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));
+        FMLLog.log(Bonfires.modid, Level.INFO, "Bonfire lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayNameString());
     }
 }

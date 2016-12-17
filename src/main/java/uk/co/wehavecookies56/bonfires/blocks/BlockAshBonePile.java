@@ -89,7 +89,6 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
             TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
             if (te.isBonfire()) {
                 if (!te.isLit()) {
-                    //OPEN LIGHTING GUI
                     if (!worldIn.isRemote) {
                     } else {
                         if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
@@ -100,7 +99,15 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 } else {
                     if (!worldIn.isRemote) {
                         if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
-                            //.getCapability(EstusHandler.CAPABILITY_ESTUS, null).setLastRestedAt(te.getID());
+                            for (int i = 0; i < playerIn.inventory.getSizeInventory(); i++) {
+                                if (playerIn.inventory.getStackInSlot(i) != null) {
+                                    if (playerIn.inventory.getStackInSlot(i).getItem() == Bonfires.estusFlask) {
+                                        if (playerIn.inventory.getStackInSlot(i).hasTagCompound()) {
+                                            playerIn.inventory.getStackInSlot(i).getTagCompound().setInteger("estus", playerIn.inventory.getStackInSlot(i).getTagCompound().getInteger("uses"));
+                                        }
+                                    }
+                                }
+                            }
                             playerIn.heal(playerIn.getMaxHealth());
                             playerIn.setSpawnPoint(pos, true);
                         }
