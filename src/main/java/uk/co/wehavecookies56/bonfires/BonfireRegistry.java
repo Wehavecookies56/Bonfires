@@ -135,7 +135,6 @@ public class BonfireRegistry {
             bonfireCompound.setDouble("POSY", pair.getValue().getPos().getY());
             bonfireCompound.setDouble("POSZ", pair.getValue().getPos().getZ());
             tagCompound.setTag(pair.getKey().toString(), bonfireCompound);
-            System.out.println("Wrote bonfire " + pair.getKey().toString());
         }
         return tagCompound;
     }
@@ -152,7 +151,6 @@ public class BonfireRegistry {
             boolean isPublic = compound.getBoolean("PUBLIC");
             Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic);
             bonfires.put(id, bonfire);
-            System.out.println("Read bonfire " + key);
         }
     }
 

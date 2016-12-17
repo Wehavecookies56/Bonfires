@@ -7,6 +7,9 @@ import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Toby on 10/11/2016.
  */
@@ -16,7 +19,7 @@ public class GuiButtonBonfire extends GuiButton {
     Bonfire bonfire;
 
     public GuiButtonBonfire(GuiBonfire parent, int buttonId, int x, int y) {
-        super(buttonId, x, y, 69, Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT+2, "");
+        super(buttonId, x, y, 69, Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT+4, "");
         this.parent = parent;
     }
 
@@ -44,13 +47,17 @@ public class GuiButtonBonfire extends GuiButton {
                                         Bonfire b = parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11);
                                         if (bonfire == b) {
                                             colour = 46339;
+                                            drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0xFF777777);
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    parent.drawCenteredStringNoShadow(fontrenderer, this.displayString, this.xPosition + width / 2, this.yPosition + 1, colour);
+                    if (mouseX >= xPosition && mouseX <= xPosition + width && mouseY >= yPosition && mouseY <= yPosition + height) {
+                        drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0xFF777777);
+                    }
+                    parent.drawCenteredStringNoShadow(fontrenderer, this.displayString, this.xPosition + width / 2, this.yPosition + height / 2, colour);
                 }
             }
         } else {
