@@ -33,17 +33,17 @@ public class TESRBonfire extends TileEntitySpecialRenderer<TileEntityBonfire> {
                 GlStateManager.pushMatrix();
                 {
                     GlStateManager.translate(0.5, 0.75, 0.5);
-                    if (Minecraft.getMinecraft().theWorld.getBlockState(te.getPos()).getBlock() == Bonfires.ashBonePile) {
-                        if (Minecraft.getMinecraft().theWorld.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.NORTH) {
+                    if (Minecraft.getMinecraft().world.getBlockState(te.getPos()).getBlock() == Bonfires.ashBonePile) {
+                        if (Minecraft.getMinecraft().world.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.NORTH) {
                             GlStateManager.rotate(0, 0, 1, 0);
                         }
-                        else if (Minecraft.getMinecraft().theWorld.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.EAST) {
+                        else if (Minecraft.getMinecraft().world.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.EAST) {
                             GlStateManager.rotate(90, 0, 1, 0);
                         }
-                        else if (Minecraft.getMinecraft().theWorld.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.SOUTH) {
+                        else if (Minecraft.getMinecraft().world.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.SOUTH) {
                             GlStateManager.rotate(180, 0, 1, 0);
                         }
-                        else if (Minecraft.getMinecraft().theWorld.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.WEST) {
+                        else if (Minecraft.getMinecraft().world.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.WEST) {
                             GlStateManager.rotate(270, 0, 1, 0);
                         }
                     }

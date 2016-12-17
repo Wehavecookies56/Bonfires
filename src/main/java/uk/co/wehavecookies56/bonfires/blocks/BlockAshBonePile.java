@@ -8,7 +8,6 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -20,12 +19,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
-import uk.co.wehavecookies56.bonfires.gui.GuiBonfire;
-import uk.co.wehavecookies56.bonfires.gui.GuiCreateBonfire;
+import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.SyncBonfire;
 import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
@@ -98,8 +95,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                         if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
 
                         }
-                        //playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, worldIn, pos.getX(), pos.getY(), pos.getZ());
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiCreateBonfire(te));
+                        playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, worldIn, pos.getX(), pos.getY(), pos.getZ());
                     }
                 } else {
                     if (!worldIn.isRemote) {
@@ -109,7 +105,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                             playerIn.setSpawnPoint(pos, true);
                         }
                     } else {
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiBonfire(te));
+                        playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRE, worldIn, pos.getX(), pos.getY(), pos.getZ());
                     }
                 }
             } else {

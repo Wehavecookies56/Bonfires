@@ -1,0 +1,10 @@
+{
+  "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
+  "promos": {
+    "1.10.2-latest": "1.0"
+  },
+
+  "1.10.2": {
+    "1.0": "Initial Release"
+  }
+}

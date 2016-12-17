@@ -34,7 +34,7 @@ public class SyncBonfire extends AbstractMessage.AbstractClientMessage<SyncBonfi
         this.bonfire = buffer.readBoolean();
         this.lit = buffer.readBoolean();
         if(this.lit)
-            this.id = buffer.readUuid();
+            this.id = buffer.readUniqueId();
         this.x = buffer.readInt();
         this.y = buffer.readInt();
         this.z = buffer.readInt();
@@ -45,7 +45,7 @@ public class SyncBonfire extends AbstractMessage.AbstractClientMessage<SyncBonfi
         buffer.writeBoolean(bonfire);
         buffer.writeBoolean(lit);
         if(lit)
-            buffer.writeUuid(id);
+            buffer.writeUniqueId(id);
         buffer.writeInt(x);
         buffer.writeInt(y);
         buffer.writeInt(z);
@@ -54,7 +54,7 @@ public class SyncBonfire extends AbstractMessage.AbstractClientMessage<SyncBonfi
     @Override
     public void process(EntityPlayer player, Side side) {
         BlockPos pos = new BlockPos(x, y, z);
-        TileEntityBonfire te = (TileEntityBonfire) player.worldObj.getTileEntity(pos);
+        TileEntityBonfire te = (TileEntityBonfire) player.world.getTileEntity(pos);
         te.setBonfire(bonfire);
         te.setLit(lit);
         if(lit)

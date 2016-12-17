@@ -50,6 +50,6 @@ public class Travel extends AbstractMessage.AbstractServerMessage<Travel> {
     public void process(EntityPlayer player, Side side) {
         BlockPos pos = new BlockPos(x, y, z);
         BonfireTeleporter tp = new BonfireTeleporter(player.getServer().worldServerForDimension(dim));
-        tp.teleport(player, player.worldObj, pos, dim);
+        tp.teleport(player, player.world, pos, dim);
     }
 }

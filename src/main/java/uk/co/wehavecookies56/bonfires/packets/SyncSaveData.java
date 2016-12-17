@@ -32,9 +32,9 @@ public class SyncSaveData extends AbstractMessage.AbstractClientMessage<SyncSave
     protected void read(PacketBuffer buffer) throws IOException {
         bonfires = new HashMap<UUID, Bonfire>();
         while (buffer.isReadable()) {
-            UUID key = buffer.readUuid();
-            String name = buffer.readStringFromBuffer(100);
-            UUID owner = buffer.readUuid();
+            UUID key = buffer.readUniqueId();
+            String name = buffer.readString(100);
+            UUID owner = buffer.readUniqueId();
             BlockPos pos = new BlockPos(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
             int dim = buffer.readInt();
             boolean isPublic = buffer.readBoolean();
@@ -48,10 +48,10 @@ public class SyncSaveData extends AbstractMessage.AbstractClientMessage<SyncSave
         Iterator<Map.Entry<UUID, Bonfire>> it = bonfires.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<UUID, Bonfire> pair = (Map.Entry<UUID, Bonfire>) it.next();
-            buffer.writeUuid(pair.getKey());
+            buffer.writeUniqueId(pair.getKey());
             Bonfire bonfire = pair.getValue();
             buffer.writeString(bonfire.getName());
-            buffer.writeUuid(bonfire.getOwner());
+            buffer.writeUniqueId(bonfire.getOwner());
             buffer.writeDouble(bonfire.getPos().getX());
             buffer.writeDouble(bonfire.getPos().getY());
             buffer.writeDouble(bonfire.getPos().getZ());

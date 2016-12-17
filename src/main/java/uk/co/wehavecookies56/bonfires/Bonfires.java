@@ -1,14 +1,9 @@
 package uk.co.wehavecookies56.bonfires;
 
-import com.mojang.authlib.GameProfile;
-import net.ilexiconn.llibrary.server.command.Command;
-import net.ilexiconn.llibrary.server.command.CommandHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,10 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -45,17 +36,14 @@ import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
 import uk.co.wehavecookies56.bonfires.proxies.CommonProxy;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
-import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
-import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by Toby on 05/11/2016.
  */
-@Mod(modid = Bonfires.modid, name = Bonfires.name, version = Bonfires.version, dependencies = "required-after:llibrary@[1.7.2]")
+@Mod(modid = Bonfires.modid, name = Bonfires.name, version = Bonfires.version, updateJSON = "https://raw.githubusercontent.com/Wehavecookies56/Bonfires/master/update.json")
 public class Bonfires {
 
     @SidedProxy(clientSide = "uk.co.wehavecookies56.bonfires.proxies.ClientProxy", serverSide = "uk.co.wehavecookies56.bonfires.proxies.CommonProxy")
@@ -125,7 +113,7 @@ public class Bonfires {
             Random r = new Random();
             double percent = r.nextDouble() * 100;
             if (percent > 65) {
-                event.getDrops().add(new EntityItem(event.getEntity().worldObj, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, new ItemStack(ashPile)));
+                event.getDrops().add(new EntityItem(event.getEntity().world, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, new ItemStack(ashPile)));
             }
         }
     }
@@ -140,7 +128,7 @@ public class Bonfires {
 
     @SubscribeEvent
     public void quit(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent event) {
-        BonfireRegistry.INSTANCE.clearBonfires();
+        if (!event.player.world.getMinecraftServer().isDedicatedServer()) BonfireRegistry.INSTANCE.clearBonfires();
     }
 
     @SubscribeEvent
@@ -174,119 +162,10 @@ public class Bonfires {
         proxy.postInit();
     }
 
-
-    public static void listQueriedBonfires(List<Bonfire> query, ICommandSender sender) {
-        query.forEach((bonfires -> {
-            GameProfile owner = sender.getServer().getPlayerProfileCache().getProfileByUUID(bonfires.getOwner());
-            String name = I18n.format(LocalStrings.COMMAND_NA);
-            if(owner != null) {
-                name = owner.getName();
-            }
-            TextComponentTranslation messageName = new TextComponentTranslation(LocalStrings.COMMAND_NAME, bonfires.getName());
-            TextComponentTranslation messageID = new TextComponentTranslation(LocalStrings.COMMAND_ID, bonfires.getId());
-            TextComponentTranslation messageOwner = new TextComponentTranslation(LocalStrings.COMMAND_OWNER, bonfires.getOwner().getMostSignificantBits());
-            TextComponentTranslation messagePos = new TextComponentTranslation(LocalStrings.COMMAND_POS, bonfires.getPos().getX(), bonfires.getPos().getY(), bonfires.getPos().getZ());
-
-            sender.addChatMessage(new TextComponentString(messageName.getUnformattedText() + " " + messageID.getUnformattedText() + " " + messageOwner.getUnformattedText() + " " + messagePos.getUnformattedText()));
-        }));
-    }
-
     @Mod.EventHandler
     public static void serverStarting(FMLServerStartingEvent event) {
-        Command list = Command.create("bonfires");
-        list.setPermissionLevel(2);
-        list.addOptionalArgument("filter", String.class);
-        list.addOptionalArgument("parameter", String.class);
-        CommandHandler.INSTANCE.registerCommand(event, list, ((server, sender, arguments) -> {
-            if (arguments.hasArgument("filter")) {
-                String sort = arguments.getArgument("filter").toString().toLowerCase();
-
-                // Filter by dimension ID
-                if (sort.equals("dim")) {
-                    if (arguments.hasArgument("parameter")) {
-                        if (DimensionManager.isDimensionRegistered(Integer.parseInt(arguments.getArgument("parameter")))) {
-                            List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresByDimension(Integer.parseInt(arguments.getArgument("parameter")));
-                            if (query.isEmpty()) {
-                                TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_DIM_NOMATCH, Integer.parseInt(arguments.getArgument("parameter")));
-                                message.getStyle().setColor(TextFormatting.RED);
-                                sender.addChatMessage(message);
-                            } else {
-                                TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_DIM_MATCH, query.size(), sender.getServer().worldServerForDimension(Integer.parseInt(arguments.getArgument("parameter"))).provider.getDimensionType().getName() + "(" + arguments.getArgument("parameter") + ")");
-                                sender.addChatMessage(message);
-                                listQueriedBonfires(query, sender);
-                            }
-                        } else {
-                            TextComponentTranslation error = new TextComponentTranslation(LocalStrings.COMMAND_DIM_NODIM, Integer.parseInt(arguments.getArgument("parameter")));
-                            error.getStyle().setColor(TextFormatting.DARK_RED);
-                            sender.addChatMessage(error);
-                        }
-                    }
-                }
-                if (sort.equals("owner")) {
-                    if (arguments.hasArgument("parameter")) {
-                        UUID ownerID = sender.getServer().getPlayerProfileCache().getGameProfileForUsername(arguments.getArgument("parameter")).getId();
-                        if (ownerID != null) {
-                            List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresByOwner(ownerID);
-                            if (query.isEmpty()) {
-                                TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_NOMATCH, arguments.getArgument("parameter").toString());
-                                message.getStyle().setColor(TextFormatting.RED);
-                                sender.addChatMessage(message);
-                            } else {
-                                TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_MATCH, query.size(), arguments.getArgument("parameter").toString());
-                                sender.addChatMessage(message);
-                                listQueriedBonfires(query, sender);
-                            }
-                        } else {
-                            TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_NOUSER, arguments.getArgument("parameter").toString());
-                            message.getStyle().setColor(TextFormatting.DARK_RED);
-                            sender.addChatMessage(message);
-                        }
-                    }
-                }
-                if (sort.equals("name")) {
-                    if (arguments.hasArgument("parameter")) {
-                        List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresByName(arguments.getArgument("parameter"));
-                        if (query.isEmpty()) {
-                            TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_NOMATCH, arguments.getArgument("parameter").toString());
-                            message.getStyle().setColor(TextFormatting.RED);
-                            sender.addChatMessage(message);
-                        } else {
-                            TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_MATCH, query.size(), arguments.getArgument("parameter").toString());
-                            sender.addChatMessage(message);
-                            listQueriedBonfires(query, sender);
-                        }
-                    }
-                }
-                if (sort.equals("radius")) {
-                    if (arguments.hasArgument("parameter")) {
-                        List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresInRadius(sender.getPosition(), Integer.parseInt(arguments.getArgument("parameter")), sender.getEntityWorld().provider.getDimension());
-                        if (query.isEmpty()) {
-                            TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_RADIUS_NOMATCH, arguments.getArgument("parameter").toString());
-                            message.getStyle().setColor(TextFormatting.RED);
-                            sender.addChatMessage(message);
-                        } else {
-                            TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_RADIUS_MATCH, query.size(), arguments.getArgument("parameter").toString());
-                            sender.addChatMessage(message);
-                            listQueriedBonfires(query, sender);
-                        }
-                    }
-                }
-            }
-        }));
-        Command travel = Command.create("travel");
-        travel.setPermissionLevel(2);
-        CommandHandler.INSTANCE.registerArgumentParser(UUID.class, ArgumentParserUUID.UUID);
-        travel.addRequiredArgument("id", UUID.class);
-        CommandHandler.INSTANCE.registerCommand(event, travel, (server, sender, arguments) -> {
-            UUID id = arguments.getArgument("id");
-            if (sender instanceof EntityPlayer) {
-                if (BonfireRegistry.INSTANCE.getBonfire(id) != null) {
-                    Bonfire bonfire = BonfireRegistry.INSTANCE.getBonfire(id);
-                    BonfireTeleporter tp = new BonfireTeleporter(server.worldServerForDimension(bonfire.dimension));
-                    tp.teleport((EntityPlayer) sender, ((EntityPlayer) sender).worldObj, bonfire.getPos(), bonfire.getDimension());
-                }
-            }
-        });
+        event.registerServerCommand(new CommandBonfires());
+        event.registerServerCommand(new CommandTravel());
     }
 
 }

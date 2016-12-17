@@ -4,9 +4,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
+import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
@@ -34,7 +36,7 @@ public class LightBonfire extends AbstractMessage.AbstractServerMessage<LightBon
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException {
-        this.name = buffer.readStringFromBuffer(20);
+        this.name = buffer.readString(20);
         this.x = buffer.readInt();
         this.y = buffer.readInt();
         this.z = buffer.readInt();
@@ -53,14 +55,14 @@ public class LightBonfire extends AbstractMessage.AbstractServerMessage<LightBon
     @Override
     public void process(EntityPlayer player, Side side) {
         BlockPos pos = new BlockPos(x, y, z);
-        TileEntityBonfire te = (TileEntityBonfire) player.worldObj.getTileEntity(pos);
+        TileEntityBonfire te = (TileEntityBonfire) player.world.getTileEntity(pos);
         te.setLit(true);
         UUID id = UUID.randomUUID();
         te.createBonfire(name, id, player.getPersistentID(), true);
         te.setID(id);
-        player.worldObj.setBlockState(pos, player.worldObj.getBlockState(pos).withProperty(BlockAshBonePile.LIT, true), 2);
-        player.addChatComponentMessage(new TextComponentString("BONFIRE LIT"));
-        PacketDispatcher.sendToAllAround(new SyncBonfire(te.isBonfire(), te.isLit(), te.getID(), te), new NetworkRegistry.TargetPoint(player.worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        player.world.setBlockState(pos, player.world.getBlockState(pos).withProperty(BlockAshBonePile.LIT, true), 2);
+        player.sendMessage(new TextComponentTranslation(LocalStrings.TEXT_LIT));
+        PacketDispatcher.sendToAll(new SyncBonfire(te.isBonfire(), te.isLit(), te.getID(), te));
         PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));
     }
 }

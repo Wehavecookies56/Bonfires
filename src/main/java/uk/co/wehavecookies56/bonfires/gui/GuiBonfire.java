@@ -121,6 +121,13 @@ public class GuiBonfire extends GuiScreen {
             } else {
                 super.drawScreen(mouseX, mouseY, partialTicks);
             }
+            String pages = "0/0";
+            if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
+                pages = (bonfirePage + 1) + "/" + bonfires.get(tabs[dimTabSelected - 5].getDimension()).size();
+            }
+            int xZero = (width / 2) - (travel_width / 2) + 16;
+            int yZero = (height / 2) - (travel_height / 2) + 128 - 17;
+            drawString(fontRendererObj, pages, xZero + (55 / 2) - fontRendererObj.getStringWidth(pages) / 2, yZero + (14 / 2) - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFF);
         } else {
             drawTexturedModalRect((width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
             super.drawScreen(mouseX, mouseY, partialTicks);
@@ -128,16 +135,9 @@ public class GuiBonfire extends GuiScreen {
             if (BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()) != null) {
                 name = BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()).getName();
             }
-            drawCenteredStringNoShadow(mc.fontRendererObj, name, (width / 4), (height / 2) - (tex_height / 2) + 6, 4210752);
+            drawCenteredStringNoShadow(mc.fontRendererObj, name, (width / 4), (height / 2) - (tex_height / 2) + 10, 4210752);
         }
         GL11.glPopMatrix();
-        String pages = "0/0";
-        if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
-            pages = (bonfirePage + 1) + "/" + bonfires.get(tabs[dimTabSelected - 5].getDimension()).size();
-        }
-        int xZero = (width / 2) - (travel_width / 2) + 16;
-        int yZero = (height / 2) - (travel_height / 2) + 128 - 17;
-        drawString(fontRendererObj, pages, xZero + (55 / 2) - fontRendererObj.getStringWidth(pages) / 2, yZero + (14 / 2) - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFF);
     }
 
     public void drawSelectedBonfire(int mouseX, int mouseY, float partialTicks) {
@@ -277,7 +277,6 @@ public class GuiBonfire extends GuiScreen {
                 break;
         }
         updateButtons();
-        System.out.println(bonfirePage);
         super.actionPerformed(button);
     }
 
