@@ -4,7 +4,6 @@ package uk.co.wehavecookies56.bonfires;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -91,7 +90,7 @@ public class CommandBonfires extends CommandBase {
     public static void listQueriedBonfires(List<Bonfire> query, ICommandSender sender) {
         query.forEach((bonfires -> {
             GameProfile owner = sender.getServer().getPlayerProfileCache().getProfileByUUID(bonfires.getOwner());
-            String name = I18n.format(LocalStrings.COMMAND_NA);
+            String name = new TextComponentTranslation(LocalStrings.COMMAND_NA).getUnformattedComponentText();
             if(owner != null) {
                 name = owner.getName();
             }

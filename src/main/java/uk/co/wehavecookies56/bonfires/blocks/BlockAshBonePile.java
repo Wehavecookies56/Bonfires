@@ -41,6 +41,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyBool LIT = PropertyBool.create("lit");
+    boolean dropFragment = false;
 
     public BlockAshBonePile(Material blockMaterialIn) {
         super(blockMaterialIn);
@@ -82,7 +83,10 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
     public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         List<ItemStack> stacks = new ArrayList<>();
         stacks.add(new ItemStack(getItemDropped(state, new Random(), fortune)));
-        stacks.add(new ItemStack(Bonfires.coiledSwordFragment));
+        if (dropFragment) {
+            stacks.add(new ItemStack(Bonfires.coiledSwordFragment));
+            dropFragment = false;
+        }
         return stacks;
     }
 
@@ -161,6 +165,9 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
         if (te != null) {
+            if (te.isBonfire()) {
+                dropFragment = true;
+            }
             if (te.isLit()) {
                 te.destroyBonfire(te.getID());
                 BonfireRegistry.INSTANCE.removeBonfire(te.getID());
@@ -178,11 +185,16 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        if (state.getValue(LIT)) {
-            return new AxisAlignedBB(0.2, 0, 0.2, 0.8, 1.0, 0.8);
-        } else {
-            return new AxisAlignedBB(0.2, 0, 0.2, 0.8, 0.2, 0.8);
+        if (source.getTileEntity(pos) != null) {
+            if (source.getTileEntity(pos) instanceof TileEntityBonfire) {
+                if (((TileEntityBonfire)source.getTileEntity(pos)).isBonfire()) {
+                    return new AxisAlignedBB(0.2, 0, 0.2, 0.8, 1.0, 0.8);
+                } else {
+                    return new AxisAlignedBB(0.2, 0, 0.2, 0.8, 0.2, 0.8);
+                }
+            }
         }
+        return new AxisAlignedBB(0.2, 0, 0.2, 0.8, 0.2, 0.8);
     }
 
     @Override
