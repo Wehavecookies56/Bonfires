@@ -25,10 +25,11 @@ public class BonfireTeleporter extends Teleporter {
 
     public void teleport(EntityPlayer player, World world, BlockPos pos, int dimension) {
         EntityPlayerMP playerMP = (EntityPlayerMP) player;
-        playerMP.setPosition(pos.getX(), pos.getY(), pos.getZ());
+        playerMP.setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
         playerMP.motionX = playerMP.motionY = playerMP.motionZ = 0;
-        playerMP.setPosition(pos.getX(), pos.getY(), pos.getZ());
-        playerMP.mcServer.getPlayerList().transferPlayerToDimension(playerMP, dimension, this);
+        playerMP.setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
+        if (world.provider.getDimension() != dimension)
+            playerMP.mcServer.getPlayerList().transferPlayerToDimension(playerMP, dimension, this);
         playerMP.setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
     }
 
