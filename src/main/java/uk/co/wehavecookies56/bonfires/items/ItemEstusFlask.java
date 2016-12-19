@@ -5,6 +5,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -373,6 +375,15 @@ public class ItemEstusFlask extends ItemFood {
     }
 
     @Override
+    public int getRGBDurabilityForDisplay(ItemStack stack) {
+        if (stack.hasTagCompound()) {
+            return MathHelper.hsvToRGB(Math.max(0.0F, 1.0F / ((float)stack.getTagCompound().getInteger("uses") - (float)stack.getTagCompound().getInteger("estus")) / (float)stack.getTagCompound().getInteger("uses")) / 3.0F, 1.0F, 1.0F);
+        } else {
+            return 0x00000000;
+        }
+    }
+
+    @Override
     public boolean showDurabilityBar(ItemStack stack) {
         if (stack.hasTagCompound()) {
             return true;
@@ -387,7 +398,7 @@ public class ItemEstusFlask extends ItemFood {
     }
 
     @Override
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
         for (int i = 3; i < 16; i++) {
             ItemStack stack = new ItemStack(itemIn);
             stack.setTagCompound(new NBTTagCompound());

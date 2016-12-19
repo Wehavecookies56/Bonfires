@@ -91,7 +91,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         BonfireWorldSavedData.get(worldIn).markDirty();
         if (worldIn.getTileEntity(pos) instanceof TileEntityBonfire) {
             TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
@@ -108,7 +108,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                     if (!worldIn.isRemote) {
                         if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
                             for (int i = 0; i < playerIn.inventory.getSizeInventory(); i++) {
-                                if (playerIn.inventory.getStackInSlot(i) != null) {
+                                if (playerIn.inventory.getStackInSlot(i) != ItemStack.EMPTY) {
                                     if (playerIn.inventory.getStackInSlot(i).getItem() == Bonfires.estusFlask) {
                                         if (playerIn.inventory.getStackInSlot(i).hasTagCompound()) {
                                             playerIn.inventory.getStackInSlot(i).getTagCompound().setInteger("estus", playerIn.inventory.getStackInSlot(i).getTagCompound().getInteger("uses"));
@@ -124,11 +124,11 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                     }
                 }
             } else {
-                if (heldItem != null) {
-                    if (heldItem.getItem() == Bonfires.coiledSword) {
+                if (playerIn.getHeldItemMainhand() != ItemStack.EMPTY) {
+                    if (playerIn.getHeldItemMainhand().getItem() == Bonfires.coiledSword) {
                         if (!worldIn.isRemote) {
                             if (!playerIn.capabilities.isCreativeMode)
-                                playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
+                                playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);
                             te.setBonfire(true);
                             te.setLit(false);
                             PacketDispatcher.sendToAllAround(new SyncBonfire(te.isBonfire(), te.isLit(), null, te), new NetworkRegistry.TargetPoint(worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));

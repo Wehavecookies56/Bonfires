@@ -6,6 +6,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketEntity;
+import net.minecraft.network.play.server.SPacketEntityTeleport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
@@ -25,11 +27,14 @@ public class BonfireTeleporter extends Teleporter {
 
     public void teleport(EntityPlayer player, World world, BlockPos pos, int dimension) {
         EntityPlayerMP playerMP = (EntityPlayerMP) player;
-        playerMP.setPosition(pos.getX(), pos.getY(), pos.getZ());
-        playerMP.motionX = playerMP.motionY = playerMP.motionZ = 0;
-        playerMP.setPosition(pos.getX(), pos.getY(), pos.getZ());
-        playerMP.mcServer.getPlayerList().transferPlayerToDimension(playerMP, dimension, this);
         playerMP.setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
+        playerMP.motionX = playerMP.motionY = playerMP.motionZ = 0;
+        playerMP.setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
+        if (world.provider.getDimension() != dimension)
+            playerMP.mcServer.getPlayerList().transferPlayerToDimension(playerMP, dimension, this);
+        playerMP.setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
+        playerMP.connection.sendPacket(new SPacketEntityTeleport(playerMP));
+        playerMP.connection.sendPacket(new SPacketEntity(playerMP.getEntityId()));
     }
 
     @Override
