@@ -2,6 +2,7 @@ package uk.co.wehavecookies56.bonfires;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -13,7 +14,7 @@ public class TabBonfires extends CreativeTabs {
     }
 
     @Override
-    public Item getTabIconItem() {
-        return Bonfires.estusFlask;
+    public ItemStack getTabIconItem() {
+        return new ItemStack(Bonfires.estusFlask);
     }
 }

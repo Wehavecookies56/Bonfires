@@ -21,12 +21,12 @@ public class ItemHomewardBone extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
         if (!worldIn.isRemote) {
             BonfireTeleporter tp = new BonfireTeleporter(playerIn.getServer().worldServerForDimension(worldIn.provider.getDimension()));
             tp.teleport(playerIn, worldIn, playerIn.getBedLocation(), worldIn.provider.getDimension());
-            itemStackIn.stackSize--;
+            playerIn.getActiveItemStack().shrink(1);
         }
-        return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand);
+        return super.onItemRightClick(worldIn, playerIn, hand);
     }
 }
