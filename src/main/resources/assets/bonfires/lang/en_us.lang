@@ -39,9 +39,13 @@ command.na=N/A;
 button.travel=Travel
 button.leave=Leave
 button.accept=Accept
+button.set_private=Set private
 
 text.name=Enter a name for the bonfire
 bonfire.lit=BONFIRE LIT
+text.private=(Private)
+
+tileentity.bonfire.label=%1$s (Private)
 
 advancements.bonfires.ash_pile=Acquire Ash
 advancements.bonfires.ash_pile.desc=Burnt a mob to a crisp

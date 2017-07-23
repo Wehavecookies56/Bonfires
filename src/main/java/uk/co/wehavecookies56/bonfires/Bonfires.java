@@ -21,6 +21,7 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -42,6 +43,7 @@ import uk.co.wehavecookies56.bonfires.proxies.CommonProxy;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -53,7 +55,7 @@ public class Bonfires {
     @SidedProxy(clientSide = "uk.co.wehavecookies56.bonfires.proxies.ClientProxy", serverSide = "uk.co.wehavecookies56.bonfires.proxies.CommonProxy")
     public static CommonProxy proxy;
 
-    public static final String modid = "bonfires", name = "Bonfires", version = "1.0.2";
+    public static final String modid = "bonfires", name = "Bonfires", version = "1.1.0";
 
     @Mod.Instance (modid)
     public static Bonfires instance;
@@ -93,6 +95,7 @@ public class Bonfires {
         EstusHandler.init();
         TRIGGER_BONFIRE_LIT = CriteriaTriggers.register(TRIGGER_BONFIRE_LIT);
         proxy.preInit();
+        Map<String, String> icons = BonfiresConfig.tabIcons;
     }
 
     @SubscribeEvent

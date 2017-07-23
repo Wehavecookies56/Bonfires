@@ -16,7 +16,7 @@ public class GuiButtonBonfire extends GuiButton {
     Bonfire bonfire;
 
     public GuiButtonBonfire(GuiBonfire parent, int buttonId, int x, int y) {
-        super(buttonId, x, y, 69, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT+4, "");
+        super(buttonId, x, y, 93, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT+4, "");
         this.parent = parent;
     }
 

@@ -13,7 +13,7 @@ public class GuiButtonBonfirePage extends GuiButton {
     boolean isNext;
 
     public GuiButtonBonfirePage(GuiBonfire parent, int buttonId, int x, int y, boolean isNext) {
-        super(buttonId, x, y,8,14,"");
+        super(buttonId, x, y, 8, 14, "");
         this.parent = parent;
         this.isNext = isNext;
     }
@@ -24,9 +24,9 @@ public class GuiButtonBonfirePage extends GuiButton {
             mc.renderEngine.bindTexture(parent.TRAVEL_TEX);
             int texWidth = 8;
             int texHeight = 14;
-            int u = parent.travel_width;
+            int u = 256 - texWidth * 2;
             if (isNext) {
-                u = parent.travel_width + texWidth;
+                u = (256 - texWidth * 2) + texWidth;
             }
             int v = 0;
             if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {

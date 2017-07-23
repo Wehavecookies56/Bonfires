@@ -62,7 +62,7 @@ public class LightBonfire extends AbstractMessage.AbstractServerMessage<LightBon
         TileEntityBonfire te = (TileEntityBonfire) player.world.getTileEntity(pos);
         te.setLit(true);
         UUID id = UUID.randomUUID();
-        te.createBonfire(name, id, player.getPersistentID(), true);
+        te.createBonfire(name, id, player.getPersistentID(), isPublic);
         te.setID(id);
         player.world.setBlockState(pos, player.world.getBlockState(pos).withProperty(BlockAshBonePile.LIT, true), 2);
         player.sendMessage(new TextComponentTranslation(LocalStrings.TEXT_LIT));

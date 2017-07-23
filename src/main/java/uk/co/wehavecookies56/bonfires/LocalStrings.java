@@ -35,9 +35,13 @@ public class LocalStrings {
             BUTTON_TRAVEL = "button.travel",
             BUTTON_LEAVE = "button.leave",
             BUTTON_ACCEPT = "button.accept",
+            BUTTON_SET_PRIVATE = "button.set_private",
 
             TEXT_NAME = "text.name",
-            TEXT_LIT = "bonfire.lit"
+            TEXT_LIT = "bonfire.lit",
+            TEXT_PRIVATE = "text.private",
+
+            TILEENTITY_BONFIRE_LABEL = "tileentity.bonfire.label"
     ;
 
 }

@@ -1,6 +1,7 @@
 package uk.co.wehavecookies56.bonfires.tiles;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -15,10 +16,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
-import uk.co.wehavecookies56.bonfires.Bonfire;
-import uk.co.wehavecookies56.bonfires.BonfireRegistry;
-import uk.co.wehavecookies56.bonfires.Bonfires;
-import uk.co.wehavecookies56.bonfires.BonfiresConfig;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import uk.co.wehavecookies56.bonfires.*;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
@@ -121,12 +121,21 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
     }
 
     @Nullable
+    @SideOnly(Side.CLIENT)
     @Override
     public ITextComponent getDisplayName() {
-        if (getID() != null && BonfiresConfig.renderTextAboveBonfire) {
-            if (BonfireRegistry.INSTANCE.getBonfire(getID()) != null) {
-                return new TextComponentTranslation(BonfireRegistry.INSTANCE.getBonfire(getID()).getName());
+        if (!Minecraft.getMinecraft().player.isSneaking()) {
+            if (getID() != null && BonfiresConfig.renderTextAboveBonfire) {
+                if (BonfireRegistry.INSTANCE.getBonfire(getID()) != null) {
+                    if (BonfireRegistry.INSTANCE.getBonfire(getID()).isPublic()) {
+                        return new TextComponentTranslation(BonfireRegistry.INSTANCE.getBonfire(getID()).getName());
+                    } else {
+                        return new TextComponentTranslation(LocalStrings.TILEENTITY_BONFIRE_LABEL, BonfireRegistry.INSTANCE.getBonfire(getID()).getName());
+                    }
+                }
             }
+        } else {
+            //TODO Souls, return new TextComponentTranslation("Souls: 1000");
         }
         return null;
     }

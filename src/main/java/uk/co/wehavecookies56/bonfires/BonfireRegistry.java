@@ -96,6 +96,50 @@ public class BonfireRegistry {
         return list;
     }
 
+    public List<Bonfire> getPrivateBonfiresByOwner(UUID owner) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        bonfires.forEach((id, bonfire) -> {
+            if (bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic) {
+                list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
+    public List<Bonfire> getBonfiresByPublicPerDimension(boolean isPublic, int dim) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        bonfires.forEach((id, bonfire) -> {
+            if (bonfire.isPublic() == isPublic && bonfire.getDimension() == dim) {
+                list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
+    public List<Bonfire> getPrivateBonfiresByOwnerPerDimension(UUID owner, int dim) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        bonfires.forEach((id, bonfire) -> {
+            if (bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic && bonfire.getDimension() == dim) {
+                list.add(bonfire);
+            }
+        });
+        return list;
+    }
+
+    public List<Bonfire> getPrivateBonfiresByOwnerAndPublicPerDimension(UUID owner, int dim) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        list.addAll(getBonfiresByPublicPerDimension(true, dim));
+        list.addAll(getPrivateBonfiresByOwnerPerDimension(owner, dim));
+        return list;
+    }
+
+    public List<Bonfire> getPrivateBonfiresByOwnerAndPublic(UUID owner) {
+        List<Bonfire> list = new ArrayList<Bonfire>();
+        list.addAll(getBonfiresByPublic(true));
+        list.addAll(getPrivateBonfiresByOwner(owner));
+        return list;
+    }
+
     public List<Bonfire> getBonfiresByDimension(int dimension) {
         List<Bonfire> list = new ArrayList<Bonfire>();
         bonfires.forEach((id, bonfire) -> {
