@@ -43,10 +43,13 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
     public static final PropertyBool LIT = PropertyBool.create("lit");
     boolean dropFragment = false;
 
-    public BlockAshBonePile(Material blockMaterialIn) {
+    public BlockAshBonePile(String name, Material blockMaterialIn) {
         super(blockMaterialIn);
         this.setTickRandomly(true);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(LIT, false));
+        setRegistryName(Bonfires.modid, name);
+        setUnlocalizedName(getRegistryName().toString().replace(Bonfires.modid + ":", ""));
+        setCreativeTab(Bonfires.tabBonfires);
     }
 
     @Override

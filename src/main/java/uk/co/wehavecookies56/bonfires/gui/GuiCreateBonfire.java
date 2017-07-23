@@ -29,7 +29,7 @@ public class GuiCreateBonfire extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        drawString(mc.fontRendererObj, I18n.format(LocalStrings.TEXT_NAME), (width / 2) - mc.fontRendererObj.getStringWidth(I18n.format(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (mc.fontRendererObj.FONT_HEIGHT / 2) - 20, 0xFFFFFF);
+        drawString(mc.fontRenderer, I18n.format(LocalStrings.TEXT_NAME), (width / 2) - mc.fontRenderer.getStringWidth(I18n.format(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (mc.fontRenderer.FONT_HEIGHT / 2) - 20, 0xFFFFFF);
         nameBox.drawTextBox();
     }
 
@@ -73,7 +73,7 @@ public class GuiCreateBonfire extends GuiScreen {
     @Override
     public void initGui() {
         super.initGui();
-        nameBox = new GuiNameTextField(0, mc.fontRendererObj, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15);
+        nameBox = new GuiNameTextField(0, mc.fontRenderer, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15);
         buttonList.clear();
         buttonList.add(accept = new GuiButton(0, (width / 2) - (80 / 2), (height / 2) - (20 / 2) + 25, 80, 20, I18n.format(LocalStrings.BUTTON_ACCEPT)));
         nameBox.setMax(14);

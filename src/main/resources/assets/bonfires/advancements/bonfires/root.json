@@ -1,0 +1,30 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:bone"
+        },
+        "title": {
+            "translate": "advancements.bonfires.root"
+        },
+        "description": {
+            "translate": "advancements.bonfires.root.desc"
+        },
+        "background": "bonfires:textures/blocks/ash.png",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "frame": "challenge"
+    },
+    "criteria": {
+        "died": {
+            "trigger": "minecraft:entity_killed_player"
+        }
+    },
+    "requirements": [
+        [
+            "died"
+        ]
+    ],
+    "rewards": {
+        "recipes": [ "bonfires:estus_shard", "bonfires:homeward_bone" ]
+    }
+}

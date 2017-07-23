@@ -18,8 +18,8 @@ public class TESRBonfire extends TileEntitySpecialRenderer<TileEntityBonfire> {
     private RenderItem renderItem;
 
     @Override
-    public void renderTileEntityAt(TileEntityBonfire te, double x, double y, double z, float partialTicks, int destroyStage) {
-        if(te != null && te instanceof TileEntityBonfire) {
+    public void render(TileEntityBonfire te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        if(te != null) {
             if (te.isBonfire()) {
 
                 GlStateManager.pushAttrib();
@@ -59,7 +59,7 @@ public class TESRBonfire extends TileEntitySpecialRenderer<TileEntityBonfire> {
 
             }
         }
-
-        super.renderTileEntityAt(te, x, y, z, partialTicks, destroyStage);
+        super.render(te, x, y, z, partialTicks, destroyStage, alpha);
     }
+
 }

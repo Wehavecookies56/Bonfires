@@ -60,7 +60,7 @@ public class CommandTravel extends CommandBase {
                 if (sender instanceof EntityPlayer) {
                     if (BonfireRegistry.INSTANCE.getBonfire(id) != null) {
                         Bonfire bonfire = BonfireRegistry.INSTANCE.getBonfire(id);
-                        BonfireTeleporter tp = new BonfireTeleporter(server.worldServerForDimension(bonfire.dimension));
+                        BonfireTeleporter tp = new BonfireTeleporter(server.getWorld(bonfire.dimension));
                         tp.teleport((EntityPlayer) sender, ((EntityPlayer) sender).world, bonfire.getPos(), bonfire.getDimension());
                     }
                 }

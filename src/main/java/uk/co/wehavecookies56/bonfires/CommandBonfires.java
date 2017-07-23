@@ -115,7 +115,7 @@ public class CommandBonfires extends CommandBase {
                             message.getStyle().setColor(TextFormatting.RED);
                             sender.sendMessage(message);
                         } else {
-                            TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_DIM_MATCH, query.size(), sender.getServer().worldServerForDimension(Integer.parseInt(args[1])).provider.getDimensionType().getName() + "(" + args[1] + ")");
+                            TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_DIM_MATCH, query.size(), sender.getServer().getWorld(Integer.parseInt(args[1])).provider.getDimensionType().getName() + "(" + args[1] + ")");
                             sender.sendMessage(message);
                             listQueriedBonfires(query, sender);
                         }

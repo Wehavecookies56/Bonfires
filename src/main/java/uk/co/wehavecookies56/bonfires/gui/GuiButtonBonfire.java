@@ -3,12 +3,9 @@ package uk.co.wehavecookies56.bonfires.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import org.lwjgl.Sys;
-import org.lwjgl.opengl.GL11;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.*;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -19,7 +16,7 @@ public class GuiButtonBonfire extends GuiButton {
     Bonfire bonfire;
 
     public GuiButtonBonfire(GuiBonfire parent, int buttonId, int x, int y) {
-        super(buttonId, x, y, 69, Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT+4, "");
+        super(buttonId, x, y, 69, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT+4, "");
         this.parent = parent;
     }
 
@@ -32,13 +29,13 @@ public class GuiButtonBonfire extends GuiButton {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (bonfire != null) {
             if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
                 displayString = bonfire.getName();
                 if (visible) {
-                    FontRenderer fontrenderer = mc.fontRendererObj;
-                    int colour = 4210752;
+                    FontRenderer fontrenderer = mc.fontRenderer;
+                    int colour = new Color(255, 255, 255).hashCode();
                     if (parent.bonfireSelected >= parent.BONFIRE1) {
                         if (parent.bonfires != null) {
                             if (parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()) != null) {
@@ -47,17 +44,17 @@ public class GuiButtonBonfire extends GuiButton {
                                         Bonfire b = parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11);
                                         if (bonfire == b) {
                                             colour = 46339;
-                                            drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0xFF777777);
+                                            drawRect(x, y, x + width, y + height, 0xFF777777);
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    if (mouseX >= xPosition && mouseX <= xPosition + width && mouseY >= yPosition && mouseY <= yPosition + height) {
-                        drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0xFF777777);
+                    if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
+                        drawRect(x, y, x + width, y + height, 0xFF777777);
                     }
-                    parent.drawCenteredStringNoShadow(fontrenderer, this.displayString, this.xPosition + width / 2, this.yPosition + height / 2, colour);
+                    parent.drawCenteredStringNoShadow(fontrenderer, this.displayString, this.x + width / 2, this.y + height / 2, colour);
                 }
             }
         } else {
@@ -65,4 +62,5 @@ public class GuiButtonBonfire extends GuiButton {
             displayString = "";
         }
     }
+
 }

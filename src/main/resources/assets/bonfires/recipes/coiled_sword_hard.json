@@ -1,0 +1,28 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"OLO",
+		"FSF",
+		"OAO"
+	],
+	"key": {
+		"O": {
+			"item": "minecraft:obsidian"
+		},
+		"L": {
+			"item": "minecraft:lava_bucket"
+		},
+		"F": {
+			"item": "minecraft:fire_charge"
+		},
+		"S": {
+			"item": "minecraft:diamond_sword"
+		},
+		"A": {
+			"item": "bonfires:ash_pile"
+		}
+	},
+	"result": {
+		"item": "bonfires:coiled_sword"
+	}
+}

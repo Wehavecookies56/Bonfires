@@ -49,7 +49,7 @@ public class Travel extends AbstractMessage.AbstractServerMessage<Travel> {
     @Override
     public void process(EntityPlayer player, Side side) {
         BlockPos pos = new BlockPos(x, y, z);
-        BonfireTeleporter tp = new BonfireTeleporter(player.getServer().worldServerForDimension(dim));
+        BonfireTeleporter tp = new BonfireTeleporter(player.getServer().getWorld(dim));
         tp.teleport(player, player.world, pos, dim);
     }
 }

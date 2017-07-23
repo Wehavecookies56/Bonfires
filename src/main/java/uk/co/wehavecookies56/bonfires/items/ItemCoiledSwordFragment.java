@@ -8,6 +8,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.EstusHandler;
 import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
 
@@ -16,14 +17,17 @@ import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
  */
 public class ItemCoiledSwordFragment extends Item {
 
-    public ItemCoiledSwordFragment() {
+    public ItemCoiledSwordFragment(String name) {
         this.setMaxStackSize(1);
+        setRegistryName(name);
+        setUnlocalizedName(name);
+        setCreativeTab(Bonfires.tabBonfires);
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
         if (!worldIn.isRemote) {
-            BonfireTeleporter tp = new BonfireTeleporter(playerIn.getServer().worldServerForDimension(worldIn.provider.getDimension()));
+            BonfireTeleporter tp = new BonfireTeleporter(playerIn.getServer().getWorld(worldIn.provider.getDimension()));
             tp.teleport(playerIn, worldIn, playerIn.getBedLocation(), worldIn.provider.getDimension());
         }
         return super.onItemRightClick(worldIn, playerIn, hand);
