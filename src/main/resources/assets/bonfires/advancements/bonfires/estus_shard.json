@@ -1,0 +1,34 @@
+{
+	"display": {
+		"icon": {
+			"item": "bonfires:estus_shard"
+		},
+		"title": {
+			"translate": "advancements.bonfires.estus_shard"
+		},
+		"description": {
+			"translate": "advancements.bonfires.estus_shard.desc"
+		}
+	},
+	"parent": "bonfires:bonfires/root",
+	"criteria": {
+		"estus_shard": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"item": "bonfires:estus_shard"
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"estus_shard"
+		]
+	],
+	"rewards": {
+        "recipes": [ "bonfires:estus_flask" ]
+    }
+}

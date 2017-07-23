@@ -1,9 +1,12 @@
 package uk.co.wehavecookies56.bonfires;
 
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
@@ -11,30 +14,22 @@ import java.io.File;
 /**
  * Created by Toby on 17/12/2016.
  */
+@Config(modid = Bonfires.modid, name = "bonfires")
 public class BonfiresConfig {
 
-    public static Configuration config;
-
+    @Config.Name("Render Text Above Bonfire")
     public static boolean renderTextAboveBonfire = true;
 
-    public static void init(File file) {
-        config = new Configuration(file);
-        config.load();
-        load();
+    @Mod.EventBusSubscriber(modid = Bonfires.modid)
+    private static class Events {
 
-        MinecraftForge.EVENT_BUS.register(new BonfiresConfig());
-    }
-    public static void load() {
+        @SubscribeEvent
+        public static void onConfigChanged(ConfigChangedEvent event) {
+            if (event.getModID().equals(Bonfires.modid)) {
+                ConfigManager.sync(Bonfires.modid, Config.Type.INSTANCE);
+            }
+        }
 
-        renderTextAboveBonfire = config.get(Configuration.CATEGORY_CLIENT, "Render Text Above Bonfires", renderTextAboveBonfire).getBoolean();
-
-        if (config.hasChanged())
-            config.save();
-    }
-
-    @SubscribeEvent
-    public void OnConfigChanged (ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equals(Bonfires.modid)) load();
     }
 
 }

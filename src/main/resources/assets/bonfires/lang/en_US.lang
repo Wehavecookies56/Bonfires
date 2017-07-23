@@ -42,3 +42,20 @@ button.accept=Accept
 
 text.name=Enter a name for the bonfire
 bonfire.lit=BONFIRE LIT
+
+advancements.bonfires.ash_pile=Acquire Ash
+advancements.bonfires.ash_pile.desc=Burnt a mob to a crisp
+advancements.bonfires.bonfire_lit=Enkindle
+advancements.bonfires.bonfire_lit.desc=Light a bonfire flame for the first time
+advancements.bonfires.root=Bonfires
+advancements.bonfires.root.desc=Die for the first time
+advancements.bonfires.coiled_sword_fragment=Destroyed Bonfire
+advancements.bonfires.coiled_sword_fragment.desc=Acquire a Coiled Sword Fragment
+advancements.bonfires.estus_flask=Estus Flask
+advancements.bonfires.estus_flask.desc=Acquire an Estus Flask
+advancements.bonfires.estus_shard=Estus Shard
+advancements.bonfires.estus_shard.desc=Acquire an Estus Shard
+advancements.bonfires.homeward_bone=Homeward Bone
+advancements.bonfires.homeward_bone.desc=Acquire a Homeward Bone
+advancements.bonfires.ash_bone_pile=Halfway
+advancements.bonfires.ash_bone_pile.desc=Acquire the base of a bonfire

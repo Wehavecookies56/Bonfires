@@ -47,7 +47,7 @@ public class GuiButtonDimensionTab extends GuiButton {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         GL11.glPushMatrix();
         if (visible) {
             int tab_width = 28;
@@ -59,11 +59,11 @@ public class GuiButtonDimensionTab extends GuiButton {
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
-                drawTexturedModalRect(xPosition, yPosition, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon), xPosition + (tab_width / 2) - 8, yPosition + (tab_height / 2) - 8);
+                drawTexturedModalRect(x, y, tab_u, tab_v, tab_width, tab_height);
+                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8);
             } else {
-                drawTexturedModalRect(xPosition, yPosition-1, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon), xPosition + (tab_width / 2) - 8, yPosition + (tab_height / 2) - 8 -1);
+                drawTexturedModalRect(x, y - 1, tab_u, tab_v, tab_width, tab_height);
+                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(icon), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8 -1);
             }
         }
         GL11.glPopMatrix();

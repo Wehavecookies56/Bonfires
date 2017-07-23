@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [ 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" }, 
+		{ "item": "bonfires:ash_pile" } 
+	],
+	"result": {
+		"item": "bonfires:ash_block"
+	}
+}

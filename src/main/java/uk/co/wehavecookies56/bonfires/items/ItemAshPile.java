@@ -8,6 +8,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 /**
@@ -15,7 +16,9 @@ import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
  */
 public class ItemAshPile extends Item {
 
-    public ItemAshPile() {
-
+    public ItemAshPile(String name) {
+        setRegistryName(name);
+        setUnlocalizedName(name);
+        setCreativeTab(Bonfires.tabBonfires);
     }
 }

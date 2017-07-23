@@ -1,5 +1,6 @@
 package uk.co.wehavecookies56.bonfires.items;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -19,10 +21,13 @@ public class ItemEstusFlask extends ItemFood {
 
     int maxUses, currentUses;
 
-    public ItemEstusFlask(int amount, float saturation, boolean isWolfFood) {
+    public ItemEstusFlask(String name, int amount, float saturation, boolean isWolfFood) {
         super(amount, saturation, isWolfFood);
         this.setAlwaysEdible();
         this.setMaxStackSize(1);
+        setRegistryName(name);
+        setUnlocalizedName(name);
+        setCreativeTab(Bonfires.tabBonfires);
     }
 
     @Override
@@ -398,20 +403,20 @@ public class ItemEstusFlask extends ItemFood {
     }
 
     @Override
-    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-        for (int i = 3; i < 16; i++) {
-            ItemStack stack = new ItemStack(itemIn);
-            stack.setTagCompound(new NBTTagCompound());
-            stack.getTagCompound().setInteger("uses", i);
-            stack.getTagCompound().setInteger("estus", i);
-            subItems.add(stack);
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (isInCreativeTab(tab)) {
+            for (int i = 3; i < 16; i++) {
+                ItemStack stack = new ItemStack(this);
+                stack.setTagCompound(new NBTTagCompound());
+                stack.getTagCompound().setInteger("uses", i);
+                stack.getTagCompound().setInteger("estus", i);
+                items.add(stack);
+            }
         }
-
-
     }
 
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         if (stack.hasTagCompound()) {
             if (stack.getTagCompound().hasKey("uses")) {
                 if (stack.getTagCompound().hasKey("estus")) {
@@ -419,6 +424,5 @@ public class ItemEstusFlask extends ItemFood {
                 }
             }
         }
-        super.addInformation(stack, playerIn, tooltip, advanced);
     }
 }

@@ -14,8 +14,11 @@ import java.util.Random;
  */
 public class BlockAshBlock extends BlockFalling {
 
-    public BlockAshBlock(Material blockMaterialIn) {
+    public BlockAshBlock(String name, Material blockMaterialIn) {
         super(blockMaterialIn);
+        setRegistryName(Bonfires.modid, name);
+        setUnlocalizedName(getRegistryName().toString().replace(Bonfires.modid + ":", ""));
+        setCreativeTab(Bonfires.tabBonfires);
     }
 
     @Nullable

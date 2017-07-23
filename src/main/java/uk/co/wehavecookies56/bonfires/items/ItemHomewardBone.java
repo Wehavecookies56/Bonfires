@@ -8,6 +8,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.EstusHandler;
 import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
 
@@ -16,16 +17,18 @@ import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
  */
 public class ItemHomewardBone extends Item {
 
-    public ItemHomewardBone() {
-
+    public ItemHomewardBone(String name) {
+        setRegistryName(name);
+        setUnlocalizedName(name);
+        setCreativeTab(Bonfires.tabBonfires);
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
         if (!worldIn.isRemote) {
-            BonfireTeleporter tp = new BonfireTeleporter(playerIn.getServer().worldServerForDimension(worldIn.provider.getDimension()));
+            BonfireTeleporter tp = new BonfireTeleporter(playerIn.getServer().getWorld(worldIn.provider.getDimension()));
             tp.teleport(playerIn, worldIn, playerIn.getBedLocation(), worldIn.provider.getDimension());
-            playerIn.getActiveItemStack().shrink(1);
+            playerIn.getHeldItemMainhand().shrink(1);
         }
         return super.onItemRightClick(worldIn, playerIn, hand);
     }

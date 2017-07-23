@@ -1,0 +1,25 @@
+{
+	"display": {
+		"icon": {
+			"item": "bonfires:coiled_sword"
+		},
+		"title": {
+			"translate": "advancements.bonfires.bonfire_lit"
+		},
+		"description": {
+			"translate": "advancements.bonfires.bonfire_lit.desc"
+		},
+		"frame": "goal"
+	},
+	"parent": "bonfires:bonfires/ash_bone_pile",
+	"criteria": {
+		"lit": {
+			"trigger": "bonfires:bonfire_lit"
+		}
+	},
+	"requirements": [
+		[
+			"lit"
+		]
+	]
+}

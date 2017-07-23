@@ -22,10 +22,10 @@ public class CommonProxy {
     }
 
     public EntityPlayer getPlayerEntity (MessageContext ctx) {
-        return ctx.getServerHandler().playerEntity;
+        return ctx.getServerHandler().player;
     }
 
     public IThreadListener getThreadFromContext (MessageContext ctx) {
-        return ctx.getServerHandler().playerEntity.getServer();
+        return ctx.getServerHandler().player.getServer();
     }
 }

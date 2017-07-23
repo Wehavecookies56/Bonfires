@@ -19,7 +19,7 @@ public class GuiButtonBonfirePage extends GuiButton {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             mc.renderEngine.bindTexture(parent.TRAVEL_TEX);
             int texWidth = 8;
@@ -29,7 +29,7 @@ public class GuiButtonBonfirePage extends GuiButton {
                 u = parent.travel_width + texWidth;
             }
             int v = 0;
-            if (mouseX >= xPosition && mouseX <= xPosition + width && mouseY >= yPosition && mouseY <= yPosition + height) {
+            if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
                 v = texHeight;
             }
             if (!enabled) {
@@ -37,8 +37,9 @@ public class GuiButtonBonfirePage extends GuiButton {
             }
             GlStateManager.pushMatrix();
             GlStateManager.color(1, 1, 1, 1);
-            drawTexturedModalRect(xPosition, yPosition, u, v, width, height);
+            drawTexturedModalRect(x, y, u, v, width, height);
             GlStateManager.popMatrix();
         }
     }
+
 }

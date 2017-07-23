@@ -1,0 +1,10 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [ 
+		{ "item": "minecraft:iron_sword" }, 
+		{ "item": "bonfires:coiled_sword_fragment" }, 
+		{ "item": "minecraft:lava_bucket" } ],
+	"result": {
+		"item": "bonfires:coiled_sword"
+	}
+}

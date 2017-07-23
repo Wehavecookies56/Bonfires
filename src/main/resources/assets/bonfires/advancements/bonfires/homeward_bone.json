@@ -1,0 +1,34 @@
+{
+	"display": {
+		"icon": {
+			"item": "bonfires:homeward_bone"
+		},
+		"title": {
+			"translate": "advancements.bonfires.homeward_bone"
+		},
+		"description": {
+			"translate": "advancements.bonfires.homeward_bone.desc"
+		}
+	},
+	"parent": "bonfires:bonfires/root",
+	"criteria": {
+		"homeward_bone": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"item": "bonfires:homeward_bone"
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"homeward_bone"
+		]
+	],
+	"rewards": {
+        "recipes": [ "bonfires:ash_bone_pile" ]
+    }
+}

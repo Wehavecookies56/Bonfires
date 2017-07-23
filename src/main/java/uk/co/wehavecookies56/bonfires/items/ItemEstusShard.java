@@ -13,7 +13,11 @@ import uk.co.wehavecookies56.bonfires.Bonfires;
  */
 public class ItemEstusShard extends Item {
 
-    public ItemEstusShard() {}
+    public ItemEstusShard(String name) {
+        setRegistryName(name);
+        setUnlocalizedName(name);
+        setCreativeTab(Bonfires.tabBonfires);
+    }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
