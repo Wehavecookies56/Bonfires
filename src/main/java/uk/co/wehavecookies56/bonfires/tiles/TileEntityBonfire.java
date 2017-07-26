@@ -6,23 +6,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import uk.co.wehavecookies56.bonfires.*;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,9 +24,15 @@ import java.util.UUID;
  */
 public class TileEntityBonfire extends TileEntity implements ITickable {
 
-    boolean bonfire;
-    boolean lit;
-    UUID id = UUID.randomUUID();
+    private boolean bonfire = false;
+    private boolean lit = false;
+    private UUID id = UUID.randomUUID();
+
+    public enum BonfireType {
+        BONFIRE, PRIMAL, NONE
+    }
+
+    private BonfireType type = BonfireType.NONE;
 
     @Override
     public void handleUpdateTag(NBTTagCompound tag) {
@@ -43,6 +43,7 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         compound.setBoolean("bonfire", bonfire);
+        compound.setInteger("type", type.ordinal());
         compound.setBoolean("lit", lit);
         compound.setUniqueId("id", id);
         return compound;
@@ -52,6 +53,7 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         bonfire = compound.getBoolean("bonfire");
+        type = BonfireType.values()[compound.getInteger("type")];
         lit = compound.getBoolean("lit");
         id = compound.getUniqueId("id");
     }
@@ -67,6 +69,15 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
 
     public boolean isBonfire() {
         return bonfire;
+    }
+
+    public BonfireType getBonfireType() {
+        return type;
+    }
+
+    public void setBonfireType(BonfireType type) {
+        this.type = type;
+        markDirty();
     }
 
     public void setBonfire(boolean bonfire) {

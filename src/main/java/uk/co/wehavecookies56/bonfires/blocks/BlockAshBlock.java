@@ -6,6 +6,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
@@ -17,12 +18,13 @@ public class BlockAshBlock extends BlockFalling {
     public BlockAshBlock(String name, Material blockMaterialIn) {
         super(blockMaterialIn);
         setRegistryName(Bonfires.modid, name);
-        setUnlocalizedName(getRegistryName().toString().replace(Bonfires.modid + ":", ""));
+        if (getRegistryName() != null)
+            setUnlocalizedName(getRegistryName().toString().replace(Bonfires.modid + ":", ""));
         setCreativeTab(Bonfires.tabBonfires);
     }
 
-    @Nullable
     @Override
+    @Nonnull
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Bonfires.ashPile;
     }

@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,12 +23,13 @@ public class BonfireLitTrigger implements ICriterionTrigger<BonfireLitTrigger.In
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.newHashMap();
 
     @Override
+    @Nonnull
     public ResourceLocation getId() {
         return ID;
     }
 
     @Override
-    public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
+    public void addListener(@Nonnull PlayerAdvancements playerAdvancementsIn, @Nonnull ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
         BonfireLitTrigger.Listeners listeners = this.listeners.get(playerAdvancementsIn);
         if (listeners == null) {
             listeners = new BonfireLitTrigger.Listeners(playerAdvancementsIn);
@@ -37,7 +39,7 @@ public class BonfireLitTrigger implements ICriterionTrigger<BonfireLitTrigger.In
     }
 
     @Override
-    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
+    public void removeListener(@Nonnull PlayerAdvancements playerAdvancementsIn, @Nonnull ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
         BonfireLitTrigger.Listeners listeners = this.listeners.get(playerAdvancementsIn);
 
         if (listeners != null) {
@@ -49,12 +51,13 @@ public class BonfireLitTrigger implements ICriterionTrigger<BonfireLitTrigger.In
     }
 
     @Override
-    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn) {
+    public void removeAllListeners(@Nonnull PlayerAdvancements playerAdvancementsIn) {
         this.listeners.remove(playerAdvancementsIn);
     }
 
     @Override
-    public BonfireLitTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
+    @Nonnull
+    public BonfireLitTrigger.Instance deserializeInstance(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext context) {
         return new BonfireLitTrigger.Instance();
     }
 
@@ -65,13 +68,13 @@ public class BonfireLitTrigger implements ICriterionTrigger<BonfireLitTrigger.In
         }
     }
 
-    public static class Instance extends AbstractCriterionInstance {
+    static class Instance extends AbstractCriterionInstance {
 
-        public Instance() {
+        Instance() {
             super(BonfireLitTrigger.ID);
         }
 
-        public boolean test() {
+        boolean test() {
             return true;
         }
 
@@ -82,19 +85,19 @@ public class BonfireLitTrigger implements ICriterionTrigger<BonfireLitTrigger.In
         private final PlayerAdvancements playerAdvancements;
         private final Set<Listener<Instance>> listeners = Sets.newHashSet();
 
-        public Listeners(PlayerAdvancements playerAdvancements) {
+        Listeners(PlayerAdvancements playerAdvancements) {
             this.playerAdvancements = playerAdvancements;
         }
 
-        public boolean isEmpty() {
+        boolean isEmpty() {
             return listeners.isEmpty();
         }
 
-        public void add(ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
+        void add(ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
             this.listeners.add(listener);
         }
 
-        public void remove(ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
+        void remove(ICriterionTrigger.Listener<BonfireLitTrigger.Instance> listener) {
             this.listeners.remove(listener);
         }
 

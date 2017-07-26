@@ -3,25 +3,18 @@ package uk.co.wehavecookies56.bonfires;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -32,6 +25,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.apache.logging.log4j.Logger;
 import uk.co.wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBlock;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
@@ -49,13 +43,18 @@ import java.util.Random;
 /**
  * Created by Toby on 05/11/2016.
  */
+@SuppressWarnings("unused")
 @Mod(modid = Bonfires.modid, name = Bonfires.name, version = Bonfires.version, updateJSON = "https://raw.githubusercontent.com/Wehavecookies56/Bonfires/master/update.json")
 public class Bonfires {
 
     @SidedProxy(clientSide = "uk.co.wehavecookies56.bonfires.proxies.ClientProxy", serverSide = "uk.co.wehavecookies56.bonfires.proxies.CommonProxy")
     public static CommonProxy proxy;
 
-    public static final String modid = "bonfires", name = "Bonfires", version = "1.1.0";
+    public static final String modid = "bonfires";
+    @SuppressWarnings("WeakerAccess")
+    public static final String name = "Bonfires";
+    @SuppressWarnings("WeakerAccess")
+    public static final String version = "1.1.1";
 
     @Mod.Instance (modid)
     public static Bonfires instance;
@@ -88,14 +87,16 @@ public class Bonfires {
 
     public static BonfireLitTrigger TRIGGER_BONFIRE_LIT = new BonfireLitTrigger();
 
+    public static Logger logger;
+
     @Mod.EventHandler
     public static void preInit(FMLPreInitializationEvent event) {
+        logger = event.getModLog();
         PacketDispatcher.registerPackets();
         tabBonfires = new TabBonfires("tabBonfires");
         EstusHandler.init();
         TRIGGER_BONFIRE_LIT = CriteriaTriggers.register(TRIGGER_BONFIRE_LIT);
         proxy.preInit();
-        Map<String, String> icons = BonfiresConfig.tabIcons;
     }
 
     @SubscribeEvent
@@ -119,7 +120,8 @@ public class Bonfires {
 
     @SubscribeEvent
     public void quit(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!event.player.world.getMinecraftServer().isDedicatedServer()) BonfireRegistry.INSTANCE.clearBonfires();
+        if (event.player.world.getMinecraftServer() != null)
+            if (!event.player.world.getMinecraftServer().isDedicatedServer()) BonfireRegistry.INSTANCE.clearBonfires();
     }
 
     @SubscribeEvent
@@ -148,7 +150,7 @@ public class Bonfires {
     }
 
     @Mod.EventBusSubscriber(modid = modid)
-    public static class Events {
+    private static class Events {
 
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
@@ -159,8 +161,10 @@ public class Bonfires {
             event.getRegistry().register(new ItemCoiledSwordFragment("coiled_sword_fragment"));
             event.getRegistry().register(new ItemEstusShard("estus_shard"));
 
-            event.getRegistry().register(new ItemBlock(ashBlock).setRegistryName(ashBlock.getRegistryName()));
-            event.getRegistry().register(new ItemBlock(ashBonePile).setRegistryName(ashBonePile.getRegistryName()));
+            if (ashBlock.getRegistryName() != null)
+                event.getRegistry().register(new ItemBlock(ashBlock).setRegistryName(ashBlock.getRegistryName()));
+            if (ashBonePile.getRegistryName() != null)
+                event.getRegistry().register(new ItemBlock(ashBonePile).setRegistryName(ashBonePile.getRegistryName()));
         }
 
         @SubscribeEvent

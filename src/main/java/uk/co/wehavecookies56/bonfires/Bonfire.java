@@ -9,9 +9,10 @@ import java.util.UUID;
  */
 public class Bonfire {
 
-    String name;
-    UUID id, owner;
-    BlockPos pos;
+    private String name;
+    private UUID id;
+    private UUID owner;
+    private BlockPos pos;
     int dimension;
     boolean isPublic;
 

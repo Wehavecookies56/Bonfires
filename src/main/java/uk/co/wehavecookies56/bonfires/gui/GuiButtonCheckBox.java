@@ -5,18 +5,19 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 
-public class GuiButtonCheckBox extends GuiButton {
+class GuiButtonCheckBox extends GuiButton {
 
-    boolean checked;
+    private boolean checked;
 
-    public GuiButtonCheckBox(int buttonId, int x, int y, String buttonText) {
+    GuiButtonCheckBox(int buttonId, int x, int y, String buttonText) {
         super(buttonId, x, y, 10, 10, buttonText);
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             mc.renderEngine.bindTexture(new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png"));
             drawTexturedModalRect(x, y, 0, 0, 10, 10);
@@ -32,7 +33,7 @@ public class GuiButtonCheckBox extends GuiButton {
         return super.getButtonWidth() + 3 + Minecraft.getMinecraft().fontRenderer.getStringWidth(displayString);
     }
 
-    public boolean isChecked() {
+    boolean isChecked() {
         return checked;
     }
 

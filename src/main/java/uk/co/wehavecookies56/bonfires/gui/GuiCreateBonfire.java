@@ -3,9 +3,6 @@ package uk.co.wehavecookies56.bonfires.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.packets.LightBonfire;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
@@ -16,14 +13,15 @@ import java.io.IOException;
 /**
  * Created by Toby on 10/11/2016.
  */
-public class GuiCreateBonfire extends GuiScreen {
+class GuiCreateBonfire extends GuiScreen {
 
-    GuiNameTextField nameBox;
-    GuiButton accept;
-    TileEntityBonfire te;
-    GuiButtonCheckBox isPrivate;
+    private GuiNameTextField nameBox;
+    @SuppressWarnings("")
+    private GuiButton accept;
+    private final TileEntityBonfire te;
+    private GuiButtonCheckBox isPrivate;
 
-    public GuiCreateBonfire(TileEntityBonfire bonfireTE) {
+    GuiCreateBonfire(TileEntityBonfire bonfireTE) {
         super();
         this.te = bonfireTE;
     }
@@ -38,12 +36,14 @@ public class GuiCreateBonfire extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         nameBox.textboxKeyTyped(typedChar, keyCode);
+        updateButtons();
         super.keyTyped(typedChar, keyCode);
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         nameBox.mouseClicked(mouseX, mouseY, mouseButton);
+        updateButtons();
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
@@ -57,18 +57,18 @@ public class GuiCreateBonfire extends GuiScreen {
                 }
                 break;
         }
+        updateButtons();
         super.actionPerformed(button);
-    }
-
-    @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
     }
 
     @Override
     public void updateScreen() {
         nameBox.updateCursorCounter();
         super.updateScreen();
+    }
+
+    public void updateButtons() {
+        accept.enabled = !nameBox.getText().isEmpty();
     }
 
     @Override
@@ -82,5 +82,6 @@ public class GuiCreateBonfire extends GuiScreen {
         isPrivate.y = (height / 2) - (10 / 2) + 20;
         buttonList.add(isPrivate);
         nameBox.setMax(14);
+        updateButtons();
     }
 }

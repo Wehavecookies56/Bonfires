@@ -5,17 +5,18 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 
 /**
  * Created by Toby on 10/11/2016.
  */
-public class GuiButtonBonfire extends GuiButton {
+class GuiButtonBonfire extends GuiButton {
 
-    GuiBonfire parent;
-    Bonfire bonfire;
+    private GuiBonfire parent;
+    private Bonfire bonfire;
 
-    public GuiButtonBonfire(GuiBonfire parent, int buttonId, int x, int y) {
+    GuiButtonBonfire(GuiBonfire parent, int buttonId, int x, int y) {
         super(buttonId, x, y, 93, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT+4, "");
         this.parent = parent;
     }
@@ -29,7 +30,7 @@ public class GuiButtonBonfire extends GuiButton {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (bonfire != null) {
             if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
                 displayString = bonfire.getName();

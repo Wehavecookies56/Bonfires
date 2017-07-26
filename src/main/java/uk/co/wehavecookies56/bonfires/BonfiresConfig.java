@@ -20,14 +20,7 @@ public class BonfiresConfig {
 
     @Config.RequiresMcRestart
     @Config.Name("Bonfire dimension tab icons")
-    public static Map<String, String> tabIcons;
-
-    static {
-        tabIcons = Maps.newHashMap();
-        tabIcons.put("" + 0, "minecraft:grass");
-        tabIcons.put("" + -1, "minecraft:netherrack");
-        tabIcons.put("" + 1, "minecraft:end_stone");
-    }
+    public static String[] tabIcons = { "0=minecraft:grass", "-1=minecraft:netherrack", "1=minecraft:end_stone" };
 
     @Mod.EventBusSubscriber(modid = Bonfires.modid)
     private static class Events {

@@ -6,7 +6,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
-import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import java.io.IOException;
@@ -20,8 +19,9 @@ import java.util.UUID;
  */
 public class SyncSaveData extends AbstractMessage.AbstractClientMessage<SyncSaveData> {
 
-    Map<UUID, Bonfire> bonfires;
+    private Map<UUID, Bonfire> bonfires;
 
+    @SuppressWarnings("unused")
     public SyncSaveData() {}
 
     public SyncSaveData(Map<UUID, Bonfire> bonfires) {
@@ -45,9 +45,7 @@ public class SyncSaveData extends AbstractMessage.AbstractClientMessage<SyncSave
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException {
-        Iterator<Map.Entry<UUID, Bonfire>> it = bonfires.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<UUID, Bonfire> pair = (Map.Entry<UUID, Bonfire>) it.next();
+        for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             buffer.writeUniqueId(pair.getKey());
             Bonfire bonfire = pair.getValue();
             buffer.writeString(bonfire.getName());
@@ -63,9 +61,7 @@ public class SyncSaveData extends AbstractMessage.AbstractClientMessage<SyncSave
     @Override
     public void process(EntityPlayer player, Side side) {
         BonfireRegistry.INSTANCE.clearBonfires();
-        Iterator<Map.Entry<UUID, Bonfire>> it = bonfires.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<UUID, Bonfire> pair = (Map.Entry<UUID, Bonfire>) it.next();
+        for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             BonfireWorldSavedData.get(player.getEntityWorld()).addBonfire(pair.getValue());
         }
     }

@@ -1,6 +1,5 @@
 package uk.co.wehavecookies56.bonfires.packets;
 
-import com.google.common.base.Throwables;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -34,7 +33,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	 * true, this method is guaranteed to be called on the main Minecraft thread
 	 * for this side.
 	 */
-	public abstract void process (EntityPlayer player, Side side);
+	protected abstract void process(EntityPlayer player, Side side);
 
 	/**
 	 * If message is sent to the wrong side, an exception will be thrown during
@@ -42,7 +41,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	 *
 	 * @return True if the message is allowed to be handled on the given side
 	 */
-	protected boolean isValidOnSide (Side side) {
+	boolean isValidOnSide(Side side) {
 		return true; // default allows handling on both sides, i.e. a
 						// bidirectional packet
 	}
@@ -51,7 +50,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	 * Whether this message requires the main thread to be processed (i.e. it
 	 * requires that the world, player, and other objects are in a valid state).
 	 */
-	protected boolean requiresMainThread () {
+	boolean requiresMainThread() {
 		return true;
 	}
 
@@ -60,7 +59,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 		try {
 			read(new PacketBuffer(buffer));
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -69,7 +68,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 		try {
 			write(new PacketBuffer(buffer));
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -98,14 +97,9 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	/**
 	 * 1.8 ONLY: Ensures that the message is being handled on the main thread
 	 */
-	private static final <T extends AbstractMessage<T>> void checkThreadAndEnqueue (final AbstractMessage<T> msg, final MessageContext ctx) {
+	private static <T extends AbstractMessage<T>> void checkThreadAndEnqueue (final AbstractMessage<T> msg, final MessageContext ctx) {
 		IThreadListener thread = Bonfires.proxy.getThreadFromContext(ctx);
-		if (!thread.isCallingFromMinecraftThread()) thread.addScheduledTask(new Runnable() {
-			@Override
-			public void run () {
-				msg.process(Bonfires.proxy.getPlayerEntity(ctx), ctx.side);
-			}
-		});
+		if (!thread.isCallingFromMinecraftThread()) thread.addScheduledTask(() -> msg.process(Bonfires.proxy.getPlayerEntity(ctx), ctx.side));
 	}
 
 	/**

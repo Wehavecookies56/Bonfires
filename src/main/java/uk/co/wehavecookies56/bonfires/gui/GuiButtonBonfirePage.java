@@ -4,22 +4,24 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by Toby on 17/12/2016.
  */
-public class GuiButtonBonfirePage extends GuiButton {
+class GuiButtonBonfirePage extends GuiButton {
 
-    GuiBonfire parent;
-    boolean isNext;
+    private GuiBonfire parent;
+    private boolean isNext;
 
-    public GuiButtonBonfirePage(GuiBonfire parent, int buttonId, int x, int y, boolean isNext) {
+    GuiButtonBonfirePage(GuiBonfire parent, int buttonId, int x, int y, boolean isNext) {
         super(buttonId, x, y, 8, 14, "");
         this.parent = parent;
         this.isNext = isNext;
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             mc.renderEngine.bindTexture(parent.TRAVEL_TEX);
             int texWidth = 8;

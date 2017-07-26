@@ -13,6 +13,7 @@ import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.UUID;
 /**
  * Created by Toby on 17/12/2016.
  */
-public class CommandTravel extends CommandBase {
+class CommandTravel extends CommandBase {
 
     @Override
     public int getRequiredPermissionLevel() {
@@ -29,6 +30,7 @@ public class CommandTravel extends CommandBase {
     }
 
     @Override
+    @Nonnull
     public List<String> getAliases() {
         List<String> aliases = new ArrayList<>();
         aliases.add("travel");
@@ -38,22 +40,25 @@ public class CommandTravel extends CommandBase {
     }
 
     @Override
+    @Nonnull
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
         return super.getTabCompletions(server, sender, args, pos);
     }
 
     @Override
+    @Nonnull
     public String getName() {
         return "travel";
     }
 
     @Override
-    public String getUsage(ICommandSender sender) {
+    @Nonnull
+    public String getUsage(@Nonnull ICommandSender sender) {
         return LocalStrings.COMMAND_TRAVEL_USAGE;
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
         if (args.length == 1) {
             try {
                 UUID id = UUID.fromString(args[0]);

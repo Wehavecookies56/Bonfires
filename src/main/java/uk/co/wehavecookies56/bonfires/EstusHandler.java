@@ -43,7 +43,7 @@ public class EstusHandler {
         clone.setUses(original.uses());
     }
 
-    public static IEstusHandler getHandler(Entity entity) {
+    private static IEstusHandler getHandler(Entity entity) {
         if (entity.hasCapability(CAPABILITY_ESTUS, null)) {
             return entity.getCapability(CAPABILITY_ESTUS, null);
         }
@@ -51,7 +51,7 @@ public class EstusHandler {
     }
 
     @CapabilityInject(IEstusHandler.class)
-    public static final Capability<IEstusHandler> CAPABILITY_ESTUS = null;
+    private static final Capability<IEstusHandler> CAPABILITY_ESTUS = null;
 
     public interface IEstusHandler {
         int uses();
@@ -99,7 +99,7 @@ public class EstusHandler {
 
         @Override
         public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-            return hasCapability(capability, facing) ? CAPABILITY_ESTUS.<T>cast(instance) : null;
+            return hasCapability(capability, facing) ? CAPABILITY_ESTUS.cast(instance) : null;
         }
 
         @Override

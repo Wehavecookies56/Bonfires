@@ -5,13 +5,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 
 import javax.annotation.Nonnull;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class EstusFlaskIngredientFactory implements IIngredientFactory {
 
     @Nonnull

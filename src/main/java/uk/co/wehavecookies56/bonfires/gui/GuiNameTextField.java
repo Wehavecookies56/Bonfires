@@ -7,19 +7,15 @@ import org.lwjgl.input.Keyboard;
 /**
  * Created by Toby on 10/11/2016.
  */
-public class GuiNameTextField extends GuiTextField {
+class GuiNameTextField extends GuiTextField {
 
-    int max = 0;
+    private int max = 0;
 
-    public GuiNameTextField(int componentId, FontRenderer fontrendererObj, int x, int y, int width, int height) {
+    GuiNameTextField(int componentId, FontRenderer fontrendererObj, int x, int y, int width, int height) {
         super(componentId, fontrendererObj, x, y, width, height);
     }
 
-    public int getMax() {
-        return max;
-    }
-
-    public void setMax(int max) {
+    void setMax(@SuppressWarnings("all") int max) {
         this.max = max;
     }
 

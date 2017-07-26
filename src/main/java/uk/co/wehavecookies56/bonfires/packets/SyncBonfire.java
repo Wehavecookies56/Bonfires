@@ -14,14 +14,20 @@ import java.util.UUID;
  */
 public class SyncBonfire extends AbstractMessage.AbstractClientMessage<SyncBonfire> {
 
-    boolean bonfire, lit;
-    UUID id;
-    int x, y, z;
+    private boolean bonfire;
+    private boolean lit;
+    private UUID id;
+    private int x;
+    private int y;
+    private int z;
+    private TileEntityBonfire.BonfireType type;
 
+    @SuppressWarnings("unused")
     public SyncBonfire() {}
 
-    public SyncBonfire(boolean bonfire, boolean lit, UUID id, TileEntityBonfire entityBonfire) {
+    public SyncBonfire(boolean bonfire, TileEntityBonfire.BonfireType type, boolean lit, UUID id, TileEntityBonfire entityBonfire) {
         this.bonfire = bonfire;
+        this.type = type;
         this.lit = lit;
         this.id = id;
         this.x = entityBonfire.getPos().getX();
@@ -32,6 +38,7 @@ public class SyncBonfire extends AbstractMessage.AbstractClientMessage<SyncBonfi
     @Override
     protected void read(PacketBuffer buffer) throws IOException {
         this.bonfire = buffer.readBoolean();
+        this.type = TileEntityBonfire.BonfireType.values()[buffer.readInt()];
         this.lit = buffer.readBoolean();
         if(this.lit)
             this.id = buffer.readUniqueId();
@@ -43,6 +50,7 @@ public class SyncBonfire extends AbstractMessage.AbstractClientMessage<SyncBonfi
     @Override
     protected void write(PacketBuffer buffer) throws IOException {
         buffer.writeBoolean(bonfire);
+        buffer.writeInt(type.ordinal());
         buffer.writeBoolean(lit);
         if(lit)
             buffer.writeUniqueId(id);
@@ -54,10 +62,15 @@ public class SyncBonfire extends AbstractMessage.AbstractClientMessage<SyncBonfi
     @Override
     public void process(EntityPlayer player, Side side) {
         BlockPos pos = new BlockPos(x, y, z);
-        TileEntityBonfire te = (TileEntityBonfire) player.world.getTileEntity(pos);
-        te.setBonfire(bonfire);
-        te.setLit(lit);
-        if(lit)
-            te.setID(id);
+        if (player.world.getTileEntity(pos) != null && player.world.getTileEntity(pos) instanceof TileEntityBonfire) {
+            TileEntityBonfire te = (TileEntityBonfire) player.world.getTileEntity(pos);
+            if (te != null) {
+                te.setBonfire(bonfire);
+                te.setBonfireType(type);
+                te.setLit(lit);
+                if (lit)
+                    te.setID(id);
+            }
+        }
     }
 }

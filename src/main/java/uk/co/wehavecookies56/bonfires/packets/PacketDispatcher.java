@@ -13,7 +13,7 @@ public class PacketDispatcher {
 
 	private static final SimpleNetworkWrapper dispatcher = NetworkRegistry.INSTANCE.newSimpleChannel("");
 
-	public static final void registerPackets () {
+	public static void registerPackets () {
 		registerMessage(SyncBonfire.class);
 		registerMessage(SyncSaveData.class);
 
@@ -21,7 +21,7 @@ public class PacketDispatcher {
 		registerMessage(Travel.class);
 	}
 
-	private static final <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerMessage (Class<T> clazz) {
+	private static <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerMessage (Class<T> clazz) {
 		if (AbstractMessage.AbstractClientMessage.class.isAssignableFrom(clazz))
 			PacketDispatcher.dispatcher.registerMessage(clazz, clazz, packetId++, Side.CLIENT);
 		else if (AbstractMessage.AbstractServerMessage.class.isAssignableFrom(clazz))
@@ -32,7 +32,7 @@ public class PacketDispatcher {
 		}
 	}
 
-	public static final void sendTo (IMessage message, EntityPlayerMP player) {
+	public static void sendTo (IMessage message, EntityPlayerMP player) {
 		PacketDispatcher.dispatcher.sendTo(message, player);
 	}
 
@@ -40,23 +40,23 @@ public class PacketDispatcher {
 		PacketDispatcher.dispatcher.sendToAll(message);
 	}
 
-	public static final void sendToAllAround (IMessage message, NetworkRegistry.TargetPoint point) {
+	public static void sendToAllAround (IMessage message, NetworkRegistry.TargetPoint point) {
 		PacketDispatcher.dispatcher.sendToAllAround(message, point);
 	}
 
-	public static final void sendToAllAround (IMessage message, int dimension, double x, double y, double z, double range) {
+	private static void sendToAllAround(IMessage message, int dimension, double x, double y, double z, double range) {
 		PacketDispatcher.sendToAllAround(message, new NetworkRegistry.TargetPoint(dimension, x, y, z, range));
 	}
 
-	public static final void sendToAllAround (IMessage message, EntityPlayer player, double range) {
+	public static void sendToAllAround (IMessage message, EntityPlayer player, double range) {
 		PacketDispatcher.sendToAllAround(message, player.world.provider.getDimension(), player.posX, player.posY, player.posZ, range);
 	}
 
-	public static final void sendToDimension (IMessage message, int dimensionId) {
+	public static void sendToDimension (IMessage message, int dimensionId) {
 		PacketDispatcher.dispatcher.sendToDimension(message, dimensionId);
 	}
 
-	public static final void sendToServer (IMessage message) {
+	public static void sendToServer (IMessage message) {
 		PacketDispatcher.dispatcher.sendToServer(message);
 	}
 }

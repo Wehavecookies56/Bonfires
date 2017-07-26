@@ -3,23 +3,21 @@ package uk.co.wehavecookies56.bonfires.packets;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import uk.co.wehavecookies56.bonfires.Bonfire;
-import uk.co.wehavecookies56.bonfires.BonfireRegistry;
-import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
 
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * Created by Toby on 06/11/2016.
  */
 public class Travel extends AbstractMessage.AbstractServerMessage<Travel> {
 
-    int x, y, z, dim;
+    private int x;
+    private int y;
+    private int z;
+    private int dim;
 
     public Travel() {}
 

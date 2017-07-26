@@ -3,10 +3,6 @@ package uk.co.wehavecookies56.bonfires;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLLog;
-import org.apache.logging.log4j.Level;
-import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import java.util.*;
 
@@ -19,7 +15,7 @@ public class BonfireRegistry {
 
     private static Map<UUID, Bonfire> bonfires;
 
-    public BonfireRegistry() {
+    private BonfireRegistry() {
         bonfires = new HashMap<>();
     }
 
@@ -32,7 +28,7 @@ public class BonfireRegistry {
     }
 
     public void setBonfires(Map<UUID, Bonfire> bonfires) {
-        this.bonfires = bonfires;
+        BonfireRegistry.bonfires = bonfires;
     }
 
     public boolean removeBonfire(UUID id) {
@@ -45,7 +41,7 @@ public class BonfireRegistry {
     }
 
     public List<Bonfire> getBonfiresByOwner(UUID owner) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+        List<Bonfire> list = new ArrayList<>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getOwner().compareTo(owner) == 0) {
                 list.add(bonfire);
@@ -55,7 +51,7 @@ public class BonfireRegistry {
     }
 
     public List<Bonfire> getBonfiresByName(String name) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+        List<Bonfire> list = new ArrayList<>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getName().toLowerCase().contains(name.toLowerCase())) {
                 list.add(bonfire);
@@ -86,8 +82,8 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List<Bonfire> getBonfiresByPublic(boolean isPublic) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+    private List<Bonfire> getBonfiresByPublic(boolean isPublic) {
+        List<Bonfire> list = new ArrayList<>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.isPublic() == isPublic) {
                 list.add(bonfire);
@@ -96,8 +92,8 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List<Bonfire> getPrivateBonfiresByOwner(UUID owner) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+    private List<Bonfire> getPrivateBonfiresByOwner(UUID owner) {
+        List<Bonfire> list = new ArrayList<>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic) {
                 list.add(bonfire);
@@ -106,8 +102,8 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List<Bonfire> getBonfiresByPublicPerDimension(boolean isPublic, int dim) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+    private List<Bonfire> getBonfiresByPublicPerDimension(boolean isPublic, int dim) {
+        List<Bonfire> list = new ArrayList<>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.isPublic() == isPublic && bonfire.getDimension() == dim) {
                 list.add(bonfire);
@@ -116,8 +112,8 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List<Bonfire> getPrivateBonfiresByOwnerPerDimension(UUID owner, int dim) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+    private List<Bonfire> getPrivateBonfiresByOwnerPerDimension(UUID owner, int dim) {
+        List<Bonfire> list = new ArrayList<>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic && bonfire.getDimension() == dim) {
                 list.add(bonfire);
@@ -127,21 +123,21 @@ public class BonfireRegistry {
     }
 
     public List<Bonfire> getPrivateBonfiresByOwnerAndPublicPerDimension(UUID owner, int dim) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+        List<Bonfire> list = new ArrayList<>();
         list.addAll(getBonfiresByPublicPerDimension(true, dim));
         list.addAll(getPrivateBonfiresByOwnerPerDimension(owner, dim));
         return list;
     }
 
     public List<Bonfire> getPrivateBonfiresByOwnerAndPublic(UUID owner) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+        List<Bonfire> list = new ArrayList<>();
         list.addAll(getBonfiresByPublic(true));
         list.addAll(getPrivateBonfiresByOwner(owner));
         return list;
     }
 
     public List<Bonfire> getBonfiresByDimension(int dimension) {
-        List<Bonfire> list = new ArrayList<Bonfire>();
+        List<Bonfire> list = new ArrayList<>();
         bonfires.forEach((id, bonfire) -> {
             if (bonfire.getDimension() == dimension) {
                 list.add(bonfire);
@@ -168,9 +164,7 @@ public class BonfireRegistry {
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-        Iterator<Map.Entry<UUID, Bonfire>> it = bonfires.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<UUID, Bonfire> pair = (Map.Entry<UUID, Bonfire>) it.next();
+        for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             NBTTagCompound bonfireCompound = new NBTTagCompound();
             bonfireCompound.setUniqueId("ID", pair.getValue().getId());
             bonfireCompound.setString("NAME", pair.getValue().getName());

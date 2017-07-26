@@ -11,7 +11,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -29,7 +28,6 @@ import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +35,7 @@ import java.util.Random;
 /**
  * Created by Toby on 05/11/2016.
  */
+@SuppressWarnings("ALL")
 public class BlockAshBonePile extends Block implements ITileEntityProvider {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
@@ -62,6 +61,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
         return state.getValue(FACING).getHorizontalIndex() + (state.getValue(LIT) ? 4 : 0);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta - (meta > 3 ? 4 : 0))).withProperty(LIT, meta > 3);
@@ -129,19 +129,26 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
             } else {
                 if (playerIn.getHeldItemMainhand() != ItemStack.EMPTY) {
                     if (playerIn.getHeldItemMainhand().getItem() == Bonfires.coiledSword) {
-                        if (!worldIn.isRemote) {
-                            if (!playerIn.capabilities.isCreativeMode)
-                                playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);
-                            te.setBonfire(true);
-                            te.setLit(false);
-                            PacketDispatcher.sendToAllAround(new SyncBonfire(te.isBonfire(), te.isLit(), null, te), new NetworkRegistry.TargetPoint(worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-                        }
-                    }
+                        placeItem(worldIn, te, pos, playerIn, TileEntityBonfire.BonfireType.BONFIRE);
+                    }/*else if (playerIn.getHeldItemMainhand().getItem() == Bonfires.coiledSwordFragment) {
+                        placeItem(worldIn, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
+                    }*/
                 }
             }
         }
         worldIn.markAndNotifyBlock(pos, worldIn.getChunkFromBlockCoords(pos), state, state, 1);
         return true;
+    }
+
+    public void placeItem(World world, TileEntityBonfire te, BlockPos pos, EntityPlayer player, TileEntityBonfire.BonfireType type) {
+        if (!world.isRemote) {
+            if (!player.capabilities.isCreativeMode)
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
+            te.setBonfire(true);
+            te.setLit(false);
+            te.setBonfireType(type);
+            PacketDispatcher.sendToAllAround(new SyncBonfire(te.isBonfire(), type, te.isLit(), null, te), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
     }
 
     @Override
@@ -156,12 +163,6 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
         } else {
             return 0;
         }
-    }
-
-    @Override
-    public void onBlockDestroyedByPlayer(World worldIn, BlockPos pos, IBlockState state) {
-
-        super.onBlockDestroyedByPlayer(worldIn, pos, state);
     }
 
     @Override
@@ -230,7 +231,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                     worldIn.playSound((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 0.5F, 1.0F, false);
                 }
                 //worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-                worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+                worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D);
             }
         }
         super.randomDisplayTick(stateIn, worldIn, pos, rand);

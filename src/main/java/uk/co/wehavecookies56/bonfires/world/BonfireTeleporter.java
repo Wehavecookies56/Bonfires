@@ -1,8 +1,5 @@
 package uk.co.wehavecookies56.bonfires.world;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,11 +15,8 @@ import net.minecraft.world.WorldServer;
  */
 public class BonfireTeleporter extends Teleporter {
 
-    private final WorldServer worldServer;
-
     public BonfireTeleporter(WorldServer worldIn) {
         super(worldIn);
-        this.worldServer = worldIn;
     }
 
     public void teleport(EntityPlayer player, World world, BlockPos pos, int dimension) {

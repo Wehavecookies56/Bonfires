@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import org.lwjgl.opengl.GL11;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
 
@@ -14,8 +13,6 @@ import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
  * Created by Toby on 06/11/2016.
  */
 public class TESRBonfire extends TileEntitySpecialRenderer<TileEntityBonfire> {
-
-    private RenderItem renderItem;
 
     @Override
     public void render(TileEntityBonfire te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
@@ -27,7 +24,7 @@ public class TESRBonfire extends TileEntitySpecialRenderer<TileEntityBonfire> {
 
                 GlStateManager.translate(x, y, z);
                 GlStateManager.disableRescaleNormal();
-                this.renderItem = Minecraft.getMinecraft().getRenderItem();
+                RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
                 RenderHelper.enableStandardItemLighting();
                 GlStateManager.enableLighting();
                 GlStateManager.pushMatrix();

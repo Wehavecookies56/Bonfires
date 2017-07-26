@@ -3,7 +3,6 @@ package uk.co.wehavecookies56.bonfires.items;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
@@ -11,15 +10,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
  * Created by Toby on 05/11/2016.
  */
 public class ItemEstusFlask extends ItemFood {
-
-    int maxUses, currentUses;
 
     public ItemEstusFlask(String name, int amount, float saturation, boolean isWolfFood) {
         super(amount, saturation, isWolfFood);
@@ -32,7 +29,7 @@ public class ItemEstusFlask extends ItemFood {
 
     @Override
     public int getMetadata(ItemStack stack) {
-        if (stack.hasTagCompound()) {
+        if (stack.getTagCompound() != null) {
             switch (stack.getTagCompound().getInteger("uses")) {
                 case 3:
                     switch (stack.getTagCompound().getInteger("estus")) {
@@ -352,15 +349,16 @@ public class ItemEstusFlask extends ItemFood {
     }
 
     @Override
+    @Nonnull
     public EnumAction getItemUseAction(ItemStack stack) {
         return EnumAction.DRINK;
     }
 
-    @Nullable
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+    @Nonnull
+    public ItemStack onItemUseFinish(ItemStack stack, @Nonnull World worldIn, EntityLivingBase entityLiving) {
         if (!worldIn.isRemote) {
-            if (stack.hasTagCompound()) {
+            if (stack.getTagCompound() != null) {
                 if (stack.getTagCompound().getInteger("estus") > 0) {
                     stack.getTagCompound().setInteger("estus", stack.getTagCompound().getInteger("estus") - 1);
                     entityLiving.heal(6);
@@ -372,7 +370,7 @@ public class ItemEstusFlask extends ItemFood {
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack) {
-        if (stack.hasTagCompound()) {
+        if (stack.getTagCompound() != null) {
             return 1 - (double)stack.getTagCompound().getInteger("estus") / (double)stack.getTagCompound().getInteger("uses");
         } else {
             return 1 - (double)0 / (double)15;
@@ -380,8 +378,8 @@ public class ItemEstusFlask extends ItemFood {
     }
 
     @Override
-    public int getRGBDurabilityForDisplay(ItemStack stack) {
-        if (stack.hasTagCompound()) {
+    public int getRGBDurabilityForDisplay(@Nonnull ItemStack stack) {
+        if (stack.getTagCompound() != null) {
             return MathHelper.hsvToRGB(Math.max(0.0F, 1.0F / ((float)stack.getTagCompound().getInteger("uses") - (float)stack.getTagCompound().getInteger("estus")) / (float)stack.getTagCompound().getInteger("uses")) / 3.0F, 1.0F, 1.0F);
         } else {
             return 0x00000000;
@@ -390,34 +388,27 @@ public class ItemEstusFlask extends ItemFood {
 
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
-        if (stack.hasTagCompound()) {
-            return true;
-        } else {
-            return false;
-        }
+        return stack.hasTagCompound();
     }
 
     @Override
-    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
-        super.onFoodEaten(stack, worldIn, player);
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+    public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
         if (isInCreativeTab(tab)) {
             for (int i = 3; i < 16; i++) {
                 ItemStack stack = new ItemStack(this);
                 stack.setTagCompound(new NBTTagCompound());
-                stack.getTagCompound().setInteger("uses", i);
-                stack.getTagCompound().setInteger("estus", i);
+                if (stack.getTagCompound() != null) {
+                    stack.getTagCompound().setInteger("uses", i);
+                    stack.getTagCompound().setInteger("estus", i);
+                }
                 items.add(stack);
             }
         }
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        if (stack.hasTagCompound()) {
+    public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        if (stack.getTagCompound() != null) {
             if (stack.getTagCompound().hasKey("uses")) {
                 if (stack.getTagCompound().hasKey("estus")) {
                     tooltip.add("Uses: " + stack.getTagCompound().getInteger("estus") + "/" + stack.getTagCompound().getInteger("uses"));

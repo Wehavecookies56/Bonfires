@@ -1,14 +1,13 @@
 package uk.co.wehavecookies56.bonfires.gui;
 
 import com.google.common.collect.Lists;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -30,48 +29,73 @@ import java.util.List;
 /**
  * Created by Toby on 10/11/2016.
  */
-public class GuiBonfire extends GuiScreen {
+class GuiBonfire extends GuiScreen {
 
-    public final ResourceLocation MENU = new ResourceLocation(Bonfires.modid, "textures/gui/bonfire_menu.png");
-    public final ResourceLocation TRAVEL_TEX = new ResourceLocation(Bonfires.modid, "textures/gui/travel_menu.png");
+    private final ResourceLocation MENU = new ResourceLocation(Bonfires.modid, "textures/gui/bonfire_menu.png");
+    final ResourceLocation TRAVEL_TEX = new ResourceLocation(Bonfires.modid, "textures/gui/travel_menu.png");
 
-    GuiButton travel, leave, back, next, prev;
+    private GuiButton travel;
+    private GuiButton leave;
+    @SuppressWarnings("unused")
+    GuiButton back;
+    private GuiButton next;
+    private GuiButton prev;
 
     Map<Integer, List<List<Bonfire>>> bonfires;
 
-    List<Integer> buttonIDs;
-    List<Integer> dimensions;
-    List<List<Integer>> pages;
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private List<Integer> buttonIDs;
+    private List<List<Integer>> pages;
 
-    int currentPage = 0;
+    private int currentPage = 0;
     int bonfirePage = 0;
 
-    TileEntityBonfire bonfire;
-    public boolean travelOpen;
+    private final TileEntityBonfire bonfire;
+    private boolean travelOpen;
 
-    public final int TRAVEL = 0, LEAVE = 1, BACK = 2, NEXT = 3, PREV = 4, TAB1 = 5, TAB2 = 6, TAB3 = 7, TAB4 = 8, TAB5 = 9, TAB6 = 10, BONFIRE1 = 11, BONFIRE2 = 12, BONFIRE3 = 13, BONFIRE4 = 14, BONFIRE5 = 15, BONFIRE6 = 16, BONFIRE7 = 17, BONFIRE_NEXT = 18, BONFIRE_PREV = 19;
+    private final int TRAVEL = 0;
+    private final int LEAVE = 1;
+    @SuppressWarnings("unused")
+    public final int BACK = 2;
+    private final int NEXT = 3;
+    private final int PREV = 4;
+    private final int TAB1 = 5;
+    private final int TAB2 = 6;
+    private final int TAB3 = 7;
+    private final int TAB4 = 8;
+    private final int TAB5 = 9;
+    private final int TAB6 = 10;
+    final int BONFIRE1 = 11;
+    private final int BONFIRE2 = 12;
+    private final int BONFIRE3 = 13;
+    private final int BONFIRE4 = 14;
+    private final int BONFIRE5 = 15;
+    private final int BONFIRE6 = 16;
+    private final int BONFIRE7 = 17;
+    private final int BONFIRE_NEXT = 18;
+    private final int BONFIRE_PREV = 19;
 
     int dimTabSelected = TAB1;
     int bonfireSelected = 0;
 
     GuiButtonDimensionTab[] tabs;
-    GuiButtonBonfire[] bonfireButtons;
-    GuiButtonBonfirePage bonfire_next, bonfire_prev;
+    private GuiButtonBonfire[] bonfireButtons;
+    private GuiButtonBonfirePage bonfire_next;
+    private GuiButtonBonfirePage bonfire_prev;
 
-    public final int tex_width = 90;
-    public final int tex_height = 166;
-    public final int travel_width = 195;
-    public final int travel_height = 136;
+    private final int tex_height = 166;
+    private final int travel_width = 195;
+    final int travel_height = 136;
 
-    public GuiBonfire(TileEntityBonfire bonfire) {
+    GuiBonfire(TileEntityBonfire bonfire) {
         this.bonfire = bonfire;
     }
 
-    public void drawCenteredStringNoShadow(FontRenderer fr, String text, int x, int y, int color) {
+    void drawCenteredStringNoShadow(FontRenderer fr, String text, int x, int y, int color) {
         fr.drawString(text, (x - (fr.getStringWidth(text) / 2)), (y - (fr.FONT_HEIGHT / 2)), color);
     }
 
-    public static Map<Integer, List<List<Bonfire>>> createSeries(int dimension) {
+    private static Map<Integer, List<List<Bonfire>>> createSeries(int dimension) {
         List<Bonfire> bonfires = BonfireRegistry.INSTANCE.getPrivateBonfiresByOwnerAndPublicPerDimension(Minecraft.getMinecraft().player.getPersistentID(), dimension);
 
         if (!bonfires.isEmpty()) {
@@ -123,14 +147,18 @@ public class GuiBonfire extends GuiScreen {
             int yZero = (height / 2) - (travel_height / 2) + 128 - 17;
             drawString(fontRenderer, pages, xZero + (55 / 2) - fontRenderer.getStringWidth(pages) / 2, yZero + (14 / 2) - fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
         } else {
+            int tex_width = 90;
             drawTexturedModalRect((width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
             super.drawScreen(mouseX, mouseY, partialTicks);
             String name = "";
             String owner = "";
-            if (BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()) != null) {
-                name = BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()).getName();
-                owner = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()).getOwner()).getName();
-                if (!BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()).isPublic()) {
+            Bonfire currentBonfire = BonfireRegistry.INSTANCE.getBonfire(bonfire.getID());
+            if (currentBonfire != null) {
+                name = currentBonfire.getName();
+                GameProfile ownerProfile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(currentBonfire.getOwner());
+                if (ownerProfile != null)
+                    owner = ownerProfile.getName();
+                if (!currentBonfire.isPublic()) {
                     drawCenteredStringNoShadow(mc.fontRenderer, I18n.format(LocalStrings.TEXT_PRIVATE), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
                 }
             }
@@ -140,7 +168,7 @@ public class GuiBonfire extends GuiScreen {
         GL11.glPopMatrix();
     }
 
-    public void drawSelectedBonfire(int mouseX, int mouseY, float partialTicks) {
+    private void drawSelectedBonfire(int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks) {
         if (bonfireSelected >= BONFIRE1) {
             if (bonfires != null) {
                 if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
@@ -150,7 +178,10 @@ public class GuiBonfire extends GuiScreen {
                         int nameY = (height / 2) - 45;
                         int nameEndX = nameX + fontRenderer.getStringWidth(b.getName());
                         int nameEndY = nameY + fontRenderer.FONT_HEIGHT;
-                        String owner = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(b.getOwner()).getName();
+                        GameProfile ownerProfile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(b.getOwner());
+                        String owner = "";
+                        if (ownerProfile != null)
+                            owner = ownerProfile.getName();
                         fontRenderer.drawString(b.getName(), nameX, nameY, new Color(255, 255, 255).hashCode());
                         fontRenderer.drawString("X:" + b.getPos().getX() + " Y:" + b.getPos().getY() + " Z:" + b.getPos().getZ(), nameX, nameY + fontRenderer.FONT_HEIGHT + 3, new Color(255, 255, 255).hashCode());
                         fontRenderer.drawString(owner, nameX, nameY + (fontRenderer.FONT_HEIGHT + 3) * 2, new Color(255, 255, 255).hashCode());
@@ -165,11 +196,7 @@ public class GuiBonfire extends GuiScreen {
         }
     }
 
-    public void drawHovering(List<String> lines, int x, int y) {
-        drawHoveringText(lines, x, y);
-    }
-
-    public void drawTravelMenu(int mouseX, int mouseY, float partialTicks) {
+    private void drawTravelMenu(int mouseX, int mouseY, float partialTicks) {
         int trueWidth = 219;
         Minecraft.getMinecraft().renderEngine.bindTexture(TRAVEL_TEX);
         RenderHelper.enableGUIStandardItemLighting();
@@ -284,7 +311,7 @@ public class GuiBonfire extends GuiScreen {
         super.actionPerformed(button);
     }
 
-    public void updateButtons() {
+    private void updateButtons() {
         for (GuiButtonDimensionTab tab : tabs) {
             tab.visible = false;
         }
@@ -303,7 +330,7 @@ public class GuiBonfire extends GuiScreen {
                 }
             }
             for (int i = 0; i < bonfireButtons.length; i++) {
-                if (tabs[dimTabSelected-5] != null) {
+                if (tabs[dimTabSelected - 5] != null) {
                     if (bonfires != null) {
                         if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
                             if (i < bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).size()) {
@@ -323,25 +350,10 @@ public class GuiBonfire extends GuiScreen {
             prev.visible = true;
             bonfire_prev.visible = true;
             bonfire_next.visible = true;
-            if (currentPage == 0)
-                prev.enabled = false;
-            else
-                prev.enabled = true;
-            if (currentPage == pages.size()-1)
-                next.enabled = false;
-            else
-                next.enabled = true;
-            if (bonfirePage == 0)
-                bonfire_prev.enabled = false;
-            else
-                bonfire_prev.enabled = true;
-            if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null)
-                if (bonfirePage == bonfires.get(tabs[dimTabSelected - 5].getDimension()).size()-1)
-                    bonfire_next.enabled = false;
-                else
-                    bonfire_next.enabled = true;
-            else
-                bonfire_next.enabled = false;
+            prev.enabled = currentPage != 0;
+            next.enabled = currentPage != pages.size() - 1;
+            bonfire_prev.enabled = bonfirePage != 0;
+            bonfire_next.enabled = bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null && bonfirePage != bonfires.get(tabs[dimTabSelected - 5].getDimension()).size() - 1;
 
         } else {
             bonfire_prev.visible = false;
@@ -371,7 +383,7 @@ public class GuiBonfire extends GuiScreen {
         }
     }
 
-    public int addButton(int id) {
+    private int addButton(int id) {
         buttonIDs.add(id);
         return id;
     }
@@ -380,7 +392,7 @@ public class GuiBonfire extends GuiScreen {
     public void initGui() {
         buttonList.clear();
         buttonIDs = new ArrayList<>();
-        dimensions = new ArrayList<>();
+        List<Integer> dimensions = new ArrayList<>();
         pages = new ArrayList<>();
         bonfires = new HashMap<>();
         buttonList.add(travel = new GuiButton(addButton(TRAVEL), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25, 80, 20, I18n.format(LocalStrings.BUTTON_TRAVEL)));
@@ -429,11 +441,9 @@ public class GuiBonfire extends GuiScreen {
         bonfire_next.x = (width / 2) - (travel_width / 2) + 63;
         bonfire_next.y = (height / 2) - (travel_height / 2) + 128 - 17;
         updateBonfires();
-        List<Integer> dimList = new ArrayList<Integer>(Arrays.asList(DimensionManager.getStaticDimensionIDs()));
+        List<Integer> dimList = new ArrayList<>(Arrays.asList(DimensionManager.getStaticDimensionIDs()));
         dimList = Lists.reverse(dimList);
-        for (int dim : dimList) {
-            dimensions.add(dim);
-        }
+        dimensions.addAll(dimList);
         for (int i = 0; i < (dimensions.size() / 6)+1; i++) {
             if ((i*6)+5 > dimensions.size())
                 pages.add(dimensions.subList(i*6, dimensions.size()));
@@ -445,7 +455,7 @@ public class GuiBonfire extends GuiScreen {
         super.initGui();
     }
 
-    public void updateBonfires() {
+    private void updateBonfires() {
         bonfires.clear();
         for (int dim : DimensionManager.getStaticDimensionIDs()) {
             Map<Integer, List<List<Bonfire>>> series = createSeries(dim);
@@ -453,16 +463,6 @@ public class GuiBonfire extends GuiScreen {
                 if (series.get(dim) != null)
                     bonfires.put(dim, series.get(dim));
         }
-    }
-
-    @Override
-    public void updateScreen() {
-        super.updateScreen();
-    }
-
-    @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
     }
 
     @Override
