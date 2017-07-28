@@ -1,5 +1,6 @@
 package uk.co.wehavecookies56.bonfires.blocks;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -10,6 +11,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -18,10 +20,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
+import uk.co.wehavecookies56.bonfires.packets.OpenBonfireGUI;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.SyncBonfire;
 import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
@@ -94,49 +98,51 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        BonfireWorldSavedData.get(worldIn).markDirty();
-        if (worldIn.getTileEntity(pos) instanceof TileEntityBonfire) {
-            TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        BonfireWorldSavedData.get(world).markDirty();
+        if (world.getTileEntity(pos) instanceof TileEntityBonfire) {
+            TileEntityBonfire te = (TileEntityBonfire) world.getTileEntity(pos);
             if (te.isBonfire()) {
                 if (!te.isLit()) {
-                    if (!worldIn.isRemote) {
+                    if (!world.isRemote) {
                     } else {
                         if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
 
                         }
-                        playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, worldIn, pos.getX(), pos.getY(), pos.getZ());
+                        player.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, world, pos.getX(), pos.getY(), pos.getZ());
                     }
                 } else {
-                    if (!worldIn.isRemote) {
+                    if (!world.isRemote) {
                         if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
-                            for (int i = 0; i < playerIn.inventory.getSizeInventory(); i++) {
-                                if (playerIn.inventory.getStackInSlot(i) != ItemStack.EMPTY) {
-                                    if (playerIn.inventory.getStackInSlot(i).getItem() == Bonfires.estusFlask) {
-                                        if (playerIn.inventory.getStackInSlot(i).hasTagCompound()) {
-                                            playerIn.inventory.getStackInSlot(i).getTagCompound().setInteger("estus", playerIn.inventory.getStackInSlot(i).getTagCompound().getInteger("uses"));
+                            GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(BonfireRegistry.INSTANCE.getBonfire(te.getID()).getOwner());
+                            PacketDispatcher.sendTo(new OpenBonfireGUI(profile.getName()), (EntityPlayerMP) player);
+                            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                                if (player.inventory.getStackInSlot(i) != ItemStack.EMPTY) {
+                                    if (player.inventory.getStackInSlot(i).getItem() == Bonfires.estusFlask) {
+                                        if (player.inventory.getStackInSlot(i).hasTagCompound()) {
+                                            player.inventory.getStackInSlot(i).getTagCompound().setInteger("estus", player.inventory.getStackInSlot(i).getTagCompound().getInteger("uses"));
                                         }
                                     }
                                 }
                             }
-                            playerIn.heal(playerIn.getMaxHealth());
-                            playerIn.setSpawnPoint(pos, true);
+                            player.heal(player.getMaxHealth());
+                            player.setSpawnPoint(pos, true);
                         }
                     } else {
-                        playerIn.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRE, worldIn, pos.getX(), pos.getY(), pos.getZ());
+                        player.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRE, world, pos.getX(), pos.getY(), pos.getZ());
                     }
                 }
             } else {
-                if (playerIn.getHeldItemMainhand() != ItemStack.EMPTY) {
-                    if (playerIn.getHeldItemMainhand().getItem() == Bonfires.coiledSword) {
-                        placeItem(worldIn, te, pos, playerIn, TileEntityBonfire.BonfireType.BONFIRE);
-                    }/*else if (playerIn.getHeldItemMainhand().getItem() == Bonfires.coiledSwordFragment) {
-                        placeItem(worldIn, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
+                if (player.getHeldItemMainhand() != ItemStack.EMPTY) {
+                    if (player.getHeldItemMainhand().getItem() == Bonfires.coiledSword) {
+                        placeItem(world, te, pos, player, TileEntityBonfire.BonfireType.BONFIRE);
+                    }/*else if (player.getHeldItemMainhand().getItem() == Bonfires.coiledSwordFragment) {
+                        placeItem(world, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
                     }*/
                 }
             }
         }
-        worldIn.markAndNotifyBlock(pos, worldIn.getChunkFromBlockCoords(pos), state, state, 1);
+        world.markAndNotifyBlock(pos, world.getChunkFromBlockCoords(pos), state, state, 1);
         return true;
     }
 

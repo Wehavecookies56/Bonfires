@@ -1,12 +1,14 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
-    "1.12-latest": "1.1.0",
+    "1.12-latest": "1.1.2",
     "1.11-latest": "1.0.1",
     "1.10.2-latest": "1.0.0"
   },
 
   "1.12": {
+    "1.1.2": "Fixed server crashing, mod now works properly on the server, next bonfire pages do not show until there is a bonfire inside it, potentially prevented some crashes",
+    "1.1.1": "Fixed dimension tab icons option",
     "1.1.0": "Added the option to create private bonfires, the tabs for dimensions can have different icons changed in the config, bonfire creator can be seen in bonfire menu",
     "1.0.2": "Updated to 1.12, fixed homeward bone, added advancements and added new textures by Prohecy_Wrecker"
   },

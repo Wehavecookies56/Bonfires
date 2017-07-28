@@ -16,6 +16,7 @@ public class PacketDispatcher {
 	public static void registerPackets () {
 		registerMessage(SyncBonfire.class);
 		registerMessage(SyncSaveData.class);
+		registerMessage(OpenBonfireGUI.class);
 
 		registerMessage(LightBonfire.class);
 		registerMessage(Travel.class);

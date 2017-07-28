@@ -69,7 +69,7 @@ public class LightBonfire extends AbstractMessage.AbstractServerMessage<LightBon
             Bonfires.TRIGGER_BONFIRE_LIT.trigger((EntityPlayerMP) player);
             PacketDispatcher.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
             PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));
-            FMLLog.log.info(Bonfires.modid, Level.INFO, "Bonfire lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayNameString());
+            Bonfires.logger.info("Bonfire lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayNameString());
         }
     }
 }

@@ -54,7 +54,7 @@ public class Bonfires {
     @SuppressWarnings("WeakerAccess")
     public static final String name = "Bonfires";
     @SuppressWarnings("WeakerAccess")
-    public static final String version = "1.1.1";
+    public static final String version = "1.1.2";
 
     @Mod.Instance (modid)
     public static Bonfires instance;

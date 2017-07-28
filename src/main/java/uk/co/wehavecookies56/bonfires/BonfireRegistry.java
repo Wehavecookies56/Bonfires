@@ -24,6 +24,7 @@ public class BonfireRegistry {
     }
 
     public void clearBonfires() {
+        Bonfires.logger.info("Bonfires cleared");
         bonfires.clear();
     }
 
@@ -156,11 +157,7 @@ public class BonfireRegistry {
     }
 
     public Bonfire getBonfire(UUID id) {
-        if (bonfires.containsKey(id)) {
-            return bonfires.get(id);
-        } else {
-            return null;
-        }
+        return bonfires.getOrDefault(id, null);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {

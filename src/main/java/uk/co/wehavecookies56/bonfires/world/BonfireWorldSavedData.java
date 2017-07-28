@@ -29,7 +29,7 @@ public class BonfireWorldSavedData extends WorldSavedData {
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        FMLLog.log.info(Bonfires.modid, Level.INFO, "Saving Bonfires");
+        Bonfires.logger.info("Saving Bonfires");
         return BonfireRegistry.INSTANCE.writeToNBT(compound);
     }
 

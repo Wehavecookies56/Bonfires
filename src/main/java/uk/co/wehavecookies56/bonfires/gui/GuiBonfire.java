@@ -1,6 +1,8 @@
 package uk.co.wehavecookies56.bonfires.gui;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -22,14 +24,18 @@ import uk.co.wehavecookies56.bonfires.packets.Travel;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
 /**
  * Created by Toby on 10/11/2016.
  */
-class GuiBonfire extends GuiScreen {
+public class GuiBonfire extends GuiScreen {
 
     private final ResourceLocation MENU = new ResourceLocation(Bonfires.modid, "textures/gui/bonfire_menu.png");
     final ResourceLocation TRAVEL_TEX = new ResourceLocation(Bonfires.modid, "textures/gui/travel_menu.png");
@@ -87,6 +93,8 @@ class GuiBonfire extends GuiScreen {
     private final int travel_width = 195;
     final int travel_height = 136;
 
+    public static String ownerName = "";
+
     GuiBonfire(TileEntityBonfire bonfire) {
         this.bonfire = bonfire;
     }
@@ -102,6 +110,8 @@ class GuiBonfire extends GuiScreen {
             List<List<Bonfire>> book = new ArrayList<>();
 
             int plus = 1;
+            if (bonfires.size() % 7 == 0)
+                plus = 0;
             for (int i = 0; i < (bonfires.size() / 7) + plus; i++) {
                 List<Bonfire> page;
                 int start = i * 7;
@@ -131,7 +141,7 @@ class GuiBonfire extends GuiScreen {
             drawTravelMenu(mouseX, mouseY, partialTicks);
 
             String dimName = (DimensionManager.getProviderType(tabs[dimTabSelected - 5].getDimension()).getName().replaceAll("_", " "));
-            fontRenderer.drawString(WordUtils.capitalizeFully(dimName) + " (" + tabs[dimTabSelected - 5].getDimension() + ")", (width / 2) - 88, (height / 2) - 62, 1184274);
+            fontRenderer.drawString(WordUtils.capitalizeFully(dimName) + " (" + tabs[dimTabSelected - 5].getDimension() + ")", (width / 2) - 100, (height / 2) - 62, 1184274);
 
             if (bonfireSelected >= BONFIRE1) {
                 super.drawScreen(mouseX, mouseY, partialTicks);
@@ -151,19 +161,16 @@ class GuiBonfire extends GuiScreen {
             drawTexturedModalRect((width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
             super.drawScreen(mouseX, mouseY, partialTicks);
             String name = "";
-            String owner = "";
             Bonfire currentBonfire = BonfireRegistry.INSTANCE.getBonfire(bonfire.getID());
             if (currentBonfire != null) {
                 name = currentBonfire.getName();
-                GameProfile ownerProfile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(currentBonfire.getOwner());
-                if (ownerProfile != null)
-                    owner = ownerProfile.getName();
                 if (!currentBonfire.isPublic()) {
                     drawCenteredStringNoShadow(mc.fontRenderer, I18n.format(LocalStrings.TEXT_PRIVATE), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
                 }
             }
             drawCenteredStringNoShadow(mc.fontRenderer, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
-            drawCenteredStringNoShadow(mc.fontRenderer, owner, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
+            if (!ownerName.isEmpty())
+                drawCenteredStringNoShadow(mc.fontRenderer, ownerName, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
         }
         GL11.glPopMatrix();
     }
@@ -178,13 +185,9 @@ class GuiBonfire extends GuiScreen {
                         int nameY = (height / 2) - 45;
                         int nameEndX = nameX + fontRenderer.getStringWidth(b.getName());
                         int nameEndY = nameY + fontRenderer.FONT_HEIGHT;
-                        GameProfile ownerProfile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(b.getOwner());
-                        String owner = "";
-                        if (ownerProfile != null)
-                            owner = ownerProfile.getName();
                         fontRenderer.drawString(b.getName(), nameX, nameY, new Color(255, 255, 255).hashCode());
                         fontRenderer.drawString("X:" + b.getPos().getX() + " Y:" + b.getPos().getY() + " Z:" + b.getPos().getZ(), nameX, nameY + fontRenderer.FONT_HEIGHT + 3, new Color(255, 255, 255).hashCode());
-                        fontRenderer.drawString(owner, nameX, nameY + (fontRenderer.FONT_HEIGHT + 3) * 2, new Color(255, 255, 255).hashCode());
+                        fontRenderer.drawString(ownerName, nameX, nameY + (fontRenderer.FONT_HEIGHT + 3) * 2, new Color(255, 255, 255).hashCode());
                         if (mouseX >= nameX && mouseX <= nameEndX && mouseY >= nameY && mouseY <= nameEndY) {
                             List<String> lines = new ArrayList<>();
                             lines.add("ID: " + b.getId());
