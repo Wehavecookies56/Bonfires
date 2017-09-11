@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.ReinforceHandler;
 import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
 import uk.co.wehavecookies56.bonfires.packets.OpenBonfireGUI;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;

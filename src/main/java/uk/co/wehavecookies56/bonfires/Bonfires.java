@@ -1,20 +1,37 @@
 package uk.co.wehavecookies56.bonfires;
 
+import com.google.common.collect.Multimap;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeMap;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -25,6 +42,8 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import uk.co.wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBlock;
@@ -32,13 +51,13 @@ import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
 import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
 import uk.co.wehavecookies56.bonfires.items.*;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
+import uk.co.wehavecookies56.bonfires.packets.SyncReinforceData;
 import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
 import uk.co.wehavecookies56.bonfires.proxies.CommonProxy;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -83,6 +102,21 @@ public class Bonfires {
     @GameRegistry.ObjectHolder("bonfires:estus_shard")
     public static Item estusShard;
 
+    @GameRegistry.ObjectHolder("bonfires:titanite_shard")
+    public static Item titaniteShard;
+
+    @GameRegistry.ObjectHolder("bonfires:large_titanite_shard")
+    public static Item largeTitaniteShard;
+
+    @GameRegistry.ObjectHolder("bonfires:titanite_chunk")
+    public static Item titaniteChunk;
+
+    @GameRegistry.ObjectHolder("bonfires:titanite_slab")
+    public static Item titaniteSlab;
+
+    @GameRegistry.ObjectHolder("bonfires:undead_bone_shard")
+    public static Item undeadBoneShard;
+
     public static CreativeTabs tabBonfires;
 
     public static BonfireLitTrigger TRIGGER_BONFIRE_LIT = new BonfireLitTrigger();
@@ -95,6 +129,8 @@ public class Bonfires {
         PacketDispatcher.registerPackets();
         tabBonfires = new TabBonfires("tabBonfires");
         EstusHandler.init();
+        ReinforceHandler.init();
+        SoulsHandler.init();
         TRIGGER_BONFIRE_LIT = CriteriaTriggers.register(TRIGGER_BONFIRE_LIT);
         proxy.preInit();
     }
@@ -113,8 +149,34 @@ public class Bonfires {
     @SubscribeEvent
     public void entityJoinWorld(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote) {
-            if (event.getEntity() instanceof EntityPlayer)
+            if (event.getEntity() instanceof EntityPlayer) {
                 PacketDispatcher.sendTo(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()), (EntityPlayerMP) event.getEntity());
+                for (int i = 0; i < ((EntityPlayer) event.getEntity()).inventory.getSizeInventory(); i++) {
+                    EntityPlayer player = (EntityPlayer) event.getEntity();
+                    if (ReinforceHandler.hasHandler(player.inventory.getStackInSlot(i))) {
+                        PacketDispatcher.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(player.inventory.getStackInSlot(i)), player.inventory.getStackInSlot(i), i), (EntityPlayerMP) player);
+                    }
+                }
+            }
+        }
+        if (event.getEntity() instanceof EntityPlayer) {
+            for (int i = 0; i < ((EntityPlayer) event.getEntity()).inventory.getSizeInventory(); i++) {
+                EntityPlayer player = (EntityPlayer) event.getEntity();
+                if (ReinforceHandler.hasHandler(player.inventory.getStackInSlot(i))) {
+                    System.out.println(ReinforceHandler.getHandler(player.inventory.getStackInSlot(i)).level());
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void livingHurt(LivingHurtEvent event) {
+        if (event.getSource().getImmediateSource() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getSource().getImmediateSource();
+            if (ReinforceHandler.hasHandler(player.getHeldItemMainhand())) {
+                ReinforceHandler.IReinforceHandler reinforce = ReinforceHandler.getHandler(player.getHeldItemMainhand());
+                event.setAmount(event.getAmount() + (0.5F * reinforce.level()));
+            }
         }
     }
 
@@ -148,6 +210,11 @@ public class Bonfires {
         event.registerServerCommand(new CommandBonfires());
         event.registerServerCommand(new CommandTravel());
     }
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void addToolTip(ItemTooltipEvent event) {
+
+    }
 
     @Mod.EventBusSubscriber(modid = modid)
     private static class Events {
@@ -160,6 +227,11 @@ public class Bonfires {
             event.getRegistry().register(new ItemHomewardBone("homeward_bone"));
             event.getRegistry().register(new ItemCoiledSwordFragment("coiled_sword_fragment"));
             event.getRegistry().register(new ItemEstusShard("estus_shard"));
+            event.getRegistry().register(new ItemTitaniteShard("titanite_shard"));
+            event.getRegistry().register(new ItemLargeTitaniteShard("large_titanite_shard"));
+            event.getRegistry().register(new ItemTitaniteChunk("titanite_chunk"));
+            event.getRegistry().register(new ItemTitaniteSlab("titanite_slab"));
+            event.getRegistry().register(new ItemUndeadBoneShard("undead_bone_shard"));
 
             if (ashBlock.getRegistryName() != null)
                 event.getRegistry().register(new ItemBlock(ashBlock).setRegistryName(ashBlock.getRegistryName()));

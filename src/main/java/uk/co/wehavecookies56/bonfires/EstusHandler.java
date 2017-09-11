@@ -25,7 +25,7 @@ import java.util.UUID;
 public class EstusHandler {
 
     public static void init() {
-        CapabilityManager.INSTANCE.register(EstusHandler.IEstusHandler.class, new Storage(), EstusHandler.DefaultEstusHandler.class);
+        CapabilityManager.INSTANCE.register(EstusHandler.IEstusHandler.class, new Storage(), EstusHandler.Default.class);
         MinecraftForge.EVENT_BUS.register(new EstusHandler());
     }
 
@@ -43,7 +43,7 @@ public class EstusHandler {
         clone.setUses(original.uses());
     }
 
-    private static IEstusHandler getHandler(Entity entity) {
+    public static IEstusHandler getHandler(Entity entity) {
         if (entity.hasCapability(CAPABILITY_ESTUS, null)) {
             return entity.getCapability(CAPABILITY_ESTUS, null);
         }
@@ -51,14 +51,14 @@ public class EstusHandler {
     }
 
     @CapabilityInject(IEstusHandler.class)
-    private static final Capability<IEstusHandler> CAPABILITY_ESTUS = null;
+    public static final Capability<IEstusHandler> CAPABILITY_ESTUS = null;
 
     public interface IEstusHandler {
         int uses();
         void setUses(int uses);
     }
 
-    public static class DefaultEstusHandler implements IEstusHandler {
+    public static class Default implements IEstusHandler {
         private int uses = 3;
         private UUID bonfire = null;
 

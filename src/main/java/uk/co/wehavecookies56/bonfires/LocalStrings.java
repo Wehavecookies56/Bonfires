@@ -36,6 +36,7 @@ public class LocalStrings {
             BUTTON_LEAVE = "button.leave",
             BUTTON_ACCEPT = "button.accept",
             BUTTON_SET_PRIVATE = "button.set_private",
+            BUTTON_REINFORCE = "button.reinforce",
 
             TEXT_NAME = "text.name",
             TEXT_LIT = "bonfire.lit",

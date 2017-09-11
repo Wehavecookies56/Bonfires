@@ -17,9 +17,11 @@ public class PacketDispatcher {
 		registerMessage(SyncBonfire.class);
 		registerMessage(SyncSaveData.class);
 		registerMessage(OpenBonfireGUI.class);
+		registerMessage(SyncReinforceData.class);
 
 		registerMessage(LightBonfire.class);
 		registerMessage(Travel.class);
+		registerMessage(ReinforceItem.class);
 	}
 
 	private static <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerMessage (Class<T> clazz) {

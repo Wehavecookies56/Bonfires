@@ -9,6 +9,11 @@ item.estus_flask.name=Estus Flask
 item.homeward_bone.name=Homeward Bone
 item.coiled_sword_fragment.name=Coiled Sword Fragment
 item.estus_shard.name=Estus Shard
+item.titanite_shard.name=Titanite Shard
+item.large_titanite_shard.name=Large Titanite Shard
+item.titanite_chunk.name=Titanite Chunk
+item.titanite_slab.name=Titanite Slab
+item.undead_bone_shard.name=Undead Bone Shard
 
 command.match=Found %1$s bonfire(s) found matching %2$s
 command.nomatch=No bonfires found matching %1$s
@@ -40,6 +45,7 @@ button.travel=Travel
 button.leave=Leave
 button.accept=Accept
 button.set_private=Set private
+button.reinforce=Reinforce
 
 text.name=Enter a name for the bonfire
 bonfire.lit=BONFIRE LIT

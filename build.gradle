@@ -1,49 +1,81 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.12-1.1.2"
-group= "uk.co.wehavecookies56.bonfires"
-archivesBaseName = "Bonfires"
-
-sourceCompatibility = targetCompatibility = "1.8"
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
+plugins {
+    id 'org.ajoberstar.grgit' version '1.7.2'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+final commitId
+
+if (hasProperty("grgit")) {
+    commitId = "${grgit.head().abbreviatedId}"
+} else {
+    commitId = "NOGIT"
+}
+
+version = "${mc_version}-${mod_version}-${commitId}"
+group = "${package_group}"
+archivesBaseName = "${mod_name}"
+
 minecraft {
-    version = "1.12-latest"
+    version = "${mc_version}-${forge_version}"
     runDir = "run"
 
-    mappings = "snapshot_20170721"
+    if (project.hasProperty('mappings_version'))
+        mappings = project.mappings_version
     makeObfSourceJar = false
 }
 
-processResources
-{
+shadowJar {
+    dependencies {
+        include(dependency('org.apache.httpcomponents:fluent-hc:.*'))
+    }
+    manifest {
+        attributes 'FMLAT': 'bonfires_at.cfg'
+    }
+
+    relocate 'org.apache.http.client.fluent', 'uk.co.wehavecookies56.bonfires.org.apache.http.client.fluent'
+
+    classifier ''
+}
+
+reobf {
+    shadowJar {}
+}
+
+processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
-        
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
 }
 
-jar {
-    manifest {
-        attributes 'FMLAT': 'bonfires_at.cfg'
-    }
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.add('-Xlint:unchecked')
+}
+
+artifacts {
+    archives shadowJar
 }

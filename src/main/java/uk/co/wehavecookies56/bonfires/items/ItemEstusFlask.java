@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.ReinforceHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -363,7 +364,11 @@ public class ItemEstusFlask extends ItemFood {
             if (stack.getTagCompound() != null) {
                 if (stack.getTagCompound().getInteger("estus") > 0) {
                     stack.getTagCompound().setInteger("estus", stack.getTagCompound().getInteger("estus") - 1);
-                    entityLiving.heal(6);
+                    int heal = 6;
+                    if (ReinforceHandler.hasHandler(stack)) {
+                        heal += ReinforceHandler.getHandler(stack).level();
+                    }
+                    entityLiving.heal(heal);
                 }
             }
         }

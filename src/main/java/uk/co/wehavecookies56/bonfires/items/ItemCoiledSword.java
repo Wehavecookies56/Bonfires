@@ -27,4 +27,8 @@ public class ItemCoiledSword extends ItemSword {
         return super.hitEntity(stack, target, attacker);
     }
 
+    @Override
+    public boolean hasEffect(ItemStack stack) {
+        return super.hasEffect(stack);
+    }
 }

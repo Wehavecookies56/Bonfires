@@ -33,6 +33,11 @@ public class ClientProxy extends CommonProxy {
         registerRender(Bonfires.coiledSwordFragment);
         registerRender(Bonfires.estusShard);
         registerRender(Bonfires.homewardBone);
+        registerRender(Bonfires.titaniteShard);
+        registerRender(Bonfires.largeTitaniteShard);
+        registerRender(Bonfires.titaniteChunk);
+        registerRender(Bonfires.titaniteSlab);
+        registerRender(Bonfires.undeadBoneShard);
         registerRender(Item.getItemFromBlock(Bonfires.ashBonePile));
         registerRender(Item.getItemFromBlock(Bonfires.ashBlock));
     }

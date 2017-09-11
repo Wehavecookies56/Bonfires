@@ -42,6 +42,7 @@ public class GuiBonfire extends GuiScreen {
 
     private GuiButton travel;
     private GuiButton leave;
+    private GuiButton reinforce;
     @SuppressWarnings("unused")
     GuiButton back;
     private GuiButton next;
@@ -61,6 +62,7 @@ public class GuiBonfire extends GuiScreen {
 
     private final int TRAVEL = 0;
     private final int LEAVE = 1;
+    private final int REINFORCE = 20;
     @SuppressWarnings("unused")
     public final int BACK = 2;
     private final int NEXT = 3;
@@ -309,6 +311,9 @@ public class GuiBonfire extends GuiScreen {
             case BONFIRE7:
                 bonfireSelected = BONFIRE7;
                 break;
+            case REINFORCE:
+                mc.displayGuiScreen(new GuiReinforce(this));
+                break;
         }
         updateButtons();
         super.actionPerformed(button);
@@ -348,6 +353,7 @@ public class GuiBonfire extends GuiScreen {
                     }
                 }
             }
+            reinforce.visible = false;
             leave.visible = false;
             next.visible = true;
             prev.visible = true;
@@ -372,6 +378,7 @@ public class GuiBonfire extends GuiScreen {
                     leave.y = (height / 2) - (tex_height / 2) + 52;
                 }
             }
+            reinforce.visible = true;
             leave.visible = true;
             next.visible = false;
             prev.visible = false;
@@ -399,7 +406,8 @@ public class GuiBonfire extends GuiScreen {
         pages = new ArrayList<>();
         bonfires = new HashMap<>();
         buttonList.add(travel = new GuiButton(addButton(TRAVEL), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25, 80, 20, I18n.format(LocalStrings.BUTTON_TRAVEL)));
-        buttonList.add(leave = new GuiButton(addButton(LEAVE), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, I18n.format(LocalStrings.BUTTON_LEAVE)));
+        buttonList.add(leave = new GuiButton(addButton(LEAVE), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62, 80, 20, I18n.format(LocalStrings.BUTTON_LEAVE)));
+        buttonList.add(reinforce = new GuiButton(addButton(REINFORCE), (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, I18n.format(LocalStrings.BUTTON_REINFORCE)));
         buttonList.add(next = new GuiButton(addButton(NEXT), 0, 0, 20, 20, ">"));
         buttonList.add(prev = new GuiButton(addButton(PREV), 20, 0, 20, 20, "<"));
         buttonList.add(bonfire_next = new GuiButtonBonfirePage(this, BONFIRE_NEXT, 0, 0, true));
