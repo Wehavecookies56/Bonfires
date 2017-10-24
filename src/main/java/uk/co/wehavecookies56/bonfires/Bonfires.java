@@ -150,7 +150,7 @@ public class Bonfires {
     public void entityJoinWorld(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote) {
             if (event.getEntity() instanceof EntityPlayer) {
-                PacketDispatcher.sendTo(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()), (EntityPlayerMP) event.getEntity());
+                PacketDispatcher.sendTo(new SyncSaveData(BonfireWorldSavedData.get(event.getWorld()).bonfires.getBonfires()), (EntityPlayerMP) event.getEntity());
                 for (int i = 0; i < ((EntityPlayer) event.getEntity()).inventory.getSizeInventory(); i++) {
                     EntityPlayer player = (EntityPlayer) event.getEntity();
                     if (ReinforceHandler.hasHandler(player.inventory.getStackInSlot(i))) {
@@ -182,8 +182,8 @@ public class Bonfires {
 
     @SubscribeEvent
     public void quit(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.player.world.getMinecraftServer() != null)
-            if (!event.player.world.getMinecraftServer().isDedicatedServer()) BonfireRegistry.INSTANCE.clearBonfires();
+        //if (event.player.world.getMinecraftServer() != null)
+            //if (!event.player.world.getMinecraftServer().isDedicatedServer()) BonfireRegistry.INSTANCE.clearBonfires();
     }
 
     @SubscribeEvent

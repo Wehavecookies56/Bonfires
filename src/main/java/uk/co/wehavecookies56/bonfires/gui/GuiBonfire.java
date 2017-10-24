@@ -22,6 +22,7 @@ import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.Travel;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
+import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -106,7 +107,7 @@ public class GuiBonfire extends GuiScreen {
     }
 
     private static Map<Integer, List<List<Bonfire>>> createSeries(int dimension) {
-        List<Bonfire> bonfires = BonfireRegistry.INSTANCE.getPrivateBonfiresByOwnerAndPublicPerDimension(Minecraft.getMinecraft().player.getPersistentID(), dimension);
+        List<Bonfire> bonfires = BonfireWorldSavedData.get(Minecraft.getMinecraft().world).bonfires.getPrivateBonfiresByOwnerAndPublicPerDimension(Minecraft.getMinecraft().player.getPersistentID(), dimension);
 
         if (!bonfires.isEmpty()) {
             List<List<Bonfire>> book = new ArrayList<>();
@@ -163,7 +164,7 @@ public class GuiBonfire extends GuiScreen {
             drawTexturedModalRect((width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
             super.drawScreen(mouseX, mouseY, partialTicks);
             String name = "";
-            Bonfire currentBonfire = BonfireRegistry.INSTANCE.getBonfire(bonfire.getID());
+            Bonfire currentBonfire = BonfireWorldSavedData.get(Minecraft.getMinecraft().world).bonfires.getBonfire(bonfire.getID());
             if (currentBonfire != null) {
                 name = currentBonfire.getName();
                 if (!currentBonfire.isPublic()) {
@@ -372,8 +373,8 @@ public class GuiBonfire extends GuiScreen {
             travel.visible = true;
             travel.x = (width / 4) - (80 / 2);
             travel.y = (height / 2) - (tex_height / 2) + 20;
-            if (BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()) != null) {
-                if (!BonfireRegistry.INSTANCE.getBonfire(bonfire.getID()).isPublic()) {
+            if (BonfireWorldSavedData.get(Minecraft.getMinecraft().world).bonfires.getBonfire(bonfire.getID()) != null) {
+                if (!BonfireWorldSavedData.get(Minecraft.getMinecraft().world).bonfires.getBonfire(bonfire.getID()).isPublic()) {
                     travel.y = (height / 2) - (tex_height / 2) + 30;
                     leave.y = (height / 2) - (tex_height / 2) + 52;
                 }

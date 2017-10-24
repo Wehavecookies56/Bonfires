@@ -12,6 +12,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.DimensionManager;
+import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -102,7 +103,7 @@ class CommandBonfires extends CommandBase {
             if (args[0].toLowerCase().equals("dim")) {
                 try {
                     if (DimensionManager.isDimensionRegistered(Integer.parseInt(args[1]))) {
-                        List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresByDimension(Integer.parseInt(args[1]));
+                        List<Bonfire> query = BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfiresByDimension(Integer.parseInt(args[1]));
                         if (query.isEmpty()) {
                             TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_DIM_NOMATCH, Integer.parseInt(args[1]));
                             message.getStyle().setColor(TextFormatting.RED);
@@ -131,7 +132,7 @@ class CommandBonfires extends CommandBase {
                     if (ownerProfile != null) {
                         UUID ownerID = ownerProfile.getId();
                         if (ownerID != null) {
-                            List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresByOwner(ownerID);
+                            List<Bonfire> query = BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfiresByOwner(ownerID);
                             if (query.isEmpty()) {
                                 TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_NOMATCH, args[1]);
                                 message.getStyle().setColor(TextFormatting.RED);
@@ -149,7 +150,7 @@ class CommandBonfires extends CommandBase {
                     }
                 }
             } else if (args[0].toLowerCase().equals("name")) {
-                List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresByName(args[1]);
+                List<Bonfire> query = BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfiresByName(args[1]);
                 if (query.isEmpty()) {
                     TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_NOMATCH, args[1]);
                     message.getStyle().setColor(TextFormatting.RED);
@@ -161,7 +162,7 @@ class CommandBonfires extends CommandBase {
                 }
             } else if (args[0].toLowerCase().equals("radius")) {
                 try {
-                    List<Bonfire> query = BonfireRegistry.INSTANCE.getBonfiresInRadius(sender.getPosition(), Integer.parseInt(args[1]), sender.getEntityWorld().provider.getDimension());
+                    List<Bonfire> query = BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfiresInRadius(sender.getPosition(), Integer.parseInt(args[1]), sender.getEntityWorld().provider.getDimension());
                     if (query.isEmpty()) {
                         TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_RADIUS_NOMATCH, args[1]);
                         message.getStyle().setColor(TextFormatting.RED);
@@ -189,7 +190,7 @@ class CommandBonfires extends CommandBase {
                 sender.sendMessage(new TextComponentTranslation(LocalStrings.COMMAND_OWNER_DESC, "owner"));
                 sender.sendMessage(new TextComponentTranslation(LocalStrings.COMMAND_RADIUS_DESC, "radius"));
             } else if (args[0].toLowerCase().equals("all")) {
-                List<Bonfire> query = new ArrayList<>(BonfireRegistry.INSTANCE.getBonfires().values());
+                List<Bonfire> query = new ArrayList<>(BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfires().values());
                 if (query.isEmpty()) {
                     TextComponentTranslation message = new TextComponentTranslation(LocalStrings.COMMAND_NOMATCH, "all");
                     message.getStyle().setColor(TextFormatting.RED);

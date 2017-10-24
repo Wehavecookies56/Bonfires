@@ -60,7 +60,7 @@ public class SyncSaveData extends AbstractMessage.AbstractClientMessage<SyncSave
 
     @Override
     public void process(EntityPlayer player, Side side) {
-        BonfireRegistry.INSTANCE.clearBonfires();
+        BonfireWorldSavedData.get(player.world).bonfires.clearBonfires();
         for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             BonfireWorldSavedData.get(player.getEntityWorld()).addBonfire(pair.getValue());
         }

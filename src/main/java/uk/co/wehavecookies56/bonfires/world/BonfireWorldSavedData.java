@@ -19,6 +19,8 @@ public class BonfireWorldSavedData extends WorldSavedData {
 
     private static final String DATA_NAME = Bonfires.modid + "_bonfiredata";
 
+    public BonfireRegistry bonfires = new BonfireRegistry();
+
     public BonfireWorldSavedData() {
         super(DATA_NAME);
     }
@@ -30,22 +32,22 @@ public class BonfireWorldSavedData extends WorldSavedData {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         Bonfires.logger.info("Saving Bonfires");
-        return BonfireRegistry.INSTANCE.writeToNBT(compound);
+        return bonfires.writeToNBT(compound, bonfires.getBonfires());
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        BonfireRegistry.INSTANCE.readFromNBT(compound);
+        bonfires.readFromNBT(compound, bonfires.getBonfires());
     }
 
     public boolean addBonfire(Bonfire bonfire) {
-        boolean added = BonfireRegistry.INSTANCE.addBonfire(bonfire);
+        boolean added = bonfires.addBonfire(bonfire);
         markDirty();
         return added;
     }
 
     public boolean removeBonfire(UUID id) {
-        boolean removed = BonfireRegistry.INSTANCE.removeBonfire(id);
+        boolean removed = bonfires.removeBonfire(id);
         markDirty();
         return removed;
     }

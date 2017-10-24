@@ -107,15 +107,15 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 if (!te.isLit()) {
                     if (!world.isRemote) {
                     } else {
-                        if(BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
+                        if(BonfireWorldSavedData.get(world).bonfires.getBonfire(te.getID()) != null) {
 
                         }
                         player.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRECREATION, world, pos.getX(), pos.getY(), pos.getZ());
                     }
                 } else {
                     if (!world.isRemote) {
-                        if (BonfireRegistry.INSTANCE.getBonfire(te.getID()) != null) {
-                            GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(BonfireRegistry.INSTANCE.getBonfire(te.getID()).getOwner());
+                        if (BonfireWorldSavedData.get(world).bonfires.getBonfire(te.getID()) != null) {
+                            GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(BonfireWorldSavedData.get(world).bonfires.getBonfire(te.getID()).getOwner());
                             PacketDispatcher.sendTo(new OpenBonfireGUI(profile.getName()), (EntityPlayerMP) player);
                             for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                                 if (player.inventory.getStackInSlot(i) != ItemStack.EMPTY) {
@@ -181,9 +181,9 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
             }
             if (te.isLit()) {
                 te.destroyBonfire(te.getID());
-                BonfireRegistry.INSTANCE.removeBonfire(te.getID());
+                BonfireWorldSavedData.get(worldIn).bonfires.removeBonfire(te.getID());
                 BonfireWorldSavedData.get(worldIn).markDirty();
-                PacketDispatcher.sendToAll(new SyncSaveData(BonfireRegistry.INSTANCE.getBonfires()));
+                PacketDispatcher.sendToAll(new SyncSaveData(BonfireWorldSavedData.get(worldIn).bonfires.getBonfires()));
             }
             worldIn.removeTileEntity(pos);
         }

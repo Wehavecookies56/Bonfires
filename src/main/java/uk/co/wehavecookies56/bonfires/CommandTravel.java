@@ -12,6 +12,7 @@ import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.world.BonfireTeleporter;
+import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -63,8 +64,8 @@ class CommandTravel extends CommandBase {
             try {
                 UUID id = UUID.fromString(args[0]);
                 if (sender instanceof EntityPlayer) {
-                    if (BonfireRegistry.INSTANCE.getBonfire(id) != null) {
-                        Bonfire bonfire = BonfireRegistry.INSTANCE.getBonfire(id);
+                    if (BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfire(id) != null) {
+                        Bonfire bonfire = BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfire(id);
                         BonfireTeleporter tp = new BonfireTeleporter(server.getWorld(bonfire.dimension));
                         tp.teleport((EntityPlayer) sender, ((EntityPlayer) sender).world, bonfire.getPos(), bonfire.getDimension());
                     }

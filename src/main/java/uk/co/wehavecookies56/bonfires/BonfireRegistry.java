@@ -5,22 +5,21 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Toby on 07/11/2016.
  */
 public class BonfireRegistry {
 
-    public static BonfireRegistry INSTANCE = new BonfireRegistry();
+    private Map<UUID, Bonfire> bonfires;
 
-    private static Map<UUID, Bonfire> bonfires;
-
-    private BonfireRegistry() {
+    public BonfireRegistry() {
         bonfires = new HashMap<>();
     }
 
     public Map<UUID, Bonfire> getBonfires() {
-        return ImmutableMap.copyOf(bonfires);
+        return bonfires;
     }
 
     public void clearBonfires() {
@@ -29,7 +28,7 @@ public class BonfireRegistry {
     }
 
     public void setBonfires(Map<UUID, Bonfire> bonfires) {
-        BonfireRegistry.bonfires = bonfires;
+        this.bonfires = bonfires;
     }
 
     public boolean removeBonfire(UUID id) {
@@ -42,28 +41,16 @@ public class BonfireRegistry {
     }
 
     public List<Bonfire> getBonfiresByOwner(UUID owner) {
-        List<Bonfire> list = new ArrayList<>();
-        bonfires.forEach((id, bonfire) -> {
-            if (bonfire.getOwner().compareTo(owner) == 0) {
-                list.add(bonfire);
-            }
-        });
-        return list;
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0).collect(Collectors.toList());
     }
 
     public List<Bonfire> getBonfiresByName(String name) {
-        List<Bonfire> list = new ArrayList<>();
-        bonfires.forEach((id, bonfire) -> {
-            if (bonfire.getName().toLowerCase().contains(name.toLowerCase())) {
-                list.add(bonfire);
-            }
-        });
-        return list;
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getName().toLowerCase().contains(name.toLowerCase())).collect(Collectors.toList());
+
     }
 
     public List<Bonfire> getBonfiresInRadius(BlockPos pos, int radius, int dimension) {
-        List<Bonfire> list = getBonfiresByDimension(dimension);
-        bonfires.forEach((id, bonfire) -> {
+        return getBonfiresByDimension(dimension).stream().filter(bonfire -> {
             int cx = pos.getX();
             int cz = pos.getZ();
             int cy = pos.getY();
@@ -76,51 +63,25 @@ public class BonfireRegistry {
             int bz = cz - radius;
             int ty = cy + radius;
             int by = cy - radius;
-            if (!((fx <= tx && fx >= bx) && (fz <= tz && fz >= bz) && (fy <= ty && fy >= by))) {
-                list.remove(bonfire);
-            }
-        });
-        return list;
+            return ((fx <= tx && fx >= bx) && (fz <= tz && fz >= bz) && (fy <= ty && fy >= by));
+        }).collect(Collectors.toList());
     }
 
     private List<Bonfire> getBonfiresByPublic(boolean isPublic) {
-        List<Bonfire> list = new ArrayList<>();
-        bonfires.forEach((id, bonfire) -> {
-            if (bonfire.isPublic() == isPublic) {
-                list.add(bonfire);
-            }
-        });
-        return list;
+        return getBonfires().values().stream().filter(bonfire -> bonfire.isPublic == isPublic).collect(Collectors.toList());
     }
 
     private List<Bonfire> getPrivateBonfiresByOwner(UUID owner) {
-        List<Bonfire> list = new ArrayList<>();
-        bonfires.forEach((id, bonfire) -> {
-            if (bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic) {
-                list.add(bonfire);
-            }
-        });
-        return list;
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic).collect(Collectors.toList());
     }
 
     private List<Bonfire> getBonfiresByPublicPerDimension(boolean isPublic, int dim) {
-        List<Bonfire> list = new ArrayList<>();
-        bonfires.forEach((id, bonfire) -> {
-            if (bonfire.isPublic() == isPublic && bonfire.getDimension() == dim) {
-                list.add(bonfire);
-            }
-        });
-        return list;
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getDimension() == dim && bonfire.isPublic).collect(Collectors.toList());
     }
 
     private List<Bonfire> getPrivateBonfiresByOwnerPerDimension(UUID owner, int dim) {
-        List<Bonfire> list = new ArrayList<>();
-        bonfires.forEach((id, bonfire) -> {
-            if (bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic && bonfire.getDimension() == dim) {
-                list.add(bonfire);
-            }
-        });
-        return list;
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic && bonfire.getDimension() == dim).collect(Collectors.toList());
+
     }
 
     public List<Bonfire> getPrivateBonfiresByOwnerAndPublicPerDimension(UUID owner, int dim) {
@@ -138,13 +99,7 @@ public class BonfireRegistry {
     }
 
     public List<Bonfire> getBonfiresByDimension(int dimension) {
-        List<Bonfire> list = new ArrayList<>();
-        bonfires.forEach((id, bonfire) -> {
-            if (bonfire.getDimension() == dimension) {
-                list.add(bonfire);
-            }
-        });
-        return list;
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getDimension() == dimension).collect(Collectors.toList());
     }
 
     public boolean addBonfire(Bonfire bonfire) {
@@ -160,7 +115,7 @@ public class BonfireRegistry {
         return bonfires.getOrDefault(id, null);
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound, Map<UUID, Bonfire> bonfires) {
         for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             NBTTagCompound bonfireCompound = new NBTTagCompound();
             bonfireCompound.setUniqueId("ID", pair.getValue().getId());
@@ -176,8 +131,8 @@ public class BonfireRegistry {
         return tagCompound;
     }
 
-    public void readFromNBT(NBTTagCompound tagCompound) {
-        bonfires.clear();
+    public void readFromNBT(NBTTagCompound tagCompound, Map<UUID, Bonfire> bonfires) {
+        //bonfires.clear();
         for (String key : tagCompound.getKeySet()) {
             NBTTagCompound compound = tagCompound.getCompoundTag(key);
             String name = compound.getString("NAME");

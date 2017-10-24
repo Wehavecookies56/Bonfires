@@ -137,11 +137,11 @@ public class TileEntityBonfire extends TileEntity implements ITickable {
     public ITextComponent getDisplayName() {
         if (!Minecraft.getMinecraft().player.isSneaking()) {
             if (getID() != null && BonfiresConfig.renderTextAboveBonfire) {
-                if (BonfireRegistry.INSTANCE.getBonfire(getID()) != null) {
-                    if (BonfireRegistry.INSTANCE.getBonfire(getID()).isPublic()) {
-                        return new TextComponentTranslation(BonfireRegistry.INSTANCE.getBonfire(getID()).getName());
+                if (BonfireWorldSavedData.get(world).bonfires.getBonfire(getID()) != null) {
+                    if (BonfireWorldSavedData.get(world).bonfires.getBonfire(getID()).isPublic()) {
+                        return new TextComponentTranslation(BonfireWorldSavedData.get(world).bonfires.getBonfire(getID()).getName());
                     } else {
-                        return new TextComponentTranslation(LocalStrings.TILEENTITY_BONFIRE_LABEL, BonfireRegistry.INSTANCE.getBonfire(getID()).getName());
+                        return new TextComponentTranslation(LocalStrings.TILEENTITY_BONFIRE_LABEL, BonfireWorldSavedData.get(world).bonfires.getBonfire(getID()).getName());
                     }
                 }
             }
