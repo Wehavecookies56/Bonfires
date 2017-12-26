@@ -1,0 +1,71 @@
+itemGroup.tabBonfires=篝火
+
+tile.ash_block.name=灰烬块
+tile.ash_bone_pile.name=埋骨之灰
+
+item.ash_pile.name=灰烬
+item.coiled_sword.name=螺旋剑
+item.estus_flask.name=元素瓶
+item.homeward_bone.name=返回骨片
+item.coiled_sword_fragment.name=螺旋剑碎片
+item.estus_shard.name=元素碎片
+item.titanite_shard.name=楔形石碎片
+item.large_titanite_shard.name=楔形石大碎片
+item.titanite_chunk.name=楔形石块
+item.titanite_slab.name=楔形石原盘
+item.undead_bone_shard.name=不死人之骨
+
+command.match=Found %1$s bonfire(s) found matching %2$s
+command.nomatch=No bonfires found matching %1$s
+command.nouser=Error: No user with name %1%s exists
+command.dim.match=Found %1$s bonfire(s) in dimension %2$s 
+command.dim.nomatch=No bonfires found in dimension %1$s
+command.dim.nodim=Error: Dimension %1$s is not a dimension
+command.dim.invalid=Error: '%1$s' is not a valid dimension ID
+command.radius.match=Found %1$s bonfire(s) within a radius of %2$s blocks
+command.radius.nomatch=No bonfires found within a radius of %1$s blocks
+command.radius.invalid=Error: '%1$s' is not a valid radius
+command.filter.invalid=Not a valid filter. Use /bonfires filters for the list of filters
+command.bonfires.usage=Usage: /bonfires <filter> [parameter], /bonfires filters to display list of filters
+command.all.desc=%1$s, displays every bonfire in the world
+command.dim.desc=%1$s, displays every bonfire in the specified dimension
+command.name.desc=%1$s, displays every bonfire with a name containing the specified name
+command.owner.desc=%1$s, displays every bonfire created by the specified owner
+command.radius.desc=%1$s, displays every bonfire within the specified block radius
+command.travel.usage=Usage: /travel <UUID>
+command.travel.invalid=Error: '%1$s' is not a valid UUID
+
+command.name=Name: %1$s;
+command.id=ID: %1$s;
+command.owner=Owner: %1$s;
+command.pos=Pos: [X:%1$s,Y:%2$s,Z:%3$s];
+command.na=N/A;
+
+button.travel=Travel
+button.leave=Leave
+button.accept=Accept
+button.set_private=Set private
+button.reinforce=Reinforce
+
+text.name=Enter a name for the bonfire
+bonfire.lit=BONFIRE LIT
+text.private=(Private)
+
+tileentity.bonfire.label=%1$s (Private)
+
+advancements.bonfires.ash_pile=Acquire Ash
+advancements.bonfires.ash_pile.desc=Burnt a mob to a crisp
+advancements.bonfires.bonfire_lit=Enkindle
+advancements.bonfires.bonfire_lit.desc=Light a bonfire flame for the first time
+advancements.bonfires.root=Bonfires
+advancements.bonfires.root.desc=Die for the first time
+advancements.bonfires.coiled_sword_fragment=Destroyed Bonfire
+advancements.bonfires.coiled_sword_fragment.desc=Acquire a Coiled Sword Fragment
+advancements.bonfires.estus_flask=Estus Flask
+advancements.bonfires.estus_flask.desc=Acquire an Estus Flask
+advancements.bonfires.estus_shard=Estus Shard
+advancements.bonfires.estus_shard.desc=Acquire an Estus Shard
+advancements.bonfires.homeward_bone=Homeward Bone
+advancements.bonfires.homeward_bone.desc=Acquire a Homeward Bone
+advancements.bonfires.ash_bone_pile=Halfway
+advancements.bonfires.ash_bone_pile.desc=Acquire the base of a bonfire
