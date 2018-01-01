@@ -1,0 +1,71 @@
+itemGroup.tabBonfires=篝火
+
+tile.ash_block.name=灰烬块
+tile.ash_bone_pile.name=骨灰堆
+
+item.ash_pile.name=灰烬堆
+item.coiled_sword.name=螺旋剑
+item.estus_flask.name=原素瓶
+item.homeward_bone.name=返回骨片
+item.coiled_sword_fragment.name=螺旋剑的残破碎片
+item.estus_shard.name=原素碎片
+item.titanite_shard.name=楔形石碎片
+item.large_titanite_shard.name=楔形石大碎片
+item.titanite_chunk.name=楔形石块
+item.titanite_slab.name=楔形石原盘
+item.undead_bone_shard.name=不死人遗骨
+
+command.match=共找到 %1$s 个符合条件 %2$s 的篝火
+command.nomatch=没有找到符合条件 %1$s 的篝火
+command.nouser=错误: 名为 %1%s 的玩家不存在
+command.dim.match=共有 %1$s 个篝火在 dimension %2$s 中 
+command.dim.nomatch=在dimension %1$s 中没有找到篝火
+command.dim.nodim=错误: dimension %1$s 不存在
+command.dim.invalid=错误: '%1$s' 不是有效的 dimension ID
+command.radius.match=共有 %1$s 个篝火在半径 %2$s 方块内
+command.radius.nomatch=在半径 %1$s 方块内没有找到篝火
+command.radius.invalid=错误: '%1$s' 不是有效的半径(不是有效的数字)
+command.filter.invalid=不是一个有效的筛选器. 使用指令 /bonfires filters 查看筛选器列表
+command.bonfires.usage=使用方法: /bonfires <filter> [parameter], 使用指令 /bonfires filters 查看筛选器列表
+command.all.desc=%1$s, 列出这个世界的所有篝火
+command.dim.desc=%1$s, 列出指定dimension的所有篝火
+command.name.desc=%1$s, 列出包含关键字的所有篝火
+command.owner.desc=%1$s,列出指定玩家创建的所有篝火
+command.radius.desc=%1$s, 列出指定半径内的所有篝火
+command.travel.usage=使用方法: /travel <UUID>
+command.travel.invalid=错误: '%1$s' 不是一个有效的 UUID
+
+command.name=名字: %1$s;
+command.id=ID: %1$s;
+command.owner=所有者: %1$s;
+command.pos=坐标: [X:%1$s,Y:%2$s,Z:%3$s];
+command.na=N/A;
+
+button.travel=传送
+button.leave=离开
+button.accept=接受
+button.set_private=设置私有
+button.reinforce=加固
+
+text.name=输入篝火的名字
+bonfire.lit=BONFIRE LIT
+text.private=(私有)
+
+tileentity.bonfire.label=%1$s (私有)
+
+advancements.bonfires.ash_pile=取得灰烬
+advancements.bonfires.ash_pile.desc=将一个生物烧成渣
+advancements.bonfires.bonfire_lit=篝火燃起
+advancements.bonfires.bonfire_lit.desc=第一次燃起篝火
+advancements.bonfires.root=篝火
+advancements.bonfires.root.desc=第一次死亡
+advancements.bonfires.coiled_sword_fragment=摧毁篝火
+advancements.bonfires.coiled_sword_fragment.desc=获得一个螺旋剑的残破碎片
+advancements.bonfires.estus_flask=原素瓶
+advancements.bonfires.estus_flask.desc=获得一个原素瓶
+advancements.bonfires.estus_shard=原素碎片
+advancements.bonfires.estus_shard.desc=获得一个原素碎片
+advancements.bonfires.homeward_bone=返回骨片
+advancements.bonfires.homeward_bone.desc=获得一个返回骨片
+advancements.bonfires.ash_bone_pile=到一半了
+advancements.bonfires.ash_bone_pile.desc=获得骨灰堆
