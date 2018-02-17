@@ -59,13 +59,18 @@ class GuiButtonDimensionTab extends GuiButton {
     public void setIcon(Item icon) {
         this.icon = icon;
     }
-
+    
+    void resetIcon() {
+        this.icon = Items.FILLED_MAP;
+    }
+    
     public int getDimension() {
         return dimension;
     }
 
     void setDimension(int dimension) {
         this.dimension = dimension;
+        this.resetIcon();
     }
 
     @Override
