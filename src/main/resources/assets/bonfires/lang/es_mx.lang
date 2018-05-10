@@ -1,0 +1,71 @@
+itemGroup.tabBonfires=Bonfires
+
+tile.ash_block.name=Bloque de ceniza
+tile.ash_bone_pile.name=Pila de huesos y ceniza
+
+item.ash_pile.name=Pila de ceniza
+item.coiled_sword.name=Espada en espiral
+item.estus_flask.name=Frasco de Estus
+item.homeward_bone.name=Hueso de regreso
+item.coiled_sword_fragment.name=Fragmento de Espada en espiral
+item.estus_shard.name=Fragmento de estus
+item.titanite_shard.name=Fragmento de titanita
+item.large_titanite_shard.name=Fragmento de titanita grande
+item.titanite_chunk.name=Trozo de titanita
+item.titanite_slab.name=Losa de titanita
+item.undead_bone_shard.name=Fragmento de hueso cenizo
+
+command.match=Se encontraron %1$s hoguera(s) que coinciden %2$s
+command.nomatch=No se encontraron hogueras que coincidan %1$s
+command.nouser=Error: No existe un usuario con el nombre %1%s
+command.dim.match=Se encontro %1$s hoguera(s) en la dimensión %2$s 
+command.dim.nomatch=No se encontraron hogueras en la dimensión %1$s
+command.dim.nodim=Error: La dimensión %1$s no es una dimecion
+command.dim.invalid=Error: '%1$s' no es un ID de dimensión valido
+command.radius.match=Found %1$s Hoguera(s) en el radio de %2$s bloques
+command.radius.nomatch=No se encontraron hogueras en el radio de %1$s bloques
+command.radius.invalid=Error: '%1$s' no es un radio valido
+command.filter.invalid=No es un filtro valido. Usa /bonfires filters para ver la lista de filtros
+command.bonfires.usage=Usage: /bonfires <filter> [parameter], /bonfires filters to display list of filters
+command.all.desc=%1$s, muestra todas las hogueras en el mundo
+command.dim.desc=%1$s, muestra todas las hogueras en la dimensión especificada
+command.name.desc=%1$s, muestra todas las hogueras que contengan en su nombre
+command.owner.desc=%1$s, muestra todas las hogueras creadas por alguien especifico
+command.radius.desc=%1$s, muestra todas las hogueras en el radio especificado
+command.travel.usage=Usage: /travel <UUID>
+command.travel.invalid=Error: '%1$s' no es un UUID valido
+
+command.name=Name: %1$s;
+command.id=ID: %1$s;
+command.owner=Owner: %1$s;
+command.pos=Pos: [X:%1$s,Y:%2$s,Z:%3$s];
+command.na=N/A;
+
+button.travel=Viajar
+button.leave=Salir
+button.accept=Aceptar
+button.set_private=hacer privada
+button.reinforce=Reforzar
+
+text.name=Introduce un nombre para la Hoguera
+bonfire.lit=HOGUERA ENCENDIDA
+text.private=(Privada)
+
+tileentity.bonfire.label=%1$s (Privada)
+
+advancements.bonfires.ash_pile=Adquerir ceniza
+advancements.bonfires.ash_pile.desc=Quema un mob hasta matarlo
+advancements.bonfires.bonfire_lit=Avivar
+advancements.bonfires.bonfire_lit.desc=Enciende una hoguera por primera vez
+advancements.bonfires.root=Hogueras
+advancements.bonfires.root.desc=Muere por primera vez
+advancements.bonfires.coiled_sword_fragment=Hoguera destruida
+advancements.bonfires.coiled_sword_fragment.desc=Adquiere Fragmento de Espada en espiral
+advancements.bonfires.estus_flask=Frasco de estus
+advancements.bonfires.estus_flask.desc=Adquiere un Frasco de estus
+advancements.bonfires.estus_shard=Fragmento de estus
+advancements.bonfires.estus_shard.desc=Adquiere un Fragmento de estus
+advancements.bonfires.homeward_bone=Hueso de regreso
+advancements.bonfires.homeward_bone.desc=Acquire a Homeward Bone Adquiere un Hueso de regreso
+advancements.bonfires.ash_bone_pile=A medio camino
+advancements.bonfires.ash_bone_pile.desc=Adquiere la base de una Hoguera
