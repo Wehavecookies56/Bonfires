@@ -1,13 +1,14 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
-    "1.12.2-latest": "1.2",
-    "1.12-latest": "1.2",
+    "1.12.2-latest": "1.2.1",
+    "1.12-latest": "1.2.1",
     "1.11-latest": "1.0.1",
     "1.10.2-latest": "1.0.0"
   },
 
   "1.12.2": {
+    "1.2.1": "Added new config options, fixed dimension tab indexing, dimension tab icons now support metadata",
     "1.2": "Fixed a bunch of bugs, added weapon and Estus Flask reinforcing with the use of Titanite materials and Undead bone shards"
   },
 

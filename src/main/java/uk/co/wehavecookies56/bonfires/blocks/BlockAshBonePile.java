@@ -24,10 +24,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import uk.co.wehavecookies56.bonfires.BonfireRegistry;
-import uk.co.wehavecookies56.bonfires.Bonfires;
-import uk.co.wehavecookies56.bonfires.EstusHandler;
-import uk.co.wehavecookies56.bonfires.ReinforceHandler;
+import uk.co.wehavecookies56.bonfires.*;
 import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
 import uk.co.wehavecookies56.bonfires.packets.*;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
@@ -201,11 +198,12 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
 
     @Override
     public void onBlockDestroyedByExplosion(World worldIn, BlockPos pos, Explosion explosionIn) {
-        EntityItem shard = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Bonfires.undeadBoneShard));
-        if (!worldIn.isRemote) {
-            TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
-            if (dropFragment) {
-                worldIn.spawnEntity(shard);
+        if (BonfiresConfig.enableUBSBonfire) {
+            EntityItem shard = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Bonfires.undeadBoneShard));
+            if (!worldIn.isRemote) {
+                if (dropFragment) {
+                    worldIn.spawnEntity(shard);
+                }
             }
         }
         super.onBlockDestroyedByExplosion(worldIn, pos, explosionIn);

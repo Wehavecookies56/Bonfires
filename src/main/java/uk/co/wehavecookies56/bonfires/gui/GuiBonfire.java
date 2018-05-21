@@ -15,10 +15,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
-import uk.co.wehavecookies56.bonfires.Bonfire;
-import uk.co.wehavecookies56.bonfires.BonfireRegistry;
-import uk.co.wehavecookies56.bonfires.Bonfires;
-import uk.co.wehavecookies56.bonfires.LocalStrings;
+import uk.co.wehavecookies56.bonfires.*;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.Travel;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
@@ -392,6 +389,10 @@ public class GuiBonfire extends GuiScreen {
                 bonfire.visible = false;
             }
         }
+        if (!BonfiresConfig.enableReinforcing) {
+            reinforce.visible = false;
+            leave.y = (height / 2) - (tex_height / 2) + 41;
+        }
     }
 
     private int addButton(int id) {
@@ -456,11 +457,17 @@ public class GuiBonfire extends GuiScreen {
         List<Integer> dimList = new ArrayList<>(Arrays.asList(DimensionManager.getStaticDimensionIDs()));
         dimList = Lists.reverse(dimList);
         dimensions.addAll(dimList);
-        for (int i = 0; i < (dimensions.size() / 6)+1; i++) {
-            if ((i*6)+5 > dimensions.size())
-                pages.add(dimensions.subList(i*6, dimensions.size()));
+        int plus = 1;
+        if (dimensions.size() % 6 == 0)
+            plus = 0;
+        for (int i = 0; i < (dimensions.size() / 6)+ plus; i++) {
+            int start = i * 6;
+            if (dimensions.size() < 6)
+                start = 0;
+            if ((start)+6 > dimensions.size())
+                pages.add(dimensions.subList(start, dimensions.size()));
             else {
-                pages.add(dimensions.subList(i * 6, (i * 6) + 6));
+                pages.add(dimensions.subList(start, (start) + 6));
             }
         }
         updateButtons();

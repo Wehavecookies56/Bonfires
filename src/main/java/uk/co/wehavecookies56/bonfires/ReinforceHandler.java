@@ -18,10 +18,13 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.Level;
 import uk.co.wehavecookies56.bonfires.items.ItemEstusFlask;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,6 +40,17 @@ public class ReinforceHandler {
 
     @SubscribeEvent
     public void attachCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
+        List<Item> blacklist = new ArrayList<>();
+        for (String s : BonfiresConfig.reinforceBlackList) {
+            if (GameRegistry.findRegistry(Item.class).containsKey(new ResourceLocation(s))) {
+                Item blacklistedItem = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(s));
+                if (event.getObject().getItem() == blacklistedItem) {
+                    return;
+                }
+            } else {
+                Bonfires.logger.info("Unable to find blacklisted item '" + s + "' in the registry");
+            }
+        }
         if (event.getObject().getItem() instanceof ItemTool || event.getObject().getItem() instanceof ItemSword || event.getObject().getItem() instanceof ItemEstusFlask) {
             event.addCapability(new ResourceLocation(Bonfires.modid, "reinforce"), new Provider());
         }

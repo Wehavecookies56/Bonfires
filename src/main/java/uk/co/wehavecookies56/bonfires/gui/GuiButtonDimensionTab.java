@@ -20,6 +20,7 @@ class GuiButtonDimensionTab extends GuiButton {
 
     private GuiBonfire parent;
     private int dimension;
+    private int metadata;
     private Item icon = Items.FILLED_MAP;
 
     GuiButtonDimensionTab(GuiBonfire parent, int buttonId, int x, int y) {
@@ -34,8 +35,22 @@ class GuiButtonDimensionTab extends GuiButton {
                 if (s.split("=").length == 2) {
                     String dimID = s.split("=")[0];
                     String item = s.split("=")[1];
+                    String meta = null;
+                    if (item.split(",").length == 2) {
+                        String[] split = item.split(",");
+                        item = split[0];
+                        meta = split[1];
+                    }
                     try {
                         if (Integer.parseInt(dimID) == dimension) {
+                            try {
+                                if (meta != null) {
+                                    metadata = Integer.parseInt(meta);
+                                }
+                            } catch (NumberFormatException e) {
+                                Bonfires.logger.error(meta + " is not a valid metadata value");
+                                return icon;
+                            }
                             if (GameRegistry.findRegistry(Item.class).containsKey(new ResourceLocation(item))) {
                                 return icon = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(item));
                             } else {
@@ -87,10 +102,10 @@ class GuiButtonDimensionTab extends GuiButton {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
                 drawTexturedModalRect(x, y, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(getIcon()), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8);
+                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(getIcon(), 1, metadata), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8);
             } else {
                 drawTexturedModalRect(x, y - 1, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(getIcon()), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8 -1);
+                Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(getIcon(), 1, metadata), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8 -1);
             }
         }
         GL11.glPopMatrix();

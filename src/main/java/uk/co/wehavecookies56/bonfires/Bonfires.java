@@ -80,7 +80,7 @@ public class Bonfires {
     @SuppressWarnings("WeakerAccess")
     public static final String name = "Bonfires";
     @SuppressWarnings("WeakerAccess")
-    public static final String version = "1.2.0";
+    public static final String version = "1.2.1";
 
     @Mod.Instance (modid)
     public static Bonfires instance;
@@ -166,14 +166,6 @@ public class Bonfires {
                 }
             }
         }
-        if (event.getEntity() instanceof EntityPlayer) {
-            for (int i = 0; i < ((EntityPlayer) event.getEntity()).inventory.getSizeInventory(); i++) {
-                EntityPlayer player = (EntityPlayer) event.getEntity();
-                if (ReinforceHandler.hasHandler(player.inventory.getStackInSlot(i))) {
-                    System.out.println(ReinforceHandler.getHandler(player.inventory.getStackInSlot(i)).level());
-                }
-            }
-        }
     }
 
     @SubscribeEvent
@@ -203,12 +195,14 @@ public class Bonfires {
 
     @SubscribeEvent
     public void breakBlock(BlockEvent.HarvestDropsEvent event) {
-        if (event.getState().getBlock() == Blocks.OBSIDIAN) {
-            if (!event.isSilkTouching()) {
-                for (int i = 0; i < EnumFacing.values().length; i++) {
-                    if (event.getWorld().getBlockState(event.getPos().offset(EnumFacing.values()[i])).getBlock() == Blocks.LAVA || event.getWorld().getBlockState(event.getPos().offset(EnumFacing.values()[i])).getBlock() == Blocks.FLOWING_LAVA) {
-                        event.getDrops().clear();
-                        event.getDrops().add(new ItemStack(titaniteShard));
+        if (BonfiresConfig.enableTitaniteObsidian) {
+            if (event.getState().getBlock() == Blocks.OBSIDIAN) {
+                if (!event.isSilkTouching()) {
+                    for (int i = 0; i < EnumFacing.values().length; i++) {
+                        if (event.getWorld().getBlockState(event.getPos().offset(EnumFacing.values()[i])).getBlock() == Blocks.LAVA || event.getWorld().getBlockState(event.getPos().offset(EnumFacing.values()[i])).getBlock() == Blocks.FLOWING_LAVA) {
+                            event.getDrops().clear();
+                            event.getDrops().add(new ItemStack(titaniteShard));
+                        }
                     }
                 }
             }
