@@ -6,14 +6,18 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import uk.co.wehavecookies56.bonfires.Bonfire;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.ReinforceHandler;
 import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
 import uk.co.wehavecookies56.bonfires.packets.ReinforceItem;
+import uk.co.wehavecookies56.bonfires.packets.SyncReinforceData;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +26,7 @@ public class GuiReinforce extends GuiScreen {
 
     public List<ItemStack> reinforceableItems;
     public List<Integer> slots;
-    int itemSelected = 0;
+    int itemSelected = -1;
     float scrollOffset = 0;
     final int SCROLLBAR = 0;
     final int ITEMS = 1;
@@ -49,6 +53,7 @@ public class GuiReinforce extends GuiScreen {
         if (confirm.isMouseOver()) {
             actionPerformed(confirm);
         }
+        updateButtons();
     }
 
     @Override
@@ -62,13 +67,39 @@ public class GuiReinforce extends GuiScreen {
         scrollBar.mouseDragged(mc, mouseX, mouseY);
     }
 
+    public void updateButtons() {
+        ScaledResolution scaledResolution = new ScaledResolution(mc);
+        int centerX = (scaledResolution.getScaledWidth() / 2) - (texWidth / 2);
+        int centerY = (scaledResolution.getScaledHeight() / 2) - (texHeight / 2);
+        if (itemSelected != -1) {
+            ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(reinforceableItems.get(itemSelected));
+            if (handler.level() != handler.maxLevel()) {
+                if (ReinforceHandler.hasRequiredItems(mc.player, ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected)))) {
+                    confirm.enabled = true;
+                } else {
+                    confirm.enabled = false;
+                }
+            } else {
+                confirm.enabled = false;
+            }
+        }
+    }
+
     @Override
     public void initGui() {
         getReinforceableItems();
         ScaledResolution scaledResolution = new ScaledResolution(mc);
+        int centerX = (scaledResolution.getScaledWidth() / 2) - (texWidth / 2);
+        int centerY = (scaledResolution.getScaledHeight() / 2) - (texHeight / 2);
         buttonList.add(scrollBar = new GuiButtonScrollBar(SCROLLBAR, (scaledResolution.getScaledWidth() / 2) + (texWidth / 2) - 16, (scaledResolution.getScaledHeight() / 2) - (texHeight / 2) + 41, 8, 15, (scaledResolution.getScaledHeight() / 2) - (texHeight / 2) + 42, (scaledResolution.getScaledHeight() / 2) - (texHeight / 2) + 42 + 155));
         buttonList.add(items = new GuiButtonReinforceItem(this, ITEMS, (scaledResolution.getScaledWidth() / 2) - (texWidth / 2) + 9, (scaledResolution.getScaledHeight() / 2) - (texHeight / 2) + 41, 239, 171));
-        buttonList.add(confirm = new GuiButton(CONFIRM, 0, 0, 50, 20, LocalStrings.BUTTON_REINFORCE));
+        buttonList.add(confirm = new GuiButton(CONFIRM, centerX + 180, centerY + 14, 60, 20, I18n.format(LocalStrings.BUTTON_REINFORCE)));
+        if (reinforceableItems.size() > 1) {
+            itemSelected = 0;
+        } else {
+            confirm.enabled = false;
+        }
+        updateButtons();
         super.initGui();
     }
 
@@ -77,12 +108,12 @@ public class GuiReinforce extends GuiScreen {
         switch (button.id) {
             case CONFIRM:
                 if (itemSelected != -1) {
-                    if (hasRequiredItems(mc.player, ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected)))) {
+                    if (ReinforceHandler.hasRequiredItems(mc.player, ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected)))) {
                         ItemStack reinforcedStack = reinforceableItems.get(itemSelected).copy();
                         ReinforceHandler.getHandler(reinforcedStack).levelup(1);
                         int level = ReinforceHandler.getHandler(reinforcedStack).level();
                         if (level != 0)
-                            reinforcedStack.setStackDisplayName(I18n.format(reinforcedStack.getUnlocalizedName()+".name") + " +" + level);
+                            reinforcedStack.setStackDisplayName(I18n.format(reinforcedStack.getUnlocalizedName() + ".name") + " +" + level);
                         PacketDispatcher.sendToServer(new ReinforceItem(reinforcedStack, slots.get(itemSelected), ReinforceHandler.getHandler(reinforcedStack).level()));
                         mc.player.inventory.setInventorySlotContents(slots.get(itemSelected), reinforcedStack);
                         getReinforceableItems();
@@ -90,6 +121,7 @@ public class GuiReinforce extends GuiScreen {
                 }
                 break;
         }
+        updateButtons();
         super.actionPerformed(button);
     }
 
@@ -102,8 +134,8 @@ public class GuiReinforce extends GuiScreen {
         mc.renderEngine.bindTexture(texture);
         drawTexturedModalRect(centerX, centerY, 0, 0, texWidth, texHeight);
         super.drawScreen(mouseX, mouseY, partialTicks);
-        float scrollBarHeight = scrollBar.bottom - (scrollBar.top);
-        float listHeight = (36 * reinforceableItems.size());
+        int scrollBarHeight = (int)(scrollBar.bottom) - (scrollBar.top);
+        int listHeight = (36 * reinforceableItems.size());
         if (scrollBarHeight >= listHeight) {
             scrollBar.visible = false;
             scrollBar.enabled = false;
@@ -113,9 +145,25 @@ public class GuiReinforce extends GuiScreen {
         }
 
         float buttonRelativeToBar = scrollBar.y - (scrollBar.top-1);
-        float scrollPos = buttonRelativeToBar != 0 ? buttonRelativeToBar / scrollBarHeight : 0;
+        float scrollPos = buttonRelativeToBar != 0 ? buttonRelativeToBar / (scrollBarHeight-15) : 0;
         scrollOffset = scrollPos*(listHeight-scrollBarHeight);
         items.drawButtons(mc, mouseX, mouseY, partialTicks, scrollOffset);
+        drawString(fontRenderer, I18n.format(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
+        if (itemSelected != -1) {
+            ItemStack required = ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected));
+            int hasCount = 0;
+            for (int i = 0; i < mc.player.inventory.getSizeInventory(); i++) {
+                if (ItemStack.areItemsEqual(mc.player.inventory.getStackInSlot(i), required)) {
+                    hasCount += mc.player.inventory.getStackInSlot(i).getCount();
+                }
+            }
+            ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(reinforceableItems.get(itemSelected));
+            if (handler.level() != handler.maxLevel()) {
+                drawString(fontRenderer, required.getDisplayName() + ": " + hasCount + " / " + required.getCount(), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
+            } else {
+                drawString(fontRenderer, I18n.format(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
+            }
+        }
     }
 
     public void getReinforceableItems() {
@@ -132,54 +180,8 @@ public class GuiReinforce extends GuiScreen {
         this.slots = slots;
     }
 
-    public static boolean hasRequiredItems(EntityPlayer player, ItemStack reqiuired) {
-        int hasCount = 0;
-        int countRequired = reqiuired.getCount();
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            if (ItemStack.areItemStacksEqual(reqiuired, player.inventory.getStackInSlot(i))) {
-                return true;
-            } else {
-                if (ItemStack.areItemsEqual(player.inventory.getStackInSlot(i), reqiuired)) {
-                    hasCount += player.inventory.getStackInSlot(i).getCount();
-                }
-            }
-        }
-        if (hasCount >= countRequired) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     @Override
     public boolean doesGuiPauseGame() {
         return false;
-    }
-
-    public static void removeRequiredItems(EntityPlayer player, ItemStack reqiuired) {
-        if (hasRequiredItems(player, reqiuired)) {
-            int remaining = reqiuired.getCount();
-            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                if (ItemStack.areItemStacksEqual(reqiuired, player.inventory.getStackInSlot(i))) {
-                    player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-                    remaining = 0;
-                    return;
-                } else {
-                    if (ItemStack.areItemsEqual(player.inventory.getStackInSlot(i), reqiuired)) {
-                        if (player.inventory.getStackInSlot(i).getCount() >= remaining) {
-                            ItemStack stackWithNewCount = player.inventory.getStackInSlot(i);
-                            stackWithNewCount.shrink(remaining);
-                            player.inventory.setInventorySlotContents(i, stackWithNewCount);
-                            remaining = 0;
-                            return;
-                        } else {
-                            player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-                            remaining -= player.inventory.getStackInSlot(i).getCount();
-                        }
-
-                    }
-                }
-            }
-        }
     }
 }

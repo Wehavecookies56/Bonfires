@@ -10,6 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Level;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.EstusHandler;
 import uk.co.wehavecookies56.bonfires.LocalStrings;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
@@ -67,10 +68,12 @@ public class LightBonfire extends AbstractMessage.AbstractServerMessage<LightBon
             te.setID(id);
             player.world.setBlockState(pos, player.world.getBlockState(pos).withProperty(BlockAshBonePile.LIT, true), 2);
             player.sendMessage(new TextComponentTranslation(LocalStrings.TEXT_LIT));
+            player.setSpawnPoint(pos, true);
+            player.getCapability(EstusHandler.CAPABILITY_ESTUS, null).setLastRested(te.getID());
             Bonfires.TRIGGER_BONFIRE_LIT.trigger((EntityPlayerMP) player);
             PacketDispatcher.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
             PacketDispatcher.sendToAll(new SyncSaveData(BonfireWorldSavedData.get(((EntityPlayerMP) player).world).bonfires.getBonfires()));
-            Bonfires.logger.info("Bonfire lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayNameString());
+            Bonfires.logger.info("Bonfire" + "'" + name + "'" + " lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayNameString());
         }
     }
 }

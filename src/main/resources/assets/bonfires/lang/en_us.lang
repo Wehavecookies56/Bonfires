@@ -50,6 +50,10 @@ button.reinforce=Reinforce
 text.name=Enter a name for the bonfire
 bonfire.lit=BONFIRE LIT
 text.private=(Private)
+text.reinforce=Select item to reinforce
+text.max_level=Max Level
+
+tooltip.reinforce=Reinforced: +%1$s damage
 
 tileentity.bonfire.label=%1$s (Private)
 

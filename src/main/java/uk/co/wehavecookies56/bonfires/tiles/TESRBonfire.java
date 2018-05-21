@@ -29,7 +29,7 @@ public class TESRBonfire extends TileEntitySpecialRenderer<TileEntityBonfire> {
                 GlStateManager.enableLighting();
                 GlStateManager.pushMatrix();
                 {
-                    GlStateManager.translate(0.5, 0.75, 0.5);
+                    GlStateManager.translate(0.5, 0.65, 0.5);
                     if (Minecraft.getMinecraft().world.getBlockState(te.getPos()).getBlock() == Bonfires.ashBonePile) {
                         if (Minecraft.getMinecraft().world.getBlockState(te.getPos()).getValue(BlockAshBonePile.FACING) == EnumFacing.NORTH) {
                             GlStateManager.rotate(0, 0, 1, 0);

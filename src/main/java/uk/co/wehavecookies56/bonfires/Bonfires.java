@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityCreature;
@@ -18,20 +19,26 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -73,7 +80,7 @@ public class Bonfires {
     @SuppressWarnings("WeakerAccess")
     public static final String name = "Bonfires";
     @SuppressWarnings("WeakerAccess")
-    public static final String version = "1.1.2";
+    public static final String version = "1.2.0";
 
     @Mod.Instance (modid)
     public static Bonfires instance;
@@ -171,13 +178,7 @@ public class Bonfires {
 
     @SubscribeEvent
     public void livingHurt(LivingHurtEvent event) {
-        if (event.getSource().getImmediateSource() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) event.getSource().getImmediateSource();
-            if (ReinforceHandler.hasHandler(player.getHeldItemMainhand())) {
-                ReinforceHandler.IReinforceHandler reinforce = ReinforceHandler.getHandler(player.getHeldItemMainhand());
-                event.setAmount(event.getAmount() + (0.5F * reinforce.level()));
-            }
-        }
+
     }
 
     @SubscribeEvent
@@ -194,10 +195,24 @@ public class Bonfires {
     @Mod.EventHandler
     public static void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(Bonfires.instance);
-        GameRegistry.registerTileEntity(TileEntityBonfire.class, "bonfire");
+        GameRegistry.registerTileEntity(TileEntityBonfire.class, new ResourceLocation(modid,"bonfire"));
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
-
+        FurnaceRecipes.instance().addSmelting(titaniteShard, new ItemStack(Blocks.OBSIDIAN), 0);
         proxy.init();
+    }
+
+    @SubscribeEvent
+    public void breakBlock(BlockEvent.HarvestDropsEvent event) {
+        if (event.getState().getBlock() == Blocks.OBSIDIAN) {
+            if (!event.isSilkTouching()) {
+                for (int i = 0; i < EnumFacing.values().length; i++) {
+                    if (event.getWorld().getBlockState(event.getPos().offset(EnumFacing.values()[i])).getBlock() == Blocks.LAVA || event.getWorld().getBlockState(event.getPos().offset(EnumFacing.values()[i])).getBlock() == Blocks.FLOWING_LAVA) {
+                        event.getDrops().clear();
+                        event.getDrops().add(new ItemStack(titaniteShard));
+                    }
+                }
+            }
+        }
     }
 
     @Mod.EventHandler
@@ -213,7 +228,12 @@ public class Bonfires {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void addToolTip(ItemTooltipEvent event) {
-
+        if (ReinforceHandler.hasHandler(event.getItemStack())) {
+            ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(event.getItemStack());
+            if (handler.level() > 0) {
+                event.getToolTip().add(I18n.format(LocalStrings.TOOLTIP_REINFORCE, Float.toString((0.5F * handler.level()) * 2)));
+            }
+        }
     }
 
     @Mod.EventBusSubscriber(modid = modid)

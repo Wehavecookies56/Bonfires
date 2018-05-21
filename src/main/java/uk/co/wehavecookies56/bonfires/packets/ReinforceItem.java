@@ -1,15 +1,18 @@
 package uk.co.wehavecookies56.bonfires.packets;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.Level;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.LocalStrings;
@@ -56,10 +59,12 @@ public class ReinforceItem extends AbstractMessage.AbstractServerMessage<Reinfor
     public void process(EntityPlayer player, Side side) {
         ItemStack required = ReinforceHandler.getRequiredResources(stack);
         if (ReinforceHandler.hasHandler(stack)) {
-            GuiReinforce.removeRequiredItems(player, required);
+            ReinforceHandler.removeRequiredItems(player, required);
             ReinforceHandler.getHandler(stack).setLevel(level);
-
-            PacketDispatcher.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(stack), stack, slot), (EntityPlayerMP) player);
+            //if (level != 0)
+                //stack.setStackDisplayName(I18n.format(stack.getUnlocalizedName()+".name") + " +" + level);
+            player.inventory.setInventorySlotContents(slot, stack);
+            //PacketDispatcher.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(stack), stack, slot), (EntityPlayerMP) player);
         }
     }
 }

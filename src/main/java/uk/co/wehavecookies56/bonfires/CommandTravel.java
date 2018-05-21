@@ -66,8 +66,12 @@ class CommandTravel extends CommandBase {
                 if (sender instanceof EntityPlayer) {
                     if (BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfire(id) != null) {
                         Bonfire bonfire = BonfireWorldSavedData.get(server.getEntityWorld()).bonfires.getBonfire(id);
-                        BonfireTeleporter tp = new BonfireTeleporter(server.getWorld(bonfire.dimension));
-                        tp.teleport((EntityPlayer) sender, ((EntityPlayer) sender).world, bonfire.getPos(), bonfire.getDimension());
+                        BonfireTeleporter tp = new BonfireTeleporter(bonfire.getPos());
+                        if (((EntityPlayer)sender).world.provider.getDimension() != bonfire.getDimension()) {
+                            ((EntityPlayer)sender).changeDimension(bonfire.dimension, tp);
+                        } else {
+                            tp.placeEntity(((EntityPlayer)sender).world, (EntityPlayer)sender, ((EntityPlayer) sender).rotationYaw);
+                        }
                     }
                 }
             } catch (IllegalArgumentException e) {

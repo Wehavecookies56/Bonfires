@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
+import sun.net.www.content.text.plain;
+import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.ReinforceHandler;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 
@@ -52,6 +54,7 @@ public class SyncReinforceData extends AbstractMessage.AbstractClientMessage<Syn
     public void process(EntityPlayer player, Side side) {
         ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(stack);
         handler.setMaxLevel(maxLevel);
+        handler.setLevel(level);
         if (level != 0)
             stack.setStackDisplayName(I18n.format(stack.getUnlocalizedName()+".name") + " +" + level);
         player.inventory.setInventorySlotContents(slot, stack);

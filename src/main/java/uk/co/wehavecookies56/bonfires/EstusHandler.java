@@ -54,13 +54,25 @@ public class EstusHandler {
     public static final Capability<IEstusHandler> CAPABILITY_ESTUS = null;
 
     public interface IEstusHandler {
+        UUID lastRested();
+        void setLastRested(UUID id);
         int uses();
         void setUses(int uses);
     }
 
     public static class Default implements IEstusHandler {
         private int uses = 3;
-        private UUID bonfire = null;
+        private UUID bonfire;
+
+        @Override
+        public UUID lastRested() {
+            return bonfire;
+        }
+
+        @Override
+        public void setLastRested(UUID id) {
+            bonfire = id;
+        }
 
         @Override
         public int uses() {
@@ -79,6 +91,8 @@ public class EstusHandler {
         public NBTBase writeNBT(Capability<IEstusHandler> capability, IEstusHandler instance, EnumFacing side) {
             final NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("uses", instance.uses());
+            if (instance.lastRested() != null)
+                tag.setUniqueId("lastRested", instance.lastRested());
             return tag;
         }
 
@@ -86,6 +100,7 @@ public class EstusHandler {
         public void readNBT(Capability<IEstusHandler> capability, IEstusHandler instance, EnumFacing side, NBTBase nbt) {
             final NBTTagCompound tag = (NBTTagCompound) nbt;
             instance.setUses(tag.getInteger("uses"));
+            instance.setLastRested(tag.getUniqueId("lastRested"));
         }
     }
 

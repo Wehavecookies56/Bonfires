@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [ 
+		{ "item": "bonfires:large_titanite_shard" }, 
+		{ "item": "bonfires:large_titanite_shard" }, 
+		{ "item": "bonfires:large_titanite_shard" }, 
+		{ "item": "minecraft:magma_cream" }
+	],
+	"result": {
+		"item": "bonfires:titanite_chunk"
+	}
+}

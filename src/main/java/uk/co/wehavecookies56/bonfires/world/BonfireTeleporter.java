@@ -14,26 +14,19 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.util.ITeleporter;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.blocks.BlockAshBonePile;
 
 /**
  * Created by Toby on 10/11/2016.
  */
-public class BonfireTeleporter extends Teleporter {
+public class BonfireTeleporter implements ITeleporter {
 
-    public BonfireTeleporter(WorldServer worldIn) {
-        super(worldIn);
-    }
+    BlockPos pos;
 
-    public void teleport(EntityPlayer player, World world, BlockPos pos, int dimension) {
-        EntityPlayerMP playerMP = (EntityPlayerMP) player;
-        playerMP.motionX = playerMP.motionY = playerMP.motionZ = 0;
-        if (world.provider.getDimension() != dimension)
-            playerMP.mcServer.getPlayerList().transferPlayerToDimension(playerMP, dimension, this);
-        Vec3d destination = attemptToPlaceNextToBonfire(pos, world);
-        playerMP.connection.setPlayerLocation(destination.x, destination.y, destination.z, playerMP.rotationYaw, playerMP.rotationPitch);
-
+    public BonfireTeleporter(BlockPos pos) {
+        this.pos = pos;
     }
 
     //There's gotta be a better way of doing this
@@ -53,23 +46,12 @@ public class BonfireTeleporter extends Teleporter {
     }
 
     @Override
-    public void placeInPortal(Entity entityIn, float rotationYaw) {
-
+    public void placeEntity(World world, Entity entity, float yaw) {
+        if (entity instanceof EntityPlayer) {
+            EntityPlayerMP playerMP = (EntityPlayerMP) entity;
+            playerMP.motionX = playerMP.motionY = playerMP.motionZ = 0;
+            Vec3d destination = attemptToPlaceNextToBonfire(pos, world);
+            playerMP.connection.setPlayerLocation(destination.x, destination.y, destination.z, playerMP.rotationYaw, playerMP.rotationPitch);
+        }
     }
-
-    @Override
-    public boolean placeInExistingPortal(Entity entityIn, float rotationYaw) {
-        return false;
-    }
-
-    @Override
-    public boolean makePortal(Entity entityIn) {
-        return false;
-    }
-
-    @Override
-    public void removeStalePortalLocations(long worldTime) {
-
-    }
-
 }

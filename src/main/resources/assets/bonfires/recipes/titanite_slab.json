@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"TTT",
+		"TET",
+		"TTT"
+	],
+	"key": {
+		"T": {
+			"item": "bonfires:titanite_chunk"
+		},
+		"E": {
+			"item": "minecraft:end_crystal"
+		}
+	},
+	"result": {
+		"item": "bonfires:titanite_slab"
+	}
+}

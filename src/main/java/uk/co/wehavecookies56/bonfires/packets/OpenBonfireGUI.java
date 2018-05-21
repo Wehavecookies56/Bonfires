@@ -1,8 +1,10 @@
 package uk.co.wehavecookies56.bonfires.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
+import uk.co.wehavecookies56.bonfires.ReinforceHandler;
 import uk.co.wehavecookies56.bonfires.gui.GuiBonfire;
 
 import java.io.IOException;

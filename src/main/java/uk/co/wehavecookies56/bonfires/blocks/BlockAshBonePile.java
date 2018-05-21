@@ -10,6 +10,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
@@ -18,18 +19,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import uk.co.wehavecookies56.bonfires.BonfireRegistry;
 import uk.co.wehavecookies56.bonfires.Bonfires;
+import uk.co.wehavecookies56.bonfires.EstusHandler;
 import uk.co.wehavecookies56.bonfires.ReinforceHandler;
 import uk.co.wehavecookies56.bonfires.gui.GuiHandler;
-import uk.co.wehavecookies56.bonfires.packets.OpenBonfireGUI;
-import uk.co.wehavecookies56.bonfires.packets.PacketDispatcher;
-import uk.co.wehavecookies56.bonfires.packets.SyncBonfire;
-import uk.co.wehavecookies56.bonfires.packets.SyncSaveData;
+import uk.co.wehavecookies56.bonfires.packets.*;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;
 import uk.co.wehavecookies56.bonfires.world.BonfireWorldSavedData;
 
@@ -54,6 +54,7 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
         setRegistryName(Bonfires.modid, name);
         setUnlocalizedName(getRegistryName().toString().replace(Bonfires.modid + ":", ""));
         setCreativeTab(Bonfires.tabBonfires);
+        setHardness(0.8F);
     }
 
     @Override
@@ -125,9 +126,13 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                                         }
                                     }
                                 }
+                                if (ReinforceHandler.hasHandler(player.inventory.getStackInSlot(i))) {
+                                    PacketDispatcher.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(player.inventory.getStackInSlot(i)), player.inventory.getStackInSlot(i), i), (EntityPlayerMP) player);
+                                }
                             }
                             player.heal(player.getMaxHealth());
                             player.setSpawnPoint(pos, true);
+                            player.getCapability(EstusHandler.CAPABILITY_ESTUS, null).setLastRested(te.getID());
                         }
                     } else {
                         player.openGui(Bonfires.instance, GuiHandler.GUI_BONFIRE, world, pos.getX(), pos.getY(), pos.getZ());
@@ -195,6 +200,18 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
     }
 
     @Override
+    public void onBlockDestroyedByExplosion(World worldIn, BlockPos pos, Explosion explosionIn) {
+        EntityItem shard = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Bonfires.undeadBoneShard));
+        if (!worldIn.isRemote) {
+            TileEntityBonfire te = (TileEntityBonfire) worldIn.getTileEntity(pos);
+            if (dropFragment) {
+                worldIn.spawnEntity(shard);
+            }
+        }
+        super.onBlockDestroyedByExplosion(worldIn, pos, explosionIn);
+    }
+
+    @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         if (source.getTileEntity(pos) != null) {
             if (source.getTileEntity(pos) instanceof TileEntityBonfire) {
@@ -233,12 +250,13 @@ public class BlockAshBonePile extends Block implements ITileEntityProvider {
                 double d2 = (double)pos.getZ() + 0.5D + rand.nextDouble() * 1.0D / 16.0D;
                 double d3 = 0.52D;
                 double d4 = rand.nextDouble() * 0.6D - 0.3D;
+                double d5 = rand.nextDouble() * 0.6D - 0.3D;
 
                 if (rand.nextDouble() < 0.1D) {
                     worldIn.playSound((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 0.5F, 1.0F, false);
                 }
                 //worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-                worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D);
+                worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d5, d1, d2 + d4, 0.0D, 0.0D, 0.0D);
             }
         }
         super.randomDisplayTick(stateIn, worldIn, pos, rand);

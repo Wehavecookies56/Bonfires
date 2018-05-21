@@ -121,7 +121,6 @@ public class ReinforceHandler {
 
         @Override
         public void levelup(int levelup) {
-            Bonfires.logger.log(Level.INFO, level+"");
             if (level + levelup <= maxLevel) {
                 level += levelup;
             } else {
@@ -179,6 +178,52 @@ public class ReinforceHandler {
         @Override
         public void deserializeNBT(NBTTagCompound nbt) {
             CAPABILITY_REINFORCE.getStorage().readNBT(CAPABILITY_REINFORCE, instance, null, nbt);
+        }
+    }
+
+    public static boolean hasRequiredItems(EntityPlayer player, ItemStack required) {
+        int hasCount = 0;
+        int countRequired = required.getCount();
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            if (ItemStack.areItemStacksEqual(required, player.inventory.getStackInSlot(i))) {
+                return true;
+            } else {
+                if (ItemStack.areItemsEqual(player.inventory.getStackInSlot(i), required)) {
+                    hasCount += player.inventory.getStackInSlot(i).getCount();
+                }
+            }
+        }
+        if (hasCount >= countRequired) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static void removeRequiredItems(EntityPlayer player, ItemStack required) {
+        if (hasRequiredItems(player, required)) {
+            int remaining = required.getCount();
+            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                if (ItemStack.areItemStacksEqual(required, player.inventory.getStackInSlot(i))) {
+                    player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+                    remaining = 0;
+                    return;
+                } else {
+                    if (ItemStack.areItemsEqual(player.inventory.getStackInSlot(i), required)) {
+                        if (player.inventory.getStackInSlot(i).getCount() >= remaining) {
+                            ItemStack stackWithNewCount = player.inventory.getStackInSlot(i);
+                            stackWithNewCount.shrink(remaining);
+                            player.inventory.setInventorySlotContents(i, stackWithNewCount);
+                            remaining = 0;
+                            return;
+                        } else {
+                            player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+                            remaining -= player.inventory.getStackInSlot(i).getCount();
+                        }
+
+                    }
+                }
+            }
         }
     }
 

@@ -41,6 +41,10 @@ public class LocalStrings {
             TEXT_NAME = "text.name",
             TEXT_LIT = "bonfire.lit",
             TEXT_PRIVATE = "text.private",
+            TEXT_REINFORCE = "text.reinforce",
+            TEXT_MAX_LEVEL = "text.max_level",
+
+            TOOLTIP_REINFORCE = "tooltip.reinforce",
 
             TILEENTITY_BONFIRE_LABEL = "tileentity.bonfire.label"
     ;
