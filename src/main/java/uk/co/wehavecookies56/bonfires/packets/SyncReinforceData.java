@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
-import sun.net.www.content.text.plain;
 import uk.co.wehavecookies56.bonfires.Bonfires;
 import uk.co.wehavecookies56.bonfires.ReinforceHandler;
 import uk.co.wehavecookies56.bonfires.tiles.TileEntityBonfire;

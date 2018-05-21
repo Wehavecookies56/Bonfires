@@ -228,12 +228,7 @@ public class Bonfires {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void addToolTip(ItemTooltipEvent event) {
-        if (ReinforceHandler.hasHandler(event.getItemStack())) {
-            ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(event.getItemStack());
-            if (handler.level() > 0) {
-                event.getToolTip().add(I18n.format(LocalStrings.TOOLTIP_REINFORCE, Float.toString((0.5F * handler.level()) * 2)));
-            }
-        }
+
     }
 
     @Mod.EventBusSubscriber(modid = modid)
