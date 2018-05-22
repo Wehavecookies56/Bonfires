@@ -80,7 +80,7 @@ public class Bonfires {
     @SuppressWarnings("WeakerAccess")
     public static final String name = "Bonfires";
     @SuppressWarnings("WeakerAccess")
-    public static final String version = "1.2.1";
+    public static final String version = "1.2.2";
 
     @Mod.Instance (modid)
     public static Bonfires instance;
@@ -170,7 +170,13 @@ public class Bonfires {
 
     @SubscribeEvent
     public void livingHurt(LivingHurtEvent event) {
-
+        if (event.getSource().getImmediateSource() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getSource().getImmediateSource();
+            if (ReinforceHandler.hasHandler(player.getHeldItemMainhand())) {
+                ReinforceHandler.IReinforceHandler reinforce = ReinforceHandler.getHandler(player.getHeldItemMainhand());
+                event.setAmount(event.getAmount() + (0.5F * reinforce.level()));
+            }
+        }
     }
 
     @SubscribeEvent
