@@ -45,7 +45,11 @@ button.travel=传送
 button.leave=离开
 button.accept=接受
 button.set_private=设置私有
-button.reinforce=加固
+button.reinforce=强化
+text.reinforce=选择强化物品
+text.max_level=最高等级
+
+tooltip.reinforce=强化: +%1$s 伤害
 
 text.name=输入篝火的名字
 bonfire.lit=BONFIRE LIT
