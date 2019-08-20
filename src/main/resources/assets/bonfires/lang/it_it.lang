@@ -13,7 +13,7 @@ item.titanite_shard.name=Frammento di Titanite
 item.large_titanite_shard.name=Grande frammento di Titanite
 item.titanite_chunk.name=Pezzo di Titanite
 item.titanite_slab.name=Lastra di Titanite
-item.undead_bone_shard.name=Frammento di osso di non-morto
+item.undead_bone_shard.name=Frammento di osso di non morto
 
 command.match=Trovato %1$s falo' corrispondente a %2$s
 command.nomatch=Trovato nessun falo' corrispondente a %1$s
