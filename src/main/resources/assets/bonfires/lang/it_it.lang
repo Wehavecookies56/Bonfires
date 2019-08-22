@@ -1,0 +1,75 @@
+itemGroup.tabBonfires=Falo'
+
+tile.ash_block.name=Blocco di cenere
+tile.ash_bone_pile.name=Pila di ossa e cenere
+
+item.ash_pile.name=Pila di cenere falo' fal&#242; fal&ograve;
+item.coiled_sword.name=Spada a spirale
+item.estus_flask.name=Fiaschetta Estus
+item.homeward_bone.name=Osso del ritorno
+item.coiled_sword_fragment.name=Frammento di spada a spirale
+item.estus_shard.name=Scheggia Estus
+item.titanite_shard.name=Frammento di Titanite
+item.large_titanite_shard.name=Grande frammento di Titanite
+item.titanite_chunk.name=Pezzo di Titanite
+item.titanite_slab.name=Lastra di Titanite
+item.undead_bone_shard.name=Frammento di osso di non morto
+
+command.match=Trovato %1$s falo' corrispondente a %2$s
+command.nomatch=Trovato nessun falo' corrispondente a %1$s
+command.nouser=Errore: Nessun utante corrispondente a %1%s esiste
+command.dim.match=Trovato %1$s falo' nella dimensione %2$s 
+command.dim.nomatch=Nessun falo' trovato nella dimensione %1$s
+command.dim.nodim=Errore: Dimensione %1$s non e' una dimensione
+command.dim.invalid=Errore: '%1$s' non e' un ID valido per una dimensione
+command.radius.match=Trovato %1$s falo' in un raggio di %2$s blocchi
+command.radius.nomatch=Nessun falo' trovato in un raggio di %1$s blocchi
+command.radius.invalid=Errore: '%1$s' non e' un raggio valido
+command.filter.invalid=Non e' un filtro valido. Usa /bonfires filters per mostrare una lista di filtri
+command.bonfires.usage=Utilizzo: /bonfires <filter> [parameter], /bonfires filters per mostrare una lista di filtri
+command.all.desc=%1$s, mostra ogni falo' nel mondo
+command.dim.desc=%1$s, mostra ogni falo' in una specifica dimensione
+command.name.desc=%1$s, mostra ogni falo' con un nome contenente un testo specifico
+command.owner.desc=%1$s, mostra ogni falo' creato da un utente specifico
+command.radius.desc=%1$s, mostra ogni falo' all'interno di un raggio di blocchi specifico
+command.travel.usage=Utilizzo: /travel <UUID>
+command.travel.invalid=Errore: '%1$s' non e' un valido UUID
+
+command.name=Name: %1$s;
+command.id=ID: %1$s;
+command.owner=Owner: %1$s;
+command.pos=Pos: [X:%1$s,Y:%2$s,Z:%3$s];
+command.na=N/A;
+
+button.travel=Viaggia
+button.leave=Lascia
+button.accept=Accetta
+button.set_private=Imposta privato
+button.reinforce=Rinforza
+
+text.name=Inserisci un nome per il Falo'
+bonfire.lit=FALO' ACCESO
+text.private=(Privato)
+text.reinforce=Seleziona un oggetto da rinforzare
+text.max_level=Massimo livello
+
+tooltip.reinforce=Rinforzato: +%1$s danno
+
+tileentity.bonfire.label=%1$s (Privato)
+
+advancements.bonfires.ash_pile=Ottieni Cenere
+advancements.bonfires.ash_pile.desc=Bruciato un mob in modo croccante
+advancements.bonfires.bonfire_lit=Accensione
+advancements.bonfires.bonfire_lit.desc=Accendi la fiamma di un Falo' per la prima volta
+advancements.bonfires.root=Falo'
+advancements.bonfires.root.desc=Muori per la prima volta
+advancements.bonfires.coiled_sword_fragment=Falo' distrutto
+advancements.bonfires.coiled_sword_fragment.desc=Ottieni un frammento di spada a spirale
+advancements.bonfires.estus_flask=Fiaschetta Estus
+advancements.bonfires.estus_flask.desc=Ottieni una Fiaschetta Estus
+advancements.bonfires.estus_shard=Scheggia Estus
+advancements.bonfires.estus_shard.desc=Ottieni una Scheggia Estus
+advancements.bonfires.homeward_bone=Osso del ritorno
+advancements.bonfires.homeward_bone.desc=Ottieni un Osso del ritorno
+advancements.bonfires.ash_bone_pile=A meta' strada
+advancements.bonfires.ash_bone_pile.desc=Ottieni la base di un Falo'
