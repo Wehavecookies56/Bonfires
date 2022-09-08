@@ -1,22 +1,23 @@
 buildscript {
     repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 
 plugins {
     id 'org.ajoberstar.grgit' version '1.7.2'
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 
 final commitId
 
@@ -26,56 +27,85 @@ if (hasProperty("grgit")) {
     commitId = "NOGIT"
 }
 
-version = "${mc_version}-${mod_version}-${commitId}"
-group = "${package_group}"
-archivesBaseName = "${mod_name}"
+def mcver = "1.16.5"
+version = mcver + '-1.2.3' + "-${commitId}"
+group = 'wehavecookies56.bonfires'
+archivesBaseName = 'Bonfires'
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    version = "${mc_version}-${forge_version}"
-    runDir = "run"
+    mappings channel: 'parchment', version: '2022.03.06-1.16.5'
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                bonfires {
+                    source sourceSets.main
+                }
+            }
+        }
 
-    if (project.hasProperty('mappings_version'))
-        mappings = project.mappings_version
-    makeObfSourceJar = false
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                bonfires {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'bonfires', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+            mods {
+                bonfires {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
-shadowJar {
-    dependencies {
-        include(dependency('org.apache.httpcomponents:fluent-hc:.*'))
-    }
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
+}
+
+jar {
     manifest {
-        attributes 'FMLAT': 'bonfires_at.cfg'
-    }
-
-    relocate 'org.apache.http.client.fluent', 'uk.co.wehavecookies56.bonfires.org.apache.http.client.fluent'
-
-    classifier ''
-}
-
-reobf {
-    shadowJar {}
-}
-
-processResources {
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        expand 'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        attributes([
+            "Specification-Title": "bonfires",
+            "Specification-Vendor": "wehavecookies56",
+            "Specification-Version": "1",
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" :"wehavecookies56",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
 }
+jar.finalizedBy('reobfJar') 
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-    options.compilerArgs.add('-Xlint:unchecked')
-}
-
-artifacts {
-    archives shadowJar
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file:///${project.projectDir}/mcmodsrepo"
+        }
+    }
 }

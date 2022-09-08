@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "bonfires",
+  "ingredients": [
+    {
+      "tag": "forge:rods/blaze"
+    },
+    {
+      "tag": "forge:ender_pearls"
+    },
+    {
+      "tag": "forge:bones"
+    }
+  ],
+  "result": {
+    "item": "bonfires:homeward_bone"
+  }
+}

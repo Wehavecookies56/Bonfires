@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bonfires:coiled_sword"
+    ]
+  },
+  "criteria": {
+    "has_ash_bone_pile": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "bonfires:ash_bone_pile"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bonfires:coiled_sword"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ash_bone_pile",
+      "has_the_recipe"
+    ]
+  ]
+}

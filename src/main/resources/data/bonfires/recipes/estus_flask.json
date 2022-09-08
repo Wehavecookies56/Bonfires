@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "bonfires",
+  "ingredients": [
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "bonfires:estus_shard"
+    },
+    {
+      "item": "bonfires:estus_shard"
+    },
+    {
+      "item": "bonfires:estus_shard"
+    }
+  ],
+  "result": {
+  	"type": "forge:nbt",
+    "item": "bonfires:estus_flask",
+    "nbt": "{estus:0,uses:3}"
+  }
+}

@@ -1,0 +1,34 @@
+{
+	"display": {
+		"icon": {
+			"item": "bonfires:ash_bone_pile"
+		},
+		"title": {
+			"translate": "advancements.bonfires.ash_bone_pile"
+		},
+		"description": {
+			"translate": "advancements.bonfires.ash_bone_pile.desc"
+		}
+	},
+	"parent": "bonfires:bonfires/homeward_bone",
+	"criteria": {
+		"ash_bone_pile": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"item": "bonfires:ash_bone_pile"
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"ash_bone_pile"
+		]
+	],
+	"rewards": {
+        "recipes": [ "bonfires:coiled_sword_hard" ]
+    }
+}

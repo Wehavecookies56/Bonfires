@@ -1,14 +1,7 @@
 {
-    "forge_marker": 1,
-	"defaults": {
-		"textures": {
-			"particle": "bonfires:blocks/ash"
-		},
-		"model": "bonfires:ash_block",
-		"uvlock": true
-	},
-    "variants": {
-        "normal": [{}],
-        "inventory": [{}]
-  }
+	"variants": {
+		"": {
+			"model": "bonfires:block/ash_block"
+		}
+	}
 }

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "bonfires",
+  "ingredients": [
+    {
+      "item": "bonfires:titanite_shard"
+    },
+    {
+      "item": "bonfires:titanite_shard"
+    },
+    {
+      "item": "bonfires:titanite_shard"
+    },
+    {
+      "item": "bonfires:titanite_shard"
+    },
+    {
+      "item": "bonfires:titanite_shard"
+    }
+  ],
+  "result": {
+    "item": "bonfires:large_titanite_shard"
+  }
+}

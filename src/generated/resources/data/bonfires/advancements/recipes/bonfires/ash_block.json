@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bonfires:ash_block"
+    ]
+  },
+  "criteria": {
+    "has_ash_pile": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "bonfires:ash_pile"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bonfires:ash_block"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ash_pile",
+      "has_the_recipe"
+    ]
+  ]
+}

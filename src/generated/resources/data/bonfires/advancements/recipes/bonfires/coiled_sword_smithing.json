@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bonfires:coiled_sword_smithing"
+    ]
+  },
+  "criteria": {
+    "has_coiled_sword_fragment": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "bonfires:coiled_sword_fragment"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bonfires:coiled_sword_smithing"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_coiled_sword_fragment",
+      "has_the_recipe"
+    ]
+  ]
+}

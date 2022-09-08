@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bonfires:titanite_chunk"
+    ]
+  },
+  "criteria": {
+    "has_large_titanite_shard": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "bonfires:large_titanite_shard"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bonfires:titanite_chunk"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_large_titanite_shard",
+      "has_the_recipe"
+    ]
+  ]
+}

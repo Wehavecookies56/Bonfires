@@ -1,6 +1,26 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "bonfires:items/estus_flask"
-	}
+		"layer0": "bonfires:items/estus_flask_empty"
+	},
+	"overrides": [
+		{
+			"predicate": {
+				"bonfires:uses": 0.01
+			},
+			"model": "bonfires:item/estus_flask_quarter"
+		},
+		{
+			"predicate": {
+				"bonfires:uses": 0.5
+			},
+			"model": "bonfires:item/estus_flask_half"
+		},
+		{
+			"predicate": {
+				"bonfires:uses": 0.75
+			},
+			"model": "bonfires:item/estus_flask_full"
+		}
+	]
 }
