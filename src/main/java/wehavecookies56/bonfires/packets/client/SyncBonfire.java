@@ -1,9 +1,9 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
@@ -23,7 +23,7 @@ public class SyncBonfire extends Packet<SyncBonfire> {
     public int z;
     public BonfireTileEntity.BonfireType type;
 
-    public SyncBonfire(PacketBuffer buffer) {
+    public SyncBonfire(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -38,7 +38,7 @@ public class SyncBonfire extends Packet<SyncBonfire> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         this.bonfire = buffer.readBoolean();
         this.type = BonfireTileEntity.BonfireType.values()[buffer.readInt()];
         this.lit = buffer.readBoolean();
@@ -50,7 +50,7 @@ public class SyncBonfire extends Packet<SyncBonfire> {
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeBoolean(bonfire);
         buffer.writeInt(type.ordinal());
         buffer.writeBoolean(lit);

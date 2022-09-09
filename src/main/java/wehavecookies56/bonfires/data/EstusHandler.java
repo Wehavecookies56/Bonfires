@@ -1,16 +1,13 @@
 package wehavecookies56.bonfires.data;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -28,13 +25,15 @@ import java.util.UUID;
 public class EstusHandler {
 
     public static void init() {
-        CapabilityManager.INSTANCE.register(EstusHandler.IEstusHandler.class, new Storage(), Default::new);
         MinecraftForge.EVENT_BUS.register(new EstusHandler());
     }
 
     @SubscribeEvent
+    public static void register(RegisterCapabilitiesEvent event) {}
+
+    @SubscribeEvent
     public void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof PlayerEntity) {
+        if (event.getObject() instanceof Player) {
             event.addCapability(new ResourceLocation(Bonfires.modid, "estus"), new Provider());
         }
     }
@@ -47,15 +46,14 @@ public class EstusHandler {
         clone.setLastRested(original.lastRested());
     }
 
-    public static IEstusHandler getHandler(PlayerEntity player) {
+    public static IEstusHandler getHandler(Player player) {
         LazyOptional<IEstusHandler> estusHandler = player.getCapability(CAPABILITY_ESTUS, null);
         return estusHandler.orElse(null);
     }
 
-    @CapabilityInject(IEstusHandler.class)
-    public static final Capability<IEstusHandler> CAPABILITY_ESTUS = null;
+    public static final Capability<IEstusHandler> CAPABILITY_ESTUS = CapabilityManager.get(new CapabilityToken<>() {});
 
-    public interface IEstusHandler {
+    public interface IEstusHandler extends INBTSerializable<CompoundTag> {
         UUID lastRested();
         void setLastRested(UUID id);
         int uses();
@@ -65,6 +63,25 @@ public class EstusHandler {
     public static class Default implements IEstusHandler {
         private int uses = 3;
         private UUID bonfire;
+
+
+        @Override
+        public CompoundTag serializeNBT() {
+            final CompoundTag tag = new CompoundTag();
+            tag.putInt("uses", uses());
+            if (lastRested() != null) {
+                tag.putUUID("lastRested", lastRested());
+            }
+            return tag;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundTag tag) {
+            setUses(tag.getInt("uses"));
+            if (tag.contains("lastRested")) {
+                setLastRested(tag.getUUID("lastRested"));
+            }
+        }
 
         @Override
         public UUID lastRested() {
@@ -87,31 +104,8 @@ public class EstusHandler {
         }
     }
 
-    public static class Storage implements Capability.IStorage<IEstusHandler> {
-
-        @Nullable
-        @Override
-        public INBT writeNBT(Capability<IEstusHandler> capability, IEstusHandler instance, Direction side) {
-            final CompoundNBT tag = new CompoundNBT();
-            tag.putInt("uses", instance.uses());
-            if (instance.lastRested() != null) {
-                tag.putUUID("lastRested", instance.lastRested());
-            }
-            return tag;
-        }
-
-        @Override
-        public void readNBT(Capability<IEstusHandler> capability, IEstusHandler instance, Direction side, INBT nbt) {
-            final CompoundNBT tag = (CompoundNBT) nbt;
-            instance.setUses(tag.getInt("uses"));
-            if (tag.contains("lastRested")) {
-                instance.setLastRested(tag.getUUID("lastRested"));
-            }
-        }
-    }
-
-    public static class Provider implements ICapabilitySerializable<CompoundNBT> {
-        IEstusHandler instance = CAPABILITY_ESTUS.getDefaultInstance();
+    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
+        IEstusHandler instance = new Default();
 
         @Nonnull
         @Override
@@ -120,13 +114,13 @@ public class EstusHandler {
         }
 
         @Override
-        public CompoundNBT serializeNBT() {
-            return (CompoundNBT) CAPABILITY_ESTUS.getStorage().writeNBT(CAPABILITY_ESTUS, instance, null);
+        public CompoundTag serializeNBT() {
+            return instance.serializeNBT();
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            CAPABILITY_ESTUS.getStorage().readNBT(CAPABILITY_ESTUS, instance, null, nbt);
+        public void deserializeNBT(CompoundTag nbt) {
+            instance.deserializeNBT(nbt);
         }
     }
 

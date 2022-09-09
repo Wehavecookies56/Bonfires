@@ -1,12 +1,10 @@
 package wehavecookies56.bonfires.packets.server;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
-import wehavecookies56.bonfires.Bonfires;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -19,7 +17,7 @@ public class ReinforceItem extends Packet<ReinforceItem> {
 
     private int slot;
 
-    public ReinforceItem(PacketBuffer buffer) {
+    public ReinforceItem(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -28,26 +26,26 @@ public class ReinforceItem extends Packet<ReinforceItem> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         this.slot = buffer.readInt();
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeInt(slot);
     }
 
     @Override
     public void handle(NetworkEvent.Context context) {
-        ItemStack toReinforce = context.getSender().inventory.getItem(slot);
+        ItemStack toReinforce = context.getSender().getInventory().getItem(slot);
         ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);
         if (ReinforceHandler.hasHandler(toReinforce)) {
             ReinforceHandler.removeRequiredItems(context.getSender(), required);
             ReinforceHandler.getHandler(toReinforce).levelup(1);
             toReinforce.resetHoverName();
             toReinforce.getTag().putInt("Damage", 0);
-            toReinforce.setHoverName(new TranslationTextComponent(toReinforce.getHoverName().getString() + " +" + ReinforceHandler.getHandler(toReinforce).level()).setStyle(Style.EMPTY.withItalic(false)));
-            context.getSender().inventory.setItem(slot, toReinforce);
+            toReinforce.setHoverName(new TranslatableComponent(toReinforce.getHoverName().getString() + " +" + ReinforceHandler.getHandler(toReinforce).level()).setStyle(Style.EMPTY.withItalic(false)));
+            context.getSender().getInventory().setItem(slot, toReinforce);
             PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(toReinforce), slot), context.getSender());
         }
     }

@@ -1,16 +1,19 @@
 package wehavecookies56.bonfires.tiles;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import wehavecookies56.bonfires.*;
+import wehavecookies56.bonfires.BonfiresConfig;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.setup.EntitySetup;
@@ -21,7 +24,7 @@ import java.util.UUID;
 /**
  * Created by Toby on 06/11/2016.
  */
-public class BonfireTileEntity extends TileEntity {
+public class BonfireTileEntity extends BlockEntity {
 
     private boolean bonfire = false;
     private boolean lit = false;
@@ -33,13 +36,15 @@ public class BonfireTileEntity extends TileEntity {
 
     private BonfireType type = BonfireType.NONE;
 
-    public BonfireTileEntity() {
-        super(EntitySetup.BONFIRE.get());
+    public BonfireTileEntity(BlockPos pos, BlockState state) {
+        super(EntitySetup.BONFIRE.get(), pos, state);
     }
 
+
+
     @Override
-    public void load(BlockState state, CompoundNBT compound) {
-        super.load(state, compound);
+    public void load(CompoundTag compound) {
+        super.load(compound);
         bonfire = compound.getBoolean("bonfire");
         type = BonfireType.values()[compound.getInt("type")];
         lit = compound.getBoolean("lit");
@@ -47,12 +52,12 @@ public class BonfireTileEntity extends TileEntity {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound) {
+    protected void saveAdditional(CompoundTag compound) {
         compound.putBoolean("bonfire", bonfire);
         compound.putInt("type", type.ordinal());
         compound.putBoolean("lit", lit);
         compound.putUUID("bonfire_id", id);
-        return super.save(compound);
+        super.saveAdditional(compound);
     }
 
     public void createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
@@ -101,44 +106,42 @@ public class BonfireTileEntity extends TileEntity {
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        return this.save(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        return serializeNBT();
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        this.load(state, tag);
+    public void handleUpdateTag(CompoundTag tag) {
+        this.load(tag);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        this.load(level.getBlockState(pkt.getPos()), pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        this.load(pkt.getTag());
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT compound = new CompoundNBT();
-        this.save(compound);
-        return new SUpdateTileEntityPacket(this.getBlockPos(), -1, compound);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
 
     @OnlyIn(Dist.CLIENT)
-    public TextComponent getDisplayName() {
+    public Component getDisplayName() {
         if (!Minecraft.getInstance().player.isCrouching()) {
             if (getID() != null && BonfiresConfig.Client.renderTextAboveBonfire) {
                 Bonfire bonfire = BonfireHandler.getHandler(Minecraft.getInstance().level).getRegistry().getBonfire(getID());
                 if (bonfire != null) {
                     if (bonfire.isPublic()) {
-                        return new TranslationTextComponent(bonfire.getName());
+                        return new TranslatableComponent(bonfire.getName());
                     } else {
-                        return new TranslationTextComponent(LocalStrings.TILEENTITY_BONFIRE_LABEL, bonfire.getName());
+                        return new TranslatableComponent(LocalStrings.TILEENTITY_BONFIRE_LABEL, bonfire.getName());
                     }
                 }
             }
         }
-        return new TranslationTextComponent("");
+        return new TextComponent("");
     }
 
 }

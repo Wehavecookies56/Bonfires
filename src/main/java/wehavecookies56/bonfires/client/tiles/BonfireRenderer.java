@@ -1,19 +1,20 @@
 package wehavecookies56.bonfires.client.tiles;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
@@ -22,14 +23,16 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 /**
  * Created by Toby on 06/11/2016.
  */
-public class BonfireRenderer extends TileEntityRenderer<BonfireTileEntity> {
+public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
 
-    public BonfireRenderer(TileEntityRendererDispatcher context) {
-        super(context);
+    BlockEntityRendererProvider.Context context;
+
+    public BonfireRenderer(BlockEntityRendererProvider.Context context) {
+        this.context = context;
     }
 
     @Override
-    public void render(BonfireTileEntity te, float pPartialTicks, MatrixStack stack, IRenderTypeBuffer pBuffer, int pCombinedLight, int pCombinedOverlay) {
+    public void render(BonfireTileEntity te, float pPartialTicks, PoseStack stack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
         if (te.isBonfire()) {
             if (te.isLit()) {
                 renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
@@ -51,31 +54,33 @@ public class BonfireRenderer extends TileEntityRenderer<BonfireTileEntity> {
                 }
             }
             stack.mulPose(Vector3f.ZP.rotationDegrees(-130));
-            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemCameraTransforms.TransformType.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer);
+            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemTransforms.TransformType.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, 0);
             stack.popPose();
         }
     }
 
-    protected void renderNameTag(BonfireTileEntity te, ITextComponent pDisplayName, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, int pPackedLight, float partialTicks) {
+    protected void renderNameTag(BonfireTileEntity te, Component pDisplayName, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, float partialTicks) {
         if (!pDisplayName.getString().isEmpty() && lookingAt(partialTicks, te)) {
             float f = (float) (te.getBlockState().getCollisionShape(Minecraft.getInstance().level, te.getBlockPos()).max(Direction.Axis.Y) + 0.5F);
             pMatrixStack.pushPose();
             pMatrixStack.translate(0.5D, (double)f, 0.5D);
-            pMatrixStack.mulPose(this.renderer.camera.rotation());
+            pMatrixStack.mulPose(context.getBlockEntityRenderDispatcher().camera.rotation());
             pMatrixStack.scale(-0.025F, -0.025F, 0.025F);
             Matrix4f matrix4f = pMatrixStack.last().pose();
             float f1 = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
             int j = (int)(f1 * 255.0F) << 24;
-            FontRenderer fontrenderer = this.renderer.getFont();
+            Font fontrenderer = context.getFont();
             float f2 = (float)(-fontrenderer.width(pDisplayName) / 2);
+            RenderSystem.enableBlend();
             fontrenderer.drawInBatch(pDisplayName, f2, 0, 0xFFFFFF, true, matrix4f, pBuffer, false, 0, pPackedLight);
+            RenderSystem.disableBlend();
             pMatrixStack.popPose();
         }
     }
 
     boolean lookingAt(float partialTicks, BonfireTileEntity te) {
-        RayTraceResult rayTraceResult = Minecraft.getInstance().player.pick(20, partialTicks, false);
-        if (((BlockRayTraceResult)rayTraceResult).getBlockPos().equals(te.getBlockPos())) {
+        HitResult rayTraceResult = Minecraft.getInstance().player.pick(20, partialTicks, false);
+        if (((BlockHitResult)rayTraceResult).getBlockPos().equals(te.getBlockPos())) {
             return true;
         } else {
             return false;

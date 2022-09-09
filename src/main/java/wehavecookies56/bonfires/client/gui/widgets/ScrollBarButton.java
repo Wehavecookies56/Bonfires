@@ -1,11 +1,10 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.TextComponent;
 
 import java.awt.Color;
 
@@ -17,7 +16,7 @@ public class ScrollBarButton extends Button {
     int minHeight, maxHeight;
 
     public ScrollBarButton(int buttonId, int x, int y, int widthIn, int minHeight, int top, int bottom) {
-        super(x, y, widthIn, minHeight, new TranslationTextComponent(""), button -> {});
+        super(x, y, widthIn, minHeight, new TextComponent(""), button -> {});
         this.top = top;
         this.minHeight = minHeight;
         this.scrollBarHeight = minHeight;
@@ -30,19 +29,15 @@ public class ScrollBarButton extends Button {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            RenderSystem.pushMatrix();
             RenderSystem.enableBlend();
-            RenderSystem.color4f(1, 1, 1, 0.5F);
+            RenderSystem.setShaderColor(1, 1, 1, 0.5F);
             fill(stack, x, top, x + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
             RenderSystem.disableBlend();
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.color4f(1, 1, 1, 1);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
             fill(stack, x, y, x+8, y+scrollBarHeight, new Color(81, 86, 71).hashCode());
             fill(stack, x+1, y+1, x+1+6, y+1+(scrollBarHeight-2), new Color(114, 118, 95).hashCode());
-            RenderSystem.popMatrix();
         }
     }
 
@@ -97,8 +92,4 @@ public class ScrollBarButton extends Button {
         return super.mouseScrolled(mouseX, mouseY, scrollDelta);
     }
 
-    @Override
-    public void playDownSound(SoundHandler p_230988_1_) {
-        super.playDownSound(p_230988_1_);
-    }
 }

@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "bonfires:ash_block"
+            "items": [
+              "bonfires:ash_block"
+            ]
           }
         ]
       }

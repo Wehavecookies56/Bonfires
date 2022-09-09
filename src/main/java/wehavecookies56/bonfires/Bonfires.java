@@ -1,22 +1,22 @@
 package wehavecookies56.bonfires;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
     public static final String name = "Bonfires";
-    public static final String version = "1.2.3";
+    public static final String version = "1.2.4";
 
     public Bonfires() {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -60,7 +60,7 @@ public class Bonfires {
 
     @SubscribeEvent
     public void entityDeath(LivingDropsEvent event) {
-        if (event.getSource().isFire() || event.getEntity().isOnFire() || (event.getSource().getEntity() instanceof PlayerEntity && ((PlayerEntity) event.getSource().getEntity()).getMainHandItem().getItem() == ItemSetup.coiled_sword.get())) {
+        if (event.getSource().isFire() || event.getEntity().isOnFire() || (event.getSource().getEntity() instanceof Player && ((Player) event.getSource().getEntity()).getMainHandItem().getItem() == ItemSetup.coiled_sword.get())) {
             Random r = new Random();
             double percent = r.nextDouble() * 100;
             if (percent > 65) {
@@ -72,9 +72,9 @@ public class Bonfires {
     @SubscribeEvent
     public void entityJoinWorld(EntityJoinWorldEvent event) {
         if (!event.getWorld().isClientSide) {
-            if (event.getEntity() instanceof PlayerEntity) {
-                PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getWorld().getServer()).getRegistry().getBonfires()), (ServerPlayerEntity) event.getEntity());
-                PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler((PlayerEntity) event.getEntity())), (ServerPlayerEntity) event.getEntity());
+            if (event.getEntity() instanceof ServerPlayer player) {
+                PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getWorld().getServer()).getRegistry().getBonfires()), player);
+                PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
             }
         }
     }
@@ -82,14 +82,13 @@ public class Bonfires {
     @SubscribeEvent
     public void changeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!event.getPlayer().level.isClientSide) {
-            PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getPlayer().getServer()).getRegistry().getBonfires()), (ServerPlayerEntity) event.getEntity());
+            PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getPlayer().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
         }
     }
 
     @SubscribeEvent
     public void livingHurt(LivingHurtEvent event) {
-        if (event.getSource().getDirectEntity() instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) event.getSource().getDirectEntity();
+        if (event.getSource().getDirectEntity() instanceof Player player) {
             if (ReinforceHandler.hasHandler(player.getMainHandItem())) {
                 ReinforceHandler.IReinforceHandler reinforce = ReinforceHandler.getHandler(player.getMainHandItem());
                 event.setAmount(event.getAmount() + (0.5F * reinforce.level()));
@@ -98,8 +97,8 @@ public class Bonfires {
     }
 
     @SubscribeEvent
-    public void serverStarting(FMLServerStartingEvent event) {
-        CommandDispatcher<CommandSource> dispatcher = event.getServer().getCommands().getDispatcher();
+    public void serverStarting(ServerStartingEvent event) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getServer().getCommands().getDispatcher();
         BonfiresCommand.register(dispatcher);
         TravelCommand.register(dispatcher);
     }

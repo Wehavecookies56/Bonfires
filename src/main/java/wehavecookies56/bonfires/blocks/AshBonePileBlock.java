@@ -1,43 +1,49 @@
 package wehavecookies56.bonfires.blocks;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import wehavecookies56.bonfires.*;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.server.ServerLifecycleHooks;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
-import wehavecookies56.bonfires.packets.*;
+import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.*;
+import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
@@ -49,7 +55,7 @@ import java.util.Random;
 /**
  * Created by Toby on 05/11/2016.
  */
-public class AshBonePileBlock extends Block {
+public class AshBonePileBlock extends Block implements EntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
@@ -57,81 +63,81 @@ public class AshBonePileBlock extends Block {
     boolean dropFragment = false;
 
     public AshBonePileBlock() {
-        super(AbstractBlock.Properties.of(Material.SAND).sound(SoundType.SAND).noOcclusion().strength(0.8F));
+        super(BlockBehaviour.Properties.of(Material.SAND).sound(SoundType.SAND).noOcclusion().strength(0.8F).lightLevel(AshBonePileBlock::getLightValue));
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(LIT, false));
     }
 
     @Override
-    public float getShadeBrightness(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
+    public float getShadeBrightness(BlockState p_220080_1_, BlockGetter p_220080_2_, BlockPos p_220080_3_) {
         return 1;
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(LIT, false);
     }
 
+
     @Override
-    public Optional<Vector3d> getRespawnPosition(BlockState state, EntityType<?> type, IWorldReader world, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
-        return Optional.of(BonfireTeleporter.attemptToPlaceNextToBonfire(pos, (World) world));
+    public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader world, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
+        return Optional.of(BonfireTeleporter.attemptToPlaceNextToBonfire(pos, (Level) world));
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
         super.createBlockStateDefinition(stateBuilder);
         stateBuilder.add(FACING, LIT);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public BlockRenderType getRenderShape(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (world.getBlockEntity(pos) instanceof BonfireTileEntity) {
-            BonfireTileEntity te = (BonfireTileEntity) world.getBlockEntity(pos);
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
             if (te.isBonfire()) {
                 if (!te.isLit()) {
                     if (!world.isClientSide) {
                         if (BonfireHandler.getServerHandler(world.getServer()).getRegistry().getBonfire(te.getID()) == null) {
-                            PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayerEntity) player);
-                            world.sendBlockUpdated(pos, state, state, Constants.BlockFlags.BLOCK_UPDATE);
-                            return ActionResultType.SUCCESS;
+                            PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayer) player);
+                            world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+                            return InteractionResult.SUCCESS;
                         }
                     } else {
-                        return ActionResultType.SUCCESS;
+                        return InteractionResult.SUCCESS;
                     }
                 } else {
                     if (!world.isClientSide) {
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
-                            GameProfile profile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner());
-                            for (int i = 0; i < player.inventory.items.size(); i++) {
-                                if (!ItemStack.isSame(player.inventory.getItem(i), ItemStack.EMPTY)) {
-                                    if (player.inventory.getItem(i).getItem() == ItemSetup.estus_flask.get()) {
-                                        if (player.inventory.getItem(i).hasTag()) {
-                                            player.inventory.getItem(i).getTag().putInt("estus", player.inventory.getItem(i).getTag().getInt("uses"));
+                            GameProfile profile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner()).get();
+                            for (int i = 0; i < player.getInventory().items.size(); i++) {
+                                if (!ItemStack.isSame(player.getInventory().getItem(i), ItemStack.EMPTY)) {
+                                    if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
+                                        if (player.getInventory().getItem(i).hasTag()) {
+                                            player.getInventory().getItem(i).getTag().putInt("estus", player.getInventory().getItem(i).getTag().getInt("uses"));
                                         }
                                     }
                                 }
-                                if (ReinforceHandler.hasHandler(player.inventory.getItem(i))) {
-                                    PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(player.inventory.getItem(i)), i), (ServerPlayerEntity) player);
+                                if (ReinforceHandler.hasHandler(player.getInventory().getItem(i))) {
+                                    PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(player.getInventory().getItem(i)), i), (ServerPlayer) player);
                                 }
                             }
-                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry), (ServerPlayerEntity) player);
+                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry), (ServerPlayer) player);
                             player.heal(player.getMaxHealth());
-                            ((ServerPlayerEntity) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.yRot, false, true);
+                            ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                             EstusHandler.getHandler(player).setLastRested(te.getID());
-                            PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), (ServerPlayerEntity) player);
-                            world.sendBlockUpdated(pos, state, state, Constants.BlockFlags.BLOCK_UPDATE);
-                            return ActionResultType.SUCCESS;
+                            PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), (ServerPlayer) player);
+                            world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+                            return InteractionResult.SUCCESS;
                         }
                     } else {
-                        return ActionResultType.SUCCESS;
+                        return InteractionResult.SUCCESS;
                     }
                 }
             } else {
@@ -141,30 +147,29 @@ public class AshBonePileBlock extends Block {
                     }/*else if (player.getHeldItemMainhand().getItem() == Bonfires.coiledSwordFragment) {
                         placeItem(world, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
                     }*/
-                    world.sendBlockUpdated(pos, state, state, Constants.BlockFlags.BLOCK_UPDATE);
-                    return ActionResultType.PASS;
+                    world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+                    return InteractionResult.PASS;
                 }
             }
         }
         return super.use(state, world, pos, player, hand, hit);
     }
 
-    public void placeItem(World world, BonfireTileEntity te, BlockPos pos, PlayerEntity player, Hand hand, BonfireTileEntity.BonfireType type) {
+    public void placeItem(Level world, BonfireTileEntity te, BlockPos pos, Player player, InteractionHand hand, BonfireTileEntity.BonfireType type) {
         if (!world.isClientSide) {
             if (!player.isCreative())
                 player.setItemInHand(hand, ItemStack.EMPTY);
-            world.playSound(null, pos, SoundEvents.ANVIL_PLACE, SoundCategory.BLOCKS, 1, 1);
+            world.playSound(null, pos, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
             te.setBonfire(true);
             te.setLit(false);
             te.setBonfireType(type);
             PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), type, te.isLit(), null, te));
         } else {
-            world.playSound(player, pos, SoundEvents.ANVIL_PLACE, SoundCategory.BLOCKS, 1, 1);
+            world.playSound(player, pos, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1, 1);
         }
     }
 
-    @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+    public static int getLightValue(BlockState state) {
         if (state.getValue(LIT)) {
             return 8;
         } else {
@@ -178,14 +183,14 @@ public class AshBonePileBlock extends Block {
     }
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean moving) {
-        if (newState.getBlock().is(Blocks.AIR)) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moving) {
+        if (newState.getBlock() == Blocks.AIR) {
             if (!world.isClientSide()) {
                 BonfireTileEntity te = (BonfireTileEntity) world.getBlockEntity(pos);
                 if (te != null) {
                     if (te.isBonfire()) {
                         dropFragment = true;
-                        ItemEntity fragment = new ItemEntity((World) world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ItemSetup.coiled_sword_fragment.get()));
+                        ItemEntity fragment = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ItemSetup.coiled_sword_fragment.get()));
                         world.addFreshEntity(fragment);
                     }
                     if (te.isLit()) {
@@ -203,7 +208,7 @@ public class AshBonePileBlock extends Block {
 
 
     @Override
-    public void onBlockExploded(BlockState state, World world, BlockPos pos, Explosion explosion) {
+    public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion) {
         if (BonfiresConfig.Common.enableUBSBonfire) {
             if (!world.isClientSide) {
                 if (dropFragment) {
@@ -216,15 +221,15 @@ public class AshBonePileBlock extends Block {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return getShape(state, world, pos, context);
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        VoxelShape base = VoxelShapes.join(Block.box(3.0D, 0.0D, 3.0D, 13.0D, 1.0, 13.0D), Block.box(4.0D, 1.0D, 4.0D, 12.0D, 2.0, 12.0D), IBooleanFunction.OR);
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        VoxelShape base = Shapes.join(Block.box(3.0D, 0.0D, 3.0D, 13.0D, 1.0, 13.0D), Block.box(4.0D, 1.0D, 4.0D, 12.0D, 2.0, 12.0D), BooleanOp.OR);
         VoxelShape sword = Block.box(5, 2, 5, 11, 20, 11);
-        VoxelShape combined = VoxelShapes.join(base, sword, IBooleanFunction.OR);
+        VoxelShape combined = Shapes.join(base, sword, BooleanOp.OR);
         if (world.getBlockEntity(pos) != null) {
             if (world.getBlockEntity(pos) instanceof BonfireTileEntity) {
                 if (((BonfireTileEntity)world.getBlockEntity(pos)).isBonfire()) {
@@ -236,17 +241,12 @@ public class AshBonePileBlock extends Block {
     }
 
     @Override
-    public VoxelShape getVisualShape(BlockState p_230322_1_, IBlockReader p_230322_2_, BlockPos p_230322_3_, ISelectionContext p_230322_4_) {
-        return super.getVisualShape(p_230322_1_, p_230322_2_, p_230322_3_, p_230322_4_);
-    }
-
-    @Override
     public boolean hasDynamicShape() {
         return true;
     }
 
     @Override
-    public void animateTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, Random random) {
         if (world.getBlockEntity(pos) != null) {
             BonfireTileEntity bonfire = (BonfireTileEntity) world.getBlockEntity(pos);
             if (bonfire.isLit()) {
@@ -258,7 +258,7 @@ public class AshBonePileBlock extends Block {
                 double d5 = random.nextDouble() * 0.6D - 0.3D;
 
                 if (random.nextDouble() < 0.1D) {
-                    world.playLocalSound((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, SoundEvents.CAMPFIRE_CRACKLE, SoundCategory.BLOCKS, 0.5F, 1.0F, false);
+                    world.playLocalSound((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS, 0.5F, 1.0F, false);
                 }
                 //worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
                 world.addParticle(ParticleTypes.FLAME, d0 + d5, d1, d2 + d4, 0.0D, 0.05D, 0.0D);
@@ -268,14 +268,11 @@ public class AshBonePileBlock extends Block {
         super.animateTick(state, world, pos, random);
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new BonfireTileEntity();
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return EntitySetup.BONFIRE.get().create(pPos, pState);
     }
+
+
 }

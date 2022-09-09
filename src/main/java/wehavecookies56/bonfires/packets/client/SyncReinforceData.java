@@ -1,14 +1,9 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -22,7 +17,7 @@ public class SyncReinforceData extends Packet<SyncReinforceData> {
     public int maxLevel;
     public int slot;
 
-    public SyncReinforceData(PacketBuffer buffer) {
+    public SyncReinforceData(FriendlyByteBuf buffer) {
        super(buffer);
     }
 
@@ -33,14 +28,14 @@ public class SyncReinforceData extends Packet<SyncReinforceData> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         this.level = buffer.readInt();
         this.maxLevel = buffer.readInt();
         this.slot = buffer.readInt();
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeInt(level);
         buffer.writeInt(maxLevel);
         buffer.writeInt(slot);

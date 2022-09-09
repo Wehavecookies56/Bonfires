@@ -1,16 +1,16 @@
 package wehavecookies56.bonfires.packets.server;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
+import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
-import wehavecookies56.bonfires.LocalStrings;
-import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.DisplayTitle;
@@ -29,7 +29,7 @@ public class LightBonfire extends Packet<LightBonfire> {
     private int x, y, z;
     private boolean isPublic;
 
-    public LightBonfire(PacketBuffer buffer) {
+    public LightBonfire(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -42,7 +42,7 @@ public class LightBonfire extends Packet<LightBonfire> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         this.name = buffer.readUtf();
         this.x = buffer.readInt();
         this.y = buffer.readInt();
@@ -51,7 +51,7 @@ public class LightBonfire extends Packet<LightBonfire> {
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeUtf(name);
         buffer.writeInt(x);
         buffer.writeInt(y);
@@ -62,7 +62,7 @@ public class LightBonfire extends Packet<LightBonfire> {
     @Override
     public void handle(NetworkEvent.Context context) {
         BlockPos pos = new BlockPos(x, y, z);
-        PlayerEntity player = context.getSender();
+        Player player = context.getSender();
         if (player != null) {
             BonfireTileEntity te = (BonfireTileEntity) player.level.getBlockEntity(pos);
             if (te != null) {
@@ -71,12 +71,12 @@ public class LightBonfire extends Packet<LightBonfire> {
                 te.createBonfire(name, id, player.getUUID(), isPublic);
                 te.setID(id);
                 player.level.setBlock(pos, player.level.getBlockState(pos).setValue(AshBonePileBlock.LIT, true), 2);
-                ((ServerPlayerEntity) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.yRot, false, true);
+                ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
-                BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger((ServerPlayerEntity) player);
+                BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger((ServerPlayer) player);
                 PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
                 PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level).getRegistry().getBonfires()));
-                PacketHandler.sendTo(new DisplayTitle(LocalStrings.TEXT_LIT, name, 15, 20, 15), (ServerPlayerEntity) player);
+                PacketHandler.sendTo(new DisplayTitle(LocalStrings.TEXT_LIT, name, 15, 20, 15), (ServerPlayer) player);
                 Bonfires.LOGGER.info("Bonfire" + "'" + name + "'" + " lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayName().getString());
             }
         }

@@ -1,8 +1,8 @@
 package wehavecookies56.bonfires.bonfire;
 
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
@@ -15,10 +15,10 @@ public class Bonfire {
     private UUID id;
     private UUID owner;
     private BlockPos pos;
-    RegistryKey<World> dimension;
+    ResourceKey<Level> dimension;
     boolean isPublic;
 
-    public Bonfire(String name, UUID id, UUID owner, BlockPos pos, RegistryKey<World> dimension, boolean isPublic) {
+    public Bonfire(String name, UUID id, UUID owner, BlockPos pos, ResourceKey<Level> dimension, boolean isPublic) {
         this.name = name;
         this.id = id;
         this.owner = owner;
@@ -59,11 +59,11 @@ public class Bonfire {
         this.pos = pos;
     }
 
-    public RegistryKey<World> getDimension() {
+    public ResourceKey<Level> getDimension() {
         return dimension;
     }
 
-    public void setDimension(RegistryKey<World> dimension) {
+    public void setDimension(ResourceKey<Level> dimension) {
         this.dimension = dimension;
     }
 

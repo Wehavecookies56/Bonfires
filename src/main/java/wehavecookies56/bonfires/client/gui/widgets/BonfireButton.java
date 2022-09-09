@@ -1,14 +1,15 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -19,7 +20,7 @@ public class BonfireButton extends ExtendedButton {
     private Bonfire bonfire;
 
     public BonfireButton(BonfireScreen parent, int id, int x, int y) {
-        super(x, y, 93, Minecraft.getInstance().font.lineHeight+4, new TranslationTextComponent(""), button -> {
+        super(x, y, 93, Minecraft.getInstance().font.lineHeight+4, new TextComponent(""), button -> {
             parent.action(id);
         });
         this.parent = parent;
@@ -34,12 +35,12 @@ public class BonfireButton extends ExtendedButton {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         if (bonfire != null) {
             if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
-                setMessage(new TranslationTextComponent(bonfire.getName()));
+                setMessage(new TranslatableComponent(bonfire.getName()));
                 if (visible) {
-                    FontRenderer fontrenderer = Minecraft.getInstance().font;
+                    Font fontrenderer = Minecraft.getInstance().font;
                     int colour = new Color(255, 255, 255).hashCode();
                     if (parent.bonfireSelected >= parent.BONFIRE1) {
                         if (parent.bonfires != null) {
@@ -64,7 +65,7 @@ public class BonfireButton extends ExtendedButton {
             }
         } else {
             visible = false;
-            setMessage(new TranslationTextComponent(""));
+            setMessage(new TextComponent(""));
         }
     }
 

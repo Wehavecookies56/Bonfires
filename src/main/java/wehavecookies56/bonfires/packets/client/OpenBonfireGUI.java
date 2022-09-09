@@ -1,15 +1,15 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -23,9 +23,9 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     public BlockPos tileEntity;
     public String ownerName;
     public BonfireRegistry registry;
-    public List<RegistryKey<World>> dimensions;
+    public List<ResourceKey<Level>> dimensions;
 
-    public OpenBonfireGUI(PacketBuffer buffer) {
+    public OpenBonfireGUI(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -37,7 +37,7 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         ownerName = buffer.readUtf();
         tileEntity = buffer.readBlockPos();
         registry = new BonfireRegistry();
@@ -45,15 +45,15 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
         dimensions = new ArrayList<>();
         int size = buffer.readVarInt();
         for (int i = 0; i < size; ++i) {
-            dimensions.add(RegistryKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation()));
+            dimensions.add(ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation()));
         }
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeUtf(ownerName);
         buffer.writeBlockPos(tileEntity);
-        buffer.writeNbt(registry.writeToNBT(new CompoundNBT(), registry.getBonfires()));
+        buffer.writeNbt(registry.writeToNBT(new CompoundTag(), registry.getBonfires()));
         buffer.writeVarInt(dimensions.size());
         for (int i = 0; i < dimensions.size(); ++i) {
             buffer.writeResourceLocation(dimensions.get(i).location());

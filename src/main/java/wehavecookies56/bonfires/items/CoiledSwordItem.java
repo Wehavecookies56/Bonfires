@@ -1,16 +1,12 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
 import wehavecookies56.bonfires.BonfiresGroup;
-import wehavecookies56.bonfires.data.ReinforceHandler;
-
-import javax.annotation.Nullable;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -18,7 +14,7 @@ import javax.annotation.Nullable;
 public class CoiledSwordItem extends SwordItem {
 
     public CoiledSwordItem() {
-        super(new IItemTier() {
+        super(new Tier() {
             @Override
             public int getUses() {
                 return 105;

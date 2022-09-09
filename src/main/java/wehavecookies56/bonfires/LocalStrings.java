@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires;
 
-import net.minecraft.util.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 /**
  * Created by Toby on 15/11/2016.
@@ -41,6 +41,9 @@ public class LocalStrings {
             BUTTON_SET_PRIVATE = "button.bonfires.set_private",
             BUTTON_REINFORCE = "button.bonfires.reinforce",
 
+            NARRATION_BUTTON_CHECKBOX_CHECKED = "narration.bonfires.button.checkbox.checked",
+            NARRATION_BUTTON_CHECKBOX_UNCHECKED = "narration.bonfires.button.checkbox.unchecked",
+
             TEXT_NAME = "text.bonfires.name",
             TEXT_LIT = "bonfire.lit",
             TEXT_PRIVATE = "text.bonfires.private",
@@ -54,7 +57,7 @@ public class LocalStrings {
             ITEMGROUP_BONFIRES = "bonfires"
     ;
 
-    public static String getDimensionKey(RegistryKey<World> dimension) {
+    public static String getDimensionKey(ResourceKey<Level> dimension) {
         return "dimensions." + dimension.location().getNamespace() + "." + dimension.location().getPath();
     }
 }

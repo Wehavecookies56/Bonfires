@@ -1,15 +1,15 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
 public class DisplayTitle extends Packet<DisplayTitle> {
 
-    public DisplayTitle(PacketBuffer buffer) {
+    public DisplayTitle(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -25,7 +25,7 @@ public class DisplayTitle extends Packet<DisplayTitle> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         title = buffer.readUtf();
         subtitle = buffer.readUtf();
         fadein = buffer.readInt();
@@ -34,7 +34,7 @@ public class DisplayTitle extends Packet<DisplayTitle> {
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeUtf(title);
         buffer.writeUtf(subtitle);
         buffer.writeInt(fadein);

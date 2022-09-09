@@ -1,19 +1,16 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
-import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
 import java.util.HashMap;
@@ -27,7 +24,7 @@ public class SyncSaveData extends Packet<SyncSaveData> {
 
     public Map<UUID, Bonfire> bonfires;
 
-    public SyncSaveData(PacketBuffer buffer) {
+    public SyncSaveData(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -36,14 +33,14 @@ public class SyncSaveData extends Packet<SyncSaveData> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         bonfires = new HashMap<>();
         while (buffer.isReadable()) {
             UUID key = buffer.readUUID();
             String name = buffer.readUtf();
             UUID owner = buffer.readUUID();
             BlockPos pos = new BlockPos(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-            RegistryKey<World> dim = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buffer.readUtf()));
+            ResourceKey<Level> dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buffer.readUtf()));
             boolean isPublic = buffer.readBoolean();
             Bonfire bonfire = new Bonfire(name, key, owner, pos, dim, isPublic);
             bonfires.put(key, bonfire);
@@ -51,7 +48,7 @@ public class SyncSaveData extends Packet<SyncSaveData> {
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             buffer.writeUUID(pair.getKey());
             Bonfire bonfire = pair.getValue();

@@ -47,6 +47,8 @@
     "button.bonfires.accept": "Accept",
     "button.bonfires.set_private": "Set private",
     "button.bonfires.reinforce": "Reinforce",
+    "narration.bonfires.button.checkbox.checked": "Checked",
+    "narration.bonfires.button.checkbox.unchecked": "Unchecked",
 
     "text.bonfires.name": "Enter a name for the bonfire",
     "bonfire.lit": "BONFIRE LIT",

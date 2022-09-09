@@ -1,20 +1,24 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.LocalStrings;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class GuiButtonCheckBox extends AbstractButton {
 
     private boolean checked;
 
     public GuiButtonCheckBox(int x, int y, String buttonText, boolean checked) {
-        super(x, y, 10, 10, new TranslationTextComponent(buttonText));
+        super(x, y, 10, 10, new TranslatableComponent(buttonText));
         this.checked = checked;
     }
 
@@ -24,9 +28,9 @@ public class GuiButtonCheckBox extends AbstractButton {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            Minecraft.getInstance().textureManager.bind(new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png"));
+            RenderSystem.setShaderTexture(0, new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png"));
             blit(stack, x, y, 0, 0, 10, 10);
             if (checked) {
                 blit(stack, x, y, 10, 0, 10, 10);
@@ -46,5 +50,11 @@ public class GuiButtonCheckBox extends AbstractButton {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+        this.defaultButtonNarrationText(pNarrationElementOutput);
+        pNarrationElementOutput.add(NarratedElementType.HINT, isChecked() ? new TranslatableComponent(LocalStrings.NARRATION_BUTTON_CHECKBOX_CHECKED) : new TranslatableComponent(LocalStrings.NARRATION_BUTTON_CHECKBOX_UNCHECKED));
     }
 }

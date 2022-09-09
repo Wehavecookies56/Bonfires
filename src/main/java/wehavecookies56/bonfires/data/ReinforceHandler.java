@@ -1,29 +1,26 @@
 package wehavecookies56.bonfires.data;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.TieredItem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.setup.ItemSetup;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -32,15 +29,19 @@ import java.util.List;
 public class ReinforceHandler {
 
     public static void init() {
-        CapabilityManager.INSTANCE.register(ReinforceHandler.IReinforceHandler.class, new Storage(), Default::new);
         MinecraftForge.EVENT_BUS.register(new ReinforceHandler());
+    }
+
+    @SubscribeEvent
+    public static void register(RegisterCapabilitiesEvent event) {
+        event.register(IReinforceHandler.class);
     }
 
     @SubscribeEvent
     public void attachCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
         for (String s : BonfiresConfig.Common.reinforceBlacklist) {
-            if (GameRegistry.findRegistry(Item.class).containsKey(new ResourceLocation(s))) {
-                Item blacklistedItem = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(s));
+            if (ForgeRegistries.ITEMS.containsKey(new ResourceLocation(s))) {
+                Item blacklistedItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(s));
                 if (event.getObject().getItem() == blacklistedItem) {
                     return;
                 }
@@ -48,7 +49,7 @@ public class ReinforceHandler {
                 Bonfires.LOGGER.info("Unable to find blacklisted item '" + s + "' in the registry");
             }
         }
-        if (event.getObject().getItem() instanceof ToolItem || event.getObject().getItem() instanceof SwordItem || event.getObject().getItem() instanceof EstusFlaskItem) {
+        if (event.getObject().getItem() instanceof TieredItem || event.getObject().getItem() instanceof SwordItem || event.getObject().getItem() instanceof EstusFlaskItem) {
             event.addCapability(new ResourceLocation(Bonfires.modid, "reinforce"), new Provider());
         }
     }
@@ -95,10 +96,9 @@ public class ReinforceHandler {
         return ItemStack.EMPTY;
     }
 
-    @CapabilityInject(IReinforceHandler.class)
-    public static final Capability<IReinforceHandler> CAPABILITY_REINFORCE = null;
+    public static final Capability<IReinforceHandler> CAPABILITY_REINFORCE = CapabilityManager.get(new CapabilityToken<>() {});
 
-    public interface IReinforceHandler {
+    public interface IReinforceHandler extends INBTSerializable<CompoundTag> {
         int level();
         int maxLevel();
         void setLevel(int level);
@@ -142,56 +142,51 @@ public class ReinforceHandler {
         public void setMaxLevel(int maxLevel) {
             this.maxLevel = maxLevel;
         }
-    }
 
-    public static class Storage implements Capability.IStorage<IReinforceHandler> {
-
-        @Nullable
         @Override
-        public INBT writeNBT(Capability<IReinforceHandler> capability, IReinforceHandler instance, Direction side) {
-            final CompoundNBT tag = new CompoundNBT();
-            tag.putInt("level", instance.level());
-            tag.putInt("maxLevel", instance.maxLevel());
+        public CompoundTag serializeNBT() {
+            final CompoundTag tag = new CompoundTag();
+            tag.putInt("level", level());
+            tag.putInt("maxLevel", maxLevel());
             return tag;
         }
 
         @Override
-        public void readNBT(Capability<IReinforceHandler> capability, IReinforceHandler instance, Direction side, INBT nbt) {
-            final CompoundNBT tag = (CompoundNBT) nbt;
-            instance.setLevel(tag.getInt("level"));
-            instance.setMaxLevel(tag.getInt("maxLevel"));
+        public void deserializeNBT(CompoundTag tag) {
+            setLevel(tag.getInt("level"));
+            setMaxLevel(tag.getInt("maxLevel"));
         }
     }
 
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundNBT> {
-        IReinforceHandler instance = CAPABILITY_REINFORCE.getDefaultInstance();
+    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
+        IReinforceHandler instance = new ReinforceHandler.Default();
 
         @Override
-        public CompoundNBT serializeNBT() {
-            return (CompoundNBT) CAPABILITY_REINFORCE.getStorage().writeNBT(CAPABILITY_REINFORCE, instance, null);
+        public CompoundTag serializeNBT() {
+            return instance.serializeNBT();
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            CAPABILITY_REINFORCE.getStorage().readNBT(CAPABILITY_REINFORCE, instance, null, nbt);
+        public void deserializeNBT(CompoundTag nbt) {
+            instance.deserializeNBT(nbt);
         }
 
-        @Nonnull
+        @NotNull
         @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
             return CAPABILITY_REINFORCE.orEmpty(cap, LazyOptional.of(() -> instance));
         }
     }
 
-    public static boolean hasRequiredItems(PlayerEntity player, ItemStack required) {
+    public static boolean hasRequiredItems(Player player, ItemStack required) {
         int hasCount = 0;
         int countRequired = required.getCount();
-        for (int i = 0; i < player.inventory.items.size(); i++) {
-            if (ItemStack.isSame(required, player.inventory.getItem(i))) {
+        for (int i = 0; i < player.getInventory().items.size(); i++) {
+            if (ItemStack.matches(required, player.getInventory().getItem(i))) {
                 return true;
             } else {
-                if (ItemStack.isSame(player.inventory.getItem(i), required)) {
-                    hasCount += player.inventory.getItem(i).getCount();
+                if (ItemStack.matches(player.getInventory().getItem(i), required)) {
+                    hasCount += player.getInventory().getItem(i).getCount();
                 }
             }
         }
@@ -202,18 +197,18 @@ public class ReinforceHandler {
         }
     }
 
-    public static void removeRequiredItems(PlayerEntity player, ItemStack required) {
+    public static void removeRequiredItems(Player player, ItemStack required) {
         if (hasRequiredItems(player, required)) {
             int remaining = required.getCount();
-            for (int i = 0; i < player.inventory.items.size(); i++) {
-                ItemStack item = player.inventory.getItem(i);
+            for (int i = 0; i < player.getInventory().items.size(); i++) {
+                ItemStack item = player.getInventory().getItem(i);
                 if (ItemStack.isSame(required, item)) {
                     if (item.getCount() >= remaining) {
                         item.shrink(remaining);
                         return;
                     } else {
                         remaining -= item.getCount();
-                        player.inventory.setItem(i, ItemStack.EMPTY);
+                        player.getInventory().setItem(i, ItemStack.EMPTY);
                     }
                 }
                 if (remaining == 0) {

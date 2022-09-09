@@ -1,17 +1,17 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
@@ -24,12 +24,12 @@ import java.util.List;
 public class DimensionTabButton extends Button {
 
     private BonfireScreen parent;
-    private RegistryKey<World> dimension;
+    private ResourceKey<Level> dimension;
     private int id;
     private Item icon = Items.FILLED_MAP;
 
     public DimensionTabButton(BonfireScreen parent, int buttonId, int x, int y) {
-        super(x, y, 28, 30, new TranslationTextComponent(""), b -> {
+        super(x, y, 28, 30, new TextComponent(""), b -> {
             parent.action(buttonId);
         });
         this.id = buttonId;
@@ -45,8 +45,8 @@ public class DimensionTabButton extends Button {
                     String dimID = split[0];
                     String item = split[1];
                     if (dimID.equals(dimension.location().toString())) {
-                        if (GameRegistry.findRegistry(Item.class).containsKey(new ResourceLocation(item))) {
-                            return icon = GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(item));
+                        if (ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item))) {
+                            return icon = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
                         } else {
                             return icon;
                         }
@@ -69,25 +69,24 @@ public class DimensionTabButton extends Button {
         this.icon = Items.FILLED_MAP;
     }
     
-    public RegistryKey<World> getDimension() {
+    public ResourceKey<Level> getDimension() {
         return dimension;
     }
 
-    public void setDimension(RegistryKey<World> dimension) {
+    public void setDimension(ResourceKey<Level> dimension) {
         this.dimension = dimension;
         this.resetIcon();
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.pushMatrix();
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             int tab_width = 28;
             int tab_height = 30;
             int tab_u = 28;
             int tab_v = parent.travel_height;
-            Minecraft.getInstance().textureManager.bind(parent.TRAVEL_TEX);
-            RenderSystem.color4f(1, 1, 1, 1);
+            RenderSystem.setShaderTexture(0, parent.TRAVEL_TEX);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
@@ -98,6 +97,5 @@ public class DimensionTabButton extends Button {
                 Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(getIcon(), 1), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8 -1);
             }
         }
-        RenderSystem.popMatrix();
     }
 }

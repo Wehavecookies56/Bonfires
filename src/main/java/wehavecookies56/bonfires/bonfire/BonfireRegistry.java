@@ -1,12 +1,11 @@
 package wehavecookies56.bonfires.bonfire;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import wehavecookies56.bonfires.Bonfires;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,11 +39,11 @@ public class BonfireRegistry {
     }
 
     public List<Bonfire> getBonfiresByOwner(UUID owner) {
-        return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0).collect(Collectors.toList());
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0).toList();
     }
 
     public List<Bonfire> getBonfiresByName(String name) {
-        return getBonfires().values().stream().filter(bonfire -> bonfire.getName().toLowerCase().contains(name.toLowerCase())).collect(Collectors.toList());
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getName().toLowerCase().contains(name.toLowerCase())).toList();
 
     }
 
@@ -66,8 +65,8 @@ public class BonfireRegistry {
         }).collect(Collectors.toList());
     }
 
-    public Bonfire getBonfireAtPos(BlockPos pos, RegistryKey<World> dim) {
-        List<Bonfire> result = getBonfiresByDimension(dim.location()).stream().filter(bonfire -> pos.equals(bonfire.getPos())).collect(Collectors.toList());
+    public Bonfire getBonfireAtPos(BlockPos pos, ResourceKey<Level> dim) {
+        List<Bonfire> result = getBonfiresByDimension(dim.location()).stream().filter(bonfire -> pos.equals(bonfire.getPos())).toList();
         if (result.size() > 0) {
             return result.get(0);
         }
@@ -122,9 +121,9 @@ public class BonfireRegistry {
         return bonfires.getOrDefault(id, null);
     }
 
-    public CompoundNBT writeToNBT(CompoundNBT tagCompound, Map<UUID, Bonfire> bonfires) {
+    public CompoundTag writeToNBT(CompoundTag tagCompound, Map<UUID, Bonfire> bonfires) {
         for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
-            CompoundNBT bonfireCompound = new CompoundNBT();
+            CompoundTag bonfireCompound = new CompoundTag();
             bonfireCompound.putUUID("ID", pair.getValue().getId());
             bonfireCompound.putString("NAME", pair.getValue().getName());
             bonfireCompound.putUUID("OWNER", pair.getValue().getOwner());
@@ -138,14 +137,14 @@ public class BonfireRegistry {
         return tagCompound;
     }
 
-    public void readFromNBT(CompoundNBT tagCompound, Map<UUID, Bonfire> bonfires) {
+    public void readFromNBT(CompoundTag tagCompound, Map<UUID, Bonfire> bonfires) {
         for (String key : tagCompound.getAllKeys()) {
-            CompoundNBT compound = tagCompound.getCompound(key);
+            CompoundTag compound = tagCompound.getCompound(key);
             String name = compound.getString("NAME");
             UUID id = compound.getUUID("ID");
             UUID owner = compound.getUUID("OWNER");
             BlockPos pos = new BlockPos(compound.getDouble("POSX"), compound.getDouble("POSY"), compound.getDouble("POSZ"));
-            RegistryKey<World> dimension = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(compound.getString("DIM")));
+            ResourceKey<Level> dimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(compound.getString("DIM")));
             boolean isPublic = compound.getBoolean("PUBLIC");
             Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic);
             bonfires.put(id, bonfire);

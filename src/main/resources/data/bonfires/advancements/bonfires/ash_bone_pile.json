@@ -17,7 +17,9 @@
 			"conditions": {
 				"items": [
 					{
-						"item": "bonfires:ash_bone_pile"
+						"items": [
+							"bonfires:ash_bone_pile"
+						]
 					}
 				]
 			}
@@ -29,6 +31,6 @@
 		]
 	],
 	"rewards": {
-        "recipes": [ "bonfires:coiled_sword_hard" ]
+        "recipes": [ "bonfires:coiled_sword" ]
     }
 }

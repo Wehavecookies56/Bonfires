@@ -1,18 +1,17 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.BonfiresGroup;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -22,16 +21,16 @@ import java.util.List;
 public class EstusFlaskItem extends Item {
 
     public EstusFlaskItem() {
-        super(new Properties().tab(BonfiresGroup.INSTANCE).stacksTo(1).food(new Food.Builder().alwaysEat().nutrition(0).saturationMod(0).build()));
+        super(new Properties().tab(BonfiresGroup.INSTANCE).stacksTo(1).food(new FoodProperties.Builder().alwaysEat().nutrition(0).saturationMod(0).build()));
     }
 
     @Override
-    public UseAction getUseAnimation(ItemStack p_77661_1_) {
-        return UseAction.DRINK;
+    public UseAnim getUseAnimation(ItemStack p_77661_1_) {
+        return UseAnim.DRINK;
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, World world, LivingEntity entity) {
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity entity) {
         if (!world.isClientSide) {
             if (stack.getTag() != null) {
                 if (stack.getTag().getInt("estus") > 0) {
@@ -48,25 +47,17 @@ public class EstusFlaskItem extends Item {
     }
 
     @Override
-    public double getDurabilityForDisplay(ItemStack stack) {
+    public int getBarColor(ItemStack stack) {
         if (stack.getTag() != null) {
-            return 1 - (double)stack.getTag().getInt("estus") / (double)stack.getTag().getInt("uses");
-        } else {
-            return 1 - (double)0 / (double)15;
-        }
-    }
-
-    @Override
-    public int getRGBDurabilityForDisplay(@Nonnull ItemStack stack) {
-        if (stack.getTag() != null) {
-            return MathHelper.hsvToRgb(Math.max(0.0F, 1.0F / ((float)stack.getTag().getInt("uses") - (float)stack.getTag().getInt("estus")) / (float)stack.getTag().getInt("uses")) / 3.0F, 1.0F, 1.0F);
+            float f = Math.max(0.0F, (float)stack.getTag().getInt("estus")) / stack.getTag().getInt("uses");
+            return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
         } else {
             return 0x00000000;
         }
     }
 
     @Override
-    public boolean showDurabilityBar(ItemStack stack) {
+    public boolean isBarVisible(ItemStack stack) {
         if (stack.getTag() != null) {
             return stack.getTag().getInt("estus") < stack.getTag().getInt("uses");
         }
@@ -74,11 +65,20 @@ public class EstusFlaskItem extends Item {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup tab, NonNullList<ItemStack> items) {
+    public int getBarWidth(ItemStack stack) {
+        if (stack.getTag() != null) {
+            return Math.round((float)13 * ((float)stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses")));
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
         if (tab.equals(BonfiresGroup.INSTANCE)) {
             for (int i = 3; i < 16; ++i) {
                 ItemStack stack = new ItemStack(this);
-                stack.setTag(new CompoundNBT());
+                stack.setTag(new CompoundTag());
                 if (stack.getTag() != null) {
                     stack.getTag().putInt("uses", i);
                     stack.getTag().putInt("estus", i);
@@ -89,11 +89,11 @@ public class EstusFlaskItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag advanced) {
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag advanced) {
         if (stack.getTag() != null) {
             if (stack.getTag().contains("uses")) {
                 if (stack.getTag().contains("estus")) {
-                    tooltip.add(new TranslationTextComponent("Uses: " + stack.getTag().getInt("estus") + "/" + stack.getTag().getInt("uses")));
+                    tooltip.add(new TranslatableComponent("Uses: " + stack.getTag().getInt("estus") + "/" + stack.getTag().getInt("uses")));
                 }
             }
         }

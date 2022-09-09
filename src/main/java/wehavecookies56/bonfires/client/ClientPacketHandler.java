@@ -1,12 +1,13 @@
 package wehavecookies56.bonfires.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.DistExecutor;
 import org.apache.commons.lang3.text.WordUtils;
 import wehavecookies56.bonfires.Bonfires;
@@ -17,7 +18,12 @@ import wehavecookies56.bonfires.client.gui.CreateBonfireScreen;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
-import wehavecookies56.bonfires.packets.client.*;
+import wehavecookies56.bonfires.packets.client.DisplayTitle;
+import wehavecookies56.bonfires.packets.client.OpenBonfireGUI;
+import wehavecookies56.bonfires.packets.client.SendDimensionsToClient;
+import wehavecookies56.bonfires.packets.client.SyncBonfire;
+import wehavecookies56.bonfires.packets.client.SyncReinforceData;
+import wehavecookies56.bonfires.packets.client.SyncSaveData;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
@@ -63,9 +69,10 @@ public class ClientPacketHandler {
         return new DistExecutor.SafeRunnable() {
             @Override
             public void run() {
-                Minecraft.getInstance().gui.setTitles(new TranslationTextComponent(packet.title), null, 0, 0, 0);
-                Minecraft.getInstance().gui.setTitles(null, new TranslationTextComponent(packet.subtitle), 0, 0, 0);
-                Minecraft.getInstance().gui.setTitles(null, null, packet.fadein, packet.stay, packet.fadeout);
+                Gui gui = Minecraft.getInstance().gui;
+                gui.setTitle(new TranslatableComponent(packet.title));
+                gui.setSubtitle(new TranslatableComponent(packet.subtitle));
+                gui.setTimes(packet.fadein, packet.stay, packet.fadeout);
             }
         };
     }
@@ -75,7 +82,7 @@ public class ClientPacketHandler {
             @Override
             public void run() {
                 BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
-                World level = Minecraft.getInstance().level;
+                Level level = Minecraft.getInstance().level;
                 if (level.getBlockEntity(pos) != null && level.getBlockEntity(pos) instanceof BonfireTileEntity) {
                     BonfireTileEntity te = (BonfireTileEntity) level.getBlockEntity(pos);
                     if (te != null) {
@@ -94,15 +101,15 @@ public class ClientPacketHandler {
         return new DistExecutor.SafeRunnable() {
             @Override
             public void run() {
-                ItemStack stack = Minecraft.getInstance().player.inventory.getItem(packet.slot);
+                ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(packet.slot);
                 ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(stack);
                 handler.setMaxLevel(packet.maxLevel);
                 handler.setLevel(packet.level);
                 if (packet.level != 0) {
                     stack.resetHoverName();
-                    stack.setHoverName(new TranslationTextComponent(stack.getHoverName().getString() + " +" + packet.level).setStyle(Style.EMPTY.withItalic(false)));
+                    stack.setHoverName(new TranslatableComponent(stack.getHoverName().getString() + " +" + packet.level).setStyle(Style.EMPTY.withItalic(false)));
                 }
-                Minecraft.getInstance().player.inventory.setItem(packet.slot, stack);
+                Minecraft.getInstance().player.getInventory().setItem(packet.slot, stack);
             }
         };
     }
@@ -138,9 +145,10 @@ public class ClientPacketHandler {
                 } else {
                     formattedDimName = I18n.get(LocalStrings.getDimensionKey(bonfire.getDimension()));
                 }
-                Minecraft.getInstance().gui.setTitles(new TranslationTextComponent(bonfire.getName()), null, 0, 0, 0);
-                Minecraft.getInstance().gui.setTitles(null, new TranslationTextComponent(formattedDimName), 0, 0, 0);
-                Minecraft.getInstance().gui.setTitles(null, null, 10, 20, 10);
+                Gui gui = Minecraft.getInstance().gui;
+                gui.setTitle(new TranslatableComponent(bonfire.getName()));
+                gui.setSubtitle(new TranslatableComponent(formattedDimName));
+                gui.setTimes(10, 20, 10);
             }
         };
     }

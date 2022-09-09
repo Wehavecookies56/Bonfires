@@ -1,10 +1,9 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.TextComponent;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
 /**
@@ -17,7 +16,7 @@ public class BonfirePageButton extends Button {
     private int id;
 
     public BonfirePageButton(BonfireScreen parent, int id, int x, int y, boolean isNext) {
-        super(x, y, 8, 14, new TranslationTextComponent(""), press -> {
+        super(x, y, 8, 14, new TextComponent(""), press -> {
             parent.action(id);
         });
         this.id = id;
@@ -26,9 +25,9 @@ public class BonfirePageButton extends Button {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            Minecraft.getInstance().textureManager.bind(parent.TRAVEL_TEX);
+            RenderSystem.setShaderTexture(0, parent.TRAVEL_TEX);
             int texWidth = 8;
             int texHeight = 14;
             int u = 256 - texWidth * 2;
@@ -42,10 +41,8 @@ public class BonfirePageButton extends Button {
             if (!active) {
                 v = texHeight * 2;
             }
-            RenderSystem.pushMatrix();
-            RenderSystem.color4f(1, 1, 1, 1);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
             blit(stack, x, y, u, v, width, height);
-            RenderSystem.popMatrix();
         }
     }
 }

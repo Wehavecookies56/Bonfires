@@ -17,7 +17,9 @@
 			"conditions": {
 				"items": [
 					{
-						"item": "bonfires:estus_flask"
+						"items": [
+							"bonfires:estus_flask"
+						]
 					}
 				]
 			}

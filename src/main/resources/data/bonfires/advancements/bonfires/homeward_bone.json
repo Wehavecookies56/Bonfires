@@ -17,7 +17,9 @@
 			"conditions": {
 				"items": [
 					{
-						"item": "bonfires:homeward_bone"
+						"items": [
+							"bonfires:homeward_bone"
+						]
 					}
 				]
 			}

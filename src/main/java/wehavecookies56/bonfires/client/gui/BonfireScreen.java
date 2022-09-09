@@ -1,18 +1,26 @@
 package wehavecookies56.bonfires.client.gui;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.*;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
-import wehavecookies56.bonfires.*;
+import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.client.gui.widgets.BonfireButton;
@@ -23,9 +31,12 @@ import wehavecookies56.bonfires.packets.server.RequestDimensionsFromServer;
 import wehavecookies56.bonfires.packets.server.Travel;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -44,11 +55,9 @@ public class BonfireScreen extends Screen {
     private Button next;
     private Button prev;
 
-    public Map<RegistryKey<World>, List<List<Bonfire>>> bonfires;
+    public Map<ResourceKey<Level>, List<List<Bonfire>>> bonfires;
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private List<Integer> buttonIDs;
-    private List<List<RegistryKey<World>>> pages;
+    private List<List<ResourceKey<Level>>> pages;
 
     private int currentPage = 0;
     public int bonfirePage = 0;
@@ -94,22 +103,22 @@ public class BonfireScreen extends Screen {
     public String ownerName = "";
 
     public BonfireRegistry registry;
-    public List<RegistryKey<World>> dimensions;
+    public List<ResourceKey<Level>> dimensions;
 
-    public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<RegistryKey<World>> dimensions, BonfireRegistry registry) {
-        super(new TranslationTextComponent(""));
+    public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<ResourceKey<Level>> dimensions, BonfireRegistry registry) {
+        super(new TextComponent(""));
         this.bonfire = bonfire;
         this.ownerName = ownerName;
         this.registry = registry;
         minecraft = Minecraft.getInstance();
-        this.dimensions = dimensions.stream().sorted(Comparator.comparing(RegistryKey::location)).collect(Collectors.toList());
+        this.dimensions = dimensions.stream().sorted(Comparator.comparing(ResourceKey::location)).collect(Collectors.toList());
     }
 
-    public void drawCenteredStringNoShadow(MatrixStack stack, FontRenderer fr, String text, int x, int y, int color) {
+    public void drawCenteredStringNoShadow(PoseStack stack, Font fr, String text, int x, int y, int color) {
         fr.draw(stack, text, (x - (fr.width(text) / 2F)), (y - (fr.lineHeight / 2F)), color);
     }
 
-    private Map<RegistryKey<World>, List<List<Bonfire>>> createSeries(RegistryKey<World> dimension) {
+    private Map<ResourceKey<Level>, List<List<Bonfire>>> createSeries(ResourceKey<Level> dimension) {
         List<Bonfire> bonfires = registry.getPrivateBonfiresByOwnerAndPublicPerDimension(Minecraft.getInstance().player.getUUID(), dimension.location());
 
         if (!bonfires.isEmpty()) {
@@ -129,7 +138,7 @@ public class BonfireScreen extends Screen {
                     page = bonfires.subList(start, (start) + 7);
                 book.add(page);
             }
-            Map<RegistryKey<World>, List<List<Bonfire>>> series = new HashMap<>();
+            Map<ResourceKey<Level>, List<List<Bonfire>>> series = new HashMap<>();
             series.put(dimension, book);
             return series;
         } else {
@@ -138,11 +147,10 @@ public class BonfireScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(stack);
-        RenderSystem.pushMatrix();
-        RenderSystem.color4f(1, 1, 1, 1);
-        Minecraft.getInstance().textureManager.bind(MENU);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShaderTexture(0, MENU);
         if (travelOpen) {
             drawTravelMenu(stack, mouseX, mouseY, partialTicks);
 
@@ -177,17 +185,16 @@ public class BonfireScreen extends Screen {
             if (currentBonfire != null) {
                 name = currentBonfire.getName();
                 if (!currentBonfire.isPublic()) {
-                    drawCenteredStringNoShadow(stack, font, new TranslationTextComponent(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
+                    drawCenteredStringNoShadow(stack, font, new TranslatableComponent(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
                 }
             }
             drawCenteredStringNoShadow(stack, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
             if (!ownerName.isEmpty())
                 drawCenteredStringNoShadow(stack, font, ownerName, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
         }
-        RenderSystem.popMatrix();
     }
 
-    private void drawSelectedBonfire(MatrixStack stack, int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks) {
+    private void drawSelectedBonfire(PoseStack stack, int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks) {
         if (bonfireSelected >= BONFIRE1) {
             if (bonfires != null) {
                 if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
@@ -201,9 +208,9 @@ public class BonfireScreen extends Screen {
                         font.draw(stack, "X:" + b.getPos().getX() + " Y:" + b.getPos().getY() + " Z:" + b.getPos().getZ(), nameX, nameY + font.lineHeight + 3, new Color(255, 255, 255).hashCode());
                         font.draw(stack, ownerName, nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
                         if (mouseX >= nameX && mouseX <= nameEndX && mouseY >= nameY && mouseY <= nameEndY) {
-                            List<IReorderingProcessor> lines = new ArrayList<>();
-                            lines.add(new TranslationTextComponent("ID: " + b.getId()).getVisualOrderText());
-                            renderToolTip(stack, lines, mouseX, mouseY, font);
+                            List<FormattedCharSequence> lines = new ArrayList<>();
+                            lines.add(new TranslatableComponent("ID: " + b.getId()).getVisualOrderText());
+                            renderTooltip(stack, lines, mouseX, mouseY, font);
                         }
                     }
                 }
@@ -211,14 +218,14 @@ public class BonfireScreen extends Screen {
         }
     }
 
-    private void drawTravelMenu(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    private void drawTravelMenu(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         int trueWidth = 219;
-        Minecraft.getInstance().textureManager.bind(TRAVEL_TEX);
+        RenderSystem.setShaderTexture(0, TRAVEL_TEX);
         //RenderHelper.enableGUIStandardItemLighting();
         for (DimensionTabButton tab : tabs) {
             tab.render(stack, mouseX, mouseY, partialTicks);
         }
-        Minecraft.getInstance().textureManager.bind(TRAVEL_TEX);
+        RenderSystem.setShaderTexture(0, TRAVEL_TEX);
         blit(stack, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height);
     }
 
@@ -237,8 +244,8 @@ public class BonfireScreen extends Screen {
                         if (bonfires != null) {
                             if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
                                 Bonfire b = bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(bonfireSelected - 11);
-                                Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, Minecraft.getInstance().player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
-                                Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, b.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+                                Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, Minecraft.getInstance().player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+                                Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, b.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
                                 PacketHandler.sendToServer(new Travel(b));
                                 String formattedDimName;
                                 if (I18n.exists(LocalStrings.getDimensionKey(b.getDimension()))) {
@@ -247,9 +254,10 @@ public class BonfireScreen extends Screen {
                                 } else {
                                     formattedDimName = I18n.get(LocalStrings.getDimensionKey(b.getDimension()));
                                 }
-                                Minecraft.getInstance().gui.setTitles(new TranslationTextComponent(b.getName()), null, 0, 0, 0);
-                                Minecraft.getInstance().gui.setTitles(null, new TranslationTextComponent(formattedDimName), 0, 0, 0);
-                                Minecraft.getInstance().gui.setTitles(null, null, 10, 20, 10);
+                                Gui gui = Minecraft.getInstance().gui;
+                                gui.setTitle(new TranslatableComponent(b.getName()));
+                                gui.setSubtitle(new TranslatableComponent(formattedDimName));
+                                gui.setTimes(10, 20, 10);
                                 minecraft.setScreen(null);
                             }
                         }
@@ -428,16 +436,15 @@ public class BonfireScreen extends Screen {
 
     @Override
     protected void init() {
-        buttonIDs = new ArrayList<>();
         pages = new ArrayList<>();
         bonfires = new HashMap<>();
-        addButton(travel = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25, 80, 20, new TranslationTextComponent(LocalStrings.BUTTON_TRAVEL), button -> action(TRAVEL)));
-        addButton(leave = new Button( (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62, 80, 20, new TranslationTextComponent(LocalStrings.BUTTON_LEAVE), button -> action(LEAVE, true)));
-        addButton(reinforce = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, new TranslationTextComponent(LocalStrings.BUTTON_REINFORCE), button -> action(REINFORCE, true)));
-        addButton(next = new Button(0, 0, 20, 20, new TranslationTextComponent(">"), button -> action(NEXT)));
-        addButton(prev = new Button(20, 0, 20, 20, new TranslationTextComponent("<"), button -> action(PREV)));
-        addButton(bonfire_next = new BonfirePageButton(this, BONFIRE_NEXT, 0, 0, true));
-        addButton(bonfire_prev = new BonfirePageButton(this, BONFIRE_PREV, 8, 0, false));
+        addRenderableWidget(travel = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25, 80, 20, new TranslatableComponent(LocalStrings.BUTTON_TRAVEL), button -> action(TRAVEL)));
+        addRenderableWidget(leave = new Button( (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62, 80, 20, new TranslatableComponent(LocalStrings.BUTTON_LEAVE), button -> action(LEAVE, true)));
+        addRenderableWidget(reinforce = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, new TranslatableComponent(LocalStrings.BUTTON_REINFORCE), button -> action(REINFORCE, true)));
+        addRenderableWidget(next = new Button(0, 0, 20, 20, new TextComponent(">"), button -> action(NEXT)));
+        addRenderableWidget(prev = new Button(20, 0, 20, 20, new TextComponent("<"), button -> action(PREV)));
+        addRenderableWidget(bonfire_next = new BonfirePageButton(this, BONFIRE_NEXT, 0, 0, true));
+        addRenderableWidget(bonfire_prev = new BonfirePageButton(this, BONFIRE_PREV, 8, 0, false));
         tabs = new DimensionTabButton[] {
                 new DimensionTabButton(this, TAB1, 0, 0),
                 new DimensionTabButton(this, TAB2, 0, 0),
@@ -456,14 +463,14 @@ public class BonfireScreen extends Screen {
                 new BonfireButton(this, BONFIRE7, 0, 0)
         };
         for (int i = 0; i < tabs.length; i++) {
-            addButton(tabs[i]);
+            addRenderableWidget(tabs[i]);
             int sixTabs = 6 * 28;
             int gap = travel_width - sixTabs;
             tabs[i].x = ((width) / 2 - (travel_width / 2) + (i * 28) + gap / 2);
             tabs[i].y = (height / 2) - (travel_width / 2) + 1;
         }
         for (int i = 0; i < bonfireButtons.length; i++) {
-            addButton(bonfireButtons[i]);
+            addRenderableWidget(bonfireButtons[i]);
             bonfireButtons[i].x = (width / 2) - 88 - 12;
             bonfireButtons[i].y = (height / 2) + (bonfireButtons[i].getHeight()) * i - 50;
         }
@@ -496,15 +503,15 @@ public class BonfireScreen extends Screen {
         super.init();
     }
 
-    public void updateDimensionsFromServer(List<RegistryKey<World>> dimensions) {
+    public void updateDimensionsFromServer(List<ResourceKey<Level>> dimensions) {
         this.dimensions = dimensions;
         updateBonfires();
     }
 
     private void updateBonfires() {
         bonfires.clear();
-        for (RegistryKey<World> dim : dimensions) {
-            Map<RegistryKey<World>, List<List<Bonfire>>> series = createSeries(dim);
+        for (ResourceKey<Level> dim : dimensions) {
+            Map<ResourceKey<Level>, List<List<Bonfire>>> series = createSeries(dim);
             if (series != null)
                 if (series.get(dim) != null)
                     bonfires.put(dim, series.get(dim));

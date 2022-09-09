@@ -1,9 +1,9 @@
 package wehavecookies56.bonfires.setup;
 
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.items.*;
 

@@ -1,14 +1,14 @@
 package wehavecookies56.bonfires.packets;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
@@ -44,11 +44,11 @@ public class PacketHandler {
 		registerMessage(RequestDimensionsFromServer.class, RequestDimensionsFromServer::encode, RequestDimensionsFromServer::new, RequestDimensionsFromServer::handle);
 	}
 
-	private static <T extends Packet<T>> void registerMessage (Class<T> clazz, BiConsumer<T, PacketBuffer> encode, Function<PacketBuffer, T> decode, BiConsumer<T, Supplier<NetworkEvent.Context>> handler) {
+	private static <T extends Packet<T>> void registerMessage (Class<T> clazz, BiConsumer<T, FriendlyByteBuf> encode, Function<FriendlyByteBuf, T> decode, BiConsumer<T, Supplier<NetworkEvent.Context>> handler) {
 		HANDLER.registerMessage(packetId++, clazz, Packet::encode, decode, handler);
 	}
 
-	public static void sendTo (Packet<?> packet, ServerPlayerEntity player) {
+	public static void sendTo (Packet<?> packet, ServerPlayer player) {
 		HANDLER.send(PacketDistributor.PLAYER.with(() -> player), packet);
 	}
 
@@ -60,7 +60,7 @@ public class PacketHandler {
 		HANDLER.sendToServer(packet);
 	}
 
-	public static void sendToAllAround (Packet<?> packet, double x, double y, double z, double range, RegistryKey<World> dimension) {
+	public static void sendToAllAround (Packet<?> packet, double x, double y, double z, double range, ResourceKey<Level> dimension) {
 		HANDLER.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(x, y, z, range, dimension)), packet);
 	}
 

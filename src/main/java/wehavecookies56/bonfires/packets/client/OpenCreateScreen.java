@@ -1,18 +1,18 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 public class OpenCreateScreen extends Packet<OpenCreateScreen> {
 
-    public OpenCreateScreen(PacketBuffer buffer) {
+    public OpenCreateScreen(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -23,12 +23,12 @@ public class OpenCreateScreen extends Packet<OpenCreateScreen> {
     }
 
     @Override
-    public void decode(PacketBuffer buffer) {
+    public void decode(FriendlyByteBuf buffer) {
         tePos = buffer.readBlockPos();
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(tePos);
     }
 

@@ -1,23 +1,25 @@
 package wehavecookies56.bonfires.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.MainWindow;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
+import wehavecookies56.bonfires.client.gui.widgets.ReinforceItemButton;
 import wehavecookies56.bonfires.client.gui.widgets.ScrollBarButton;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.server.ReinforceItem;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +27,14 @@ public class ReinforceScreen extends Screen {
 
     public List<ItemStack> reinforceableItems;
     public List<Integer> slots;
-    int itemSelected = -1;
+    public int itemSelected = -1;
     float scrollOffset = 0;
     final int SCROLLBAR = 0;
     final int ITEMS = 1;
     final int CONFIRM = 2;
     ReinforceItemButton items;
     BonfireScreen parent;
-    ScrollBarButton scrollBar;
+    public ScrollBarButton scrollBar;
     Button confirm;
     private static ResourceLocation texture = new ResourceLocation(Bonfires.modid, "textures/gui/reinforce_menu.png");
     int texWidth = 256;
@@ -40,7 +42,7 @@ public class ReinforceScreen extends Screen {
     Minecraft mc;
 
     public ReinforceScreen(BonfireScreen parent) {
-        super(new TranslationTextComponent(""));
+        super(new TextComponent(""));
         this.parent = parent;
         mc = Minecraft.getInstance();
     }
@@ -77,7 +79,7 @@ public class ReinforceScreen extends Screen {
     }
 
     public void updateButtons() {
-        MainWindow window = mc.getWindow();
+        Window window = mc.getWindow();
         int centerX = (window.getWidth() / 2) - (texWidth / 2);
         int centerY = (window.getHeight() / 2) - (texHeight / 2);
         if (itemSelected != -1) {
@@ -97,12 +99,12 @@ public class ReinforceScreen extends Screen {
     @Override
     public void init() {
         getReinforceableItems();
-        MainWindow window = mc.getWindow();
+        Window window = mc.getWindow();
         int centerX = (window.getGuiScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
-        buttons.add(scrollBar = new ScrollBarButton(SCROLLBAR, (window.getGuiScaledWidth() / 2) + (texWidth / 2) - 16, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 8, 15, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 42 + 155));
-        buttons.add(items = new ReinforceItemButton(this, ITEMS, (window.getGuiScaledWidth() / 2) - (texWidth / 2) + 9, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 239, 171));
-        buttons.add(confirm = new Button(centerX + 180, centerY + 14, 60, 20, new TranslationTextComponent(LocalStrings.BUTTON_REINFORCE), button -> {}));
+        addRenderableOnly(scrollBar = new ScrollBarButton(SCROLLBAR, (window.getGuiScaledWidth() / 2) + (texWidth / 2) - 16, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 8, 15, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 42 + 155));
+        addRenderableOnly(items = new ReinforceItemButton(this, ITEMS, (window.getGuiScaledWidth() / 2) - (texWidth / 2) + 9, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 239, 171));
+        addRenderableWidget(confirm = new Button(centerX + 180, centerY + 14, 60, 20, new TranslatableComponent(LocalStrings.BUTTON_REINFORCE), button -> {}));
         if (reinforceableItems.size() > 1) {
             itemSelected = 0;
         } else {
@@ -122,11 +124,11 @@ public class ReinforceScreen extends Screen {
                         int level = ReinforceHandler.getHandler(reinforcedStack).level();
                         if (level != 0) {
                             reinforcedStack.resetHoverName();
-                            reinforcedStack.setHoverName(new TranslationTextComponent(reinforcedStack.getHoverName().getString() + " +" + level).setStyle(Style.EMPTY.withItalic(false)));
+                            reinforcedStack.setHoverName(new TranslatableComponent(reinforcedStack.getHoverName().getString() + " +" + level).setStyle(Style.EMPTY.withItalic(false)));
                         }
                         reinforcedStack.getTag().putInt("Damage", 0);
                         PacketHandler.sendToServer(new ReinforceItem(slots.get(itemSelected)));
-                        mc.player.inventory.setItem(slots.get(itemSelected), reinforcedStack);
+                        mc.player.getInventory().setItem(slots.get(itemSelected), reinforcedStack);
                         getReinforceableItems();
                     }
                 }
@@ -136,12 +138,12 @@ public class ReinforceScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(stack);
-        MainWindow window = mc.getWindow();
+        Window window = mc.getWindow();
         int centerX = (window.getGuiScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
-        mc.textureManager.bind(texture);
+        RenderSystem.setShaderTexture(0, texture);
         blit(stack, centerX, centerY, 0, 0, texWidth, texHeight);
         super.render(stack, mouseX, mouseY, partialTicks);
         int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.top);
@@ -158,20 +160,20 @@ public class ReinforceScreen extends Screen {
         float scrollPos = Math.min(buttonRelativeToBar != 0 ? buttonRelativeToBar / (scrollBarHeight) : 0, 1);
         scrollOffset = scrollPos*(listHeight-scrollBarHeight);
         items.drawButtons(stack, mouseX, mouseY, partialTicks, scrollOffset);
-        drawString(stack, font, new TranslationTextComponent(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
+        drawString(stack, font, new TranslatableComponent(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
         if (itemSelected != -1) {
             ItemStack required = ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected));
             int hasCount = 0;
-            for (int i = 0; i < mc.player.inventory.items.size(); i++) {
-                if (ItemStack.isSame(mc.player.inventory.getItem(i), required)) {
-                    hasCount += mc.player.inventory.getItem(i).getCount();
+            for (int i = 0; i < mc.player.getInventory().items.size(); i++) {
+                if (ItemStack.isSame(mc.player.getInventory().getItem(i), required)) {
+                    hasCount += mc.player.getInventory().getItem(i).getCount();
                 }
             }
             ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(reinforceableItems.get(itemSelected));
             if (handler.level() != handler.maxLevel()) {
-                drawString(stack, font, TextFormatting.stripFormatting(required.getHoverName().getString()) + ": " + hasCount + " / " + required.getCount(), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
+                drawString(stack, font, required.getHoverName().getString() + ": " + hasCount + " / " + required.getCount(), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
             } else {
-                drawString(stack, font, new TranslationTextComponent(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
+                drawString(stack, font, new TranslatableComponent(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
             }
         }
     }
@@ -180,9 +182,9 @@ public class ReinforceScreen extends Screen {
         List<ItemStack> items = new ArrayList<>();
         List<Integer> slots = new ArrayList<>();
 
-        for (int i = 0; i < mc.player.inventory.items.size(); i++) {
-            if (ReinforceHandler.hasHandler(mc.player.inventory.getItem(i))) {
-                items.add(mc.player.inventory.getItem(i));
+        for (int i = 0; i < mc.player.getInventory().items.size(); i++) {
+            if (ReinforceHandler.hasHandler(mc.player.getInventory().getItem(i))) {
+                items.add(mc.player.getInventory().getItem(i));
                 slots.add(i);
             }
         }

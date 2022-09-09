@@ -1,19 +1,14 @@
 package wehavecookies56.bonfires;
 
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Toby on 17/12/2016.
@@ -84,7 +79,7 @@ public class BonfiresConfig {
     }
 
     @SubscribeEvent
-    public static void configEvent(ModConfig.ModConfigEvent event) {
+    public static void configEvent(ModConfigEvent event) {
         if (event.getConfig().getSpec() == CLIENT_SPEC) {
             Client.renderTextAboveBonfire = CLIENT.renderTextAboveBonfireConfig.get();
             Client.tabIcons = (List<String>) CLIENT.tabIconsConfig.get();

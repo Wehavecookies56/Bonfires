@@ -1,13 +1,13 @@
 package wehavecookies56.bonfires;
 
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
 /**
  * Created by Toby on 05/11/2016.
  */
-public class BonfiresGroup extends ItemGroup {
+public class BonfiresGroup extends CreativeModeTab {
 
     public static BonfiresGroup INSTANCE = new BonfiresGroup(LocalStrings.ITEMGROUP_BONFIRES);
 

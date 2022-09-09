@@ -1,20 +1,25 @@
 package wehavecookies56.bonfires.datagen;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.*;
-import net.minecraft.loot.functions.SetCount;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.registries.RegistryObject;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
@@ -44,20 +49,22 @@ public class BonfiresDataGen {
             super(generator);
         }
 
+
+
         @Override
-        protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
+        protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
             return Arrays.asList(
-               Pair.of(BlockLoot::new, LootParameterSets.BLOCK)
+               Pair.of(BonfiresBlockLoot::new, LootContextParamSets.BLOCK)
             );
         }
 
         @Override
-        protected void validate(Map<ResourceLocation, LootTable> p_validate_1_, ValidationTracker p_validate_2_) {
+        protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
 
         }
     }
 
-    public static class BlockLoot extends BlockLootTables {
+    public static class BonfiresBlockLoot extends BlockLoot {
 
         @Override
         protected void addTables() {
@@ -65,15 +72,15 @@ public class BonfiresDataGen {
             add(BlockSetup.ash_block.get(), new LootTable.Builder().withPool(
                     new LootPool.Builder()
                             .name("ash")
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(ItemLootEntry.lootTableItem(ItemSetup.ash_pile.get())
-                                    .apply(SetCount.setCount(RandomValueRange.between(3, 6))))
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(LootItem.lootTableItem(ItemSetup.ash_pile.get())
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 6))))
             ));
             add(BlockSetup.ash_bone_pile.get(), new LootTable.Builder().withPool(
                     new LootPool.Builder()
                             .name("self")
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(ItemLootEntry.lootTableItem(BlockSetup.ash_bone_pile.get()))
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(LootItem.lootTableItem(BlockSetup.ash_bone_pile.get()))
             ));
         }
 
