@@ -10,7 +10,11 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,8 +26,6 @@ import wehavecookies56.bonfires.setup.ItemSetup;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -187,10 +189,10 @@ public class ReinforceHandler {
         int hasCount = 0;
         int countRequired = required.getCount();
         for (int i = 0; i < player.inventory.items.size(); i++) {
-            if (ItemStack.isSame(required, player.inventory.getItem(i))) {
+            if (ItemStack.matches(required, player.inventory.getItem(i))) {
                 return true;
             } else {
-                if (ItemStack.isSame(player.inventory.getItem(i), required)) {
+                if (ItemStack.matches(player.inventory.getItem(i), required)) {
                     hasCount += player.inventory.getItem(i).getCount();
                 }
             }

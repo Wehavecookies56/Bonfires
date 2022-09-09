@@ -18,7 +18,7 @@
 		},
 		{
 			"predicate": {
-				"bonfires:uses": 0.75
+				"bonfires:uses": 0.99
 			},
 			"model": "bonfires:item/estus_flask_full"
 		}
