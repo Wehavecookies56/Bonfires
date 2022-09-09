@@ -3,7 +3,7 @@ package wehavecookies56.bonfires.client.gui.widgets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
 /**
@@ -16,7 +16,7 @@ public class BonfirePageButton extends Button {
     private int id;
 
     public BonfirePageButton(BonfireScreen parent, int id, int x, int y, boolean isNext) {
-        super(x, y, 8, 14, new TextComponent(""), press -> {
+        super(x, y, 8, 14, Component.empty(), press -> {
             parent.action(id);
         });
         this.id = id;

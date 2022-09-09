@@ -9,8 +9,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -106,7 +105,7 @@ public class BonfireScreen extends Screen {
     public List<ResourceKey<Level>> dimensions;
 
     public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<ResourceKey<Level>> dimensions, BonfireRegistry registry) {
-        super(new TextComponent(""));
+        super(Component.empty());
         this.bonfire = bonfire;
         this.ownerName = ownerName;
         this.registry = registry;
@@ -185,7 +184,7 @@ public class BonfireScreen extends Screen {
             if (currentBonfire != null) {
                 name = currentBonfire.getName();
                 if (!currentBonfire.isPublic()) {
-                    drawCenteredStringNoShadow(stack, font, new TranslatableComponent(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
+                    drawCenteredStringNoShadow(stack, font, Component.translatable(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
                 }
             }
             drawCenteredStringNoShadow(stack, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
@@ -209,7 +208,7 @@ public class BonfireScreen extends Screen {
                         font.draw(stack, ownerName, nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
                         if (mouseX >= nameX && mouseX <= nameEndX && mouseY >= nameY && mouseY <= nameEndY) {
                             List<FormattedCharSequence> lines = new ArrayList<>();
-                            lines.add(new TranslatableComponent("ID: " + b.getId()).getVisualOrderText());
+                            lines.add(Component.translatable("ID: " + b.getId()).getVisualOrderText());
                             renderTooltip(stack, lines, mouseX, mouseY, font);
                         }
                     }
@@ -255,8 +254,8 @@ public class BonfireScreen extends Screen {
                                     formattedDimName = I18n.get(LocalStrings.getDimensionKey(b.getDimension()));
                                 }
                                 Gui gui = Minecraft.getInstance().gui;
-                                gui.setTitle(new TranslatableComponent(b.getName()));
-                                gui.setSubtitle(new TranslatableComponent(formattedDimName));
+                                gui.setTitle(Component.translatable(b.getName()));
+                                gui.setSubtitle(Component.translatable(formattedDimName));
                                 gui.setTimes(10, 20, 10);
                                 minecraft.setScreen(null);
                             }
@@ -438,11 +437,11 @@ public class BonfireScreen extends Screen {
     protected void init() {
         pages = new ArrayList<>();
         bonfires = new HashMap<>();
-        addRenderableWidget(travel = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25, 80, 20, new TranslatableComponent(LocalStrings.BUTTON_TRAVEL), button -> action(TRAVEL)));
-        addRenderableWidget(leave = new Button( (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62, 80, 20, new TranslatableComponent(LocalStrings.BUTTON_LEAVE), button -> action(LEAVE, true)));
-        addRenderableWidget(reinforce = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, new TranslatableComponent(LocalStrings.BUTTON_REINFORCE), button -> action(REINFORCE, true)));
-        addRenderableWidget(next = new Button(0, 0, 20, 20, new TextComponent(">"), button -> action(NEXT)));
-        addRenderableWidget(prev = new Button(20, 0, 20, 20, new TextComponent("<"), button -> action(PREV)));
+        addRenderableWidget(travel = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25, 80, 20, Component.translatable(LocalStrings.BUTTON_TRAVEL), button -> action(TRAVEL)));
+        addRenderableWidget(leave = new Button( (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62, 80, 20, Component.translatable(LocalStrings.BUTTON_LEAVE), button -> action(LEAVE, true)));
+        addRenderableWidget(reinforce = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> action(REINFORCE, true)));
+        addRenderableWidget(next = new Button(0, 0, 20, 20, Component.literal(">"), button -> action(NEXT)));
+        addRenderableWidget(prev = new Button(20, 0, 20, 20, Component.literal("<"), button -> action(PREV)));
         addRenderableWidget(bonfire_next = new BonfirePageButton(this, BONFIRE_NEXT, 0, 0, true));
         addRenderableWidget(bonfire_prev = new BonfirePageButton(this, BONFIRE_PREV, 8, 0, false));
         tabs = new DimensionTabButton[] {

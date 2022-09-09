@@ -4,8 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import wehavecookies56.bonfires.LocalStrings;
@@ -26,14 +25,14 @@ public class CreateBonfireScreen extends Screen {
     private GuiButtonCheckBox isPrivate;
 
     public CreateBonfireScreen(BonfireTileEntity bonfireTE) {
-        super(new TextComponent(""));
+        super(Component.empty());
         this.te = bonfireTE;
     }
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         super.render(stack, mouseX, mouseY, partialTicks);
-        drawString(stack, minecraft.font, new TranslatableComponent(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(new TranslatableComponent(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
+        drawString(stack, minecraft.font, Component.translatable(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(Component.translatable(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
         nameBox.render(stack, mouseX, mouseY, partialTicks);
     }
 
@@ -84,7 +83,7 @@ public class CreateBonfireScreen extends Screen {
     public void init() {
         super.init();
         addRenderableWidget(nameBox = new NameTextField(minecraft.font, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15));
-        addRenderableWidget(accept = new Button((width / 2) - (80 / 2), (height / 2) - (20 / 2) + 40, 80, 20, new TranslatableComponent(LocalStrings.BUTTON_ACCEPT), press -> action(0)));
+        addRenderableWidget(accept = new Button((width / 2) - (80 / 2), (height / 2) - (20 / 2) + 40, 80, 20, Component.translatable(LocalStrings.BUTTON_ACCEPT), press -> action(0)));
         isPrivate = new GuiButtonCheckBox(0, 0, LocalStrings.BUTTON_SET_PRIVATE, false);
         isPrivate.x = (width / 2) - (isPrivate.getWidth() / 2);
         isPrivate.y = (height / 2) - (10 / 2) + 20;

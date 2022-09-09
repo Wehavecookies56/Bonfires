@@ -3,11 +3,14 @@ package wehavecookies56.bonfires.items;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.BonfiresGroup;
 import wehavecookies56.bonfires.data.ReinforceHandler;
@@ -93,7 +96,7 @@ public class EstusFlaskItem extends Item {
         if (stack.getTag() != null) {
             if (stack.getTag().contains("uses")) {
                 if (stack.getTag().contains("estus")) {
-                    tooltip.add(new TranslatableComponent("Uses: " + stack.getTag().getInt("estus") + "/" + stack.getTag().getInt("uses")));
+                    tooltip.add(Component.translatable("Uses: " + stack.getTag().getInt("estus") + "/" + stack.getTag().getInt("uses")));
                 }
             }
         }

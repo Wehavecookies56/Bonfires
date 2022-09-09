@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import java.awt.Color;
 
@@ -16,7 +16,7 @@ public class ScrollBarButton extends Button {
     int minHeight, maxHeight;
 
     public ScrollBarButton(int buttonId, int x, int y, int widthIn, int minHeight, int top, int bottom) {
-        super(x, y, widthIn, minHeight, new TextComponent(""), button -> {});
+        super(x, y, widthIn, minHeight, Component.empty(), button -> {});
         this.top = top;
         this.minHeight = minHeight;
         this.scrollBarHeight = minHeight;

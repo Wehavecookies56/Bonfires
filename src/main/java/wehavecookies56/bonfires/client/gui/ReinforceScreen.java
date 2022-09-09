@@ -6,9 +6,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import wehavecookies56.bonfires.Bonfires;
@@ -42,7 +41,7 @@ public class ReinforceScreen extends Screen {
     Minecraft mc;
 
     public ReinforceScreen(BonfireScreen parent) {
-        super(new TextComponent(""));
+        super(Component.empty());
         this.parent = parent;
         mc = Minecraft.getInstance();
     }
@@ -104,7 +103,7 @@ public class ReinforceScreen extends Screen {
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
         addRenderableOnly(scrollBar = new ScrollBarButton(SCROLLBAR, (window.getGuiScaledWidth() / 2) + (texWidth / 2) - 16, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 8, 15, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 42 + 155));
         addRenderableOnly(items = new ReinforceItemButton(this, ITEMS, (window.getGuiScaledWidth() / 2) - (texWidth / 2) + 9, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 239, 171));
-        addRenderableWidget(confirm = new Button(centerX + 180, centerY + 14, 60, 20, new TranslatableComponent(LocalStrings.BUTTON_REINFORCE), button -> {}));
+        addRenderableWidget(confirm = new Button(centerX + 180, centerY + 14, 60, 20, Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> {}));
         if (reinforceableItems.size() > 1) {
             itemSelected = 0;
         } else {
@@ -124,7 +123,7 @@ public class ReinforceScreen extends Screen {
                         int level = ReinforceHandler.getHandler(reinforcedStack).level();
                         if (level != 0) {
                             reinforcedStack.resetHoverName();
-                            reinforcedStack.setHoverName(new TranslatableComponent(reinforcedStack.getHoverName().getString() + " +" + level).setStyle(Style.EMPTY.withItalic(false)));
+                            reinforcedStack.setHoverName(Component.translatable(reinforcedStack.getHoverName().getString() + " +" + level).setStyle(Style.EMPTY.withItalic(false)));
                         }
                         reinforcedStack.getTag().putInt("Damage", 0);
                         PacketHandler.sendToServer(new ReinforceItem(slots.get(itemSelected)));
@@ -160,7 +159,7 @@ public class ReinforceScreen extends Screen {
         float scrollPos = Math.min(buttonRelativeToBar != 0 ? buttonRelativeToBar / (scrollBarHeight) : 0, 1);
         scrollOffset = scrollPos*(listHeight-scrollBarHeight);
         items.drawButtons(stack, mouseX, mouseY, partialTicks, scrollOffset);
-        drawString(stack, font, new TranslatableComponent(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
+        drawString(stack, font, Component.translatable(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
         if (itemSelected != -1) {
             ItemStack required = ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected));
             int hasCount = 0;
@@ -173,7 +172,7 @@ public class ReinforceScreen extends Screen {
             if (handler.level() != handler.maxLevel()) {
                 drawString(stack, font, required.getHoverName().getString() + ": " + hasCount + " / " + required.getCount(), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
             } else {
-                drawString(stack, font, new TranslatableComponent(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
+                drawString(stack, font, Component.translatable(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
             }
         }
     }

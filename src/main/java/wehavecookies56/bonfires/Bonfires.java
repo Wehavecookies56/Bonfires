@@ -7,7 +7,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -41,7 +41,7 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
     public static final String name = "Bonfires";
-    public static final String version = "1.2.4";
+    public static final String version = "1.2.5";
 
     public Bonfires() {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -70,10 +70,10 @@ public class Bonfires {
     }
 
     @SubscribeEvent
-    public void entityJoinWorld(EntityJoinWorldEvent event) {
-        if (!event.getWorld().isClientSide) {
+    public void entityJoinWorld(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide) {
             if (event.getEntity() instanceof ServerPlayer player) {
-                PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getWorld().getServer()).getRegistry().getBonfires()), player);
+                PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry().getBonfires()), player);
                 PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
             }
         }
@@ -81,8 +81,8 @@ public class Bonfires {
 
     @SubscribeEvent
     public void changeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.getPlayer().level.isClientSide) {
-            PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getPlayer().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
+        if (!event.getEntity().level.isClientSide) {
+            PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getEntity().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
         }
     }
 

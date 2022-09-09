@@ -14,10 +14,9 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -67,9 +66,9 @@ public class BonfiresCommand {
             case "all":
                 query = new ArrayList<>(BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfires().values());
                 if (query.isEmpty()) {
-                    context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_NOMATCH, "all"), false);
+                    context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_NOMATCH, "all"), false);
                 } else {
-                    context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_MATCH, query.size(), "all"), false);
+                    context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_MATCH, query.size(), "all"), false);
                     listQueriedBonfires(query, context.getSource());
                 }
                 break;
@@ -80,25 +79,25 @@ public class BonfiresCommand {
                     if (ServerLifecycleHooks.getCurrentServer().levelKeys().contains(dimensionKey)) {
                         query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresByDimension(dimensionKey.location());
                         if (query.isEmpty()) {
-                            context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_DIM_NOMATCH, input), false);
+                            context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_DIM_NOMATCH, input), false);
                         } else {
-                            context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_DIM_MATCH, query.size(), input), false);
+                            context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_DIM_MATCH, query.size(), input), false);
                             listQueriedBonfires(query, context.getSource());
                         }
                     } else {
-                        context.getSource().sendFailure(new TranslatableComponent(LocalStrings.COMMAND_DIM_NODIM, input));
+                        context.getSource().sendFailure(Component.translatable(LocalStrings.COMMAND_DIM_NODIM, input));
                     }
                 } else {
-                    context.getSource().sendFailure(new TranslatableComponent(LocalStrings.COMMAND_DIM_INVALID, input));
+                    context.getSource().sendFailure(Component.translatable(LocalStrings.COMMAND_DIM_INVALID, input));
                 }
                 break;
             case "name":
                 input = StringArgumentType.getString(context, "bonfirename");
                 query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresByName(input);
                 if (query.isEmpty()) {
-                    context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_NOMATCH, input), false);
+                    context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_NOMATCH, input), false);
                 } else {
-                    context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_MATCH, query.size(), input), false);
+                    context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_MATCH, query.size(), input), false);
                     listQueriedBonfires(query, context.getSource());
                 }
                 break;
@@ -110,13 +109,13 @@ public class BonfiresCommand {
                     if (ownerID != null) {
                         query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresByOwner(ownerID);
                         if (query.isEmpty()) {
-                            context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_NOMATCH, input), false);
+                            context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_NOMATCH, input), false);
                         } else {
-                            context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_MATCH, query.size(), input), false);
+                            context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_MATCH, query.size(), input), false);
                             listQueriedBonfires(query, context.getSource());
                         }
                     } else {
-                        context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_NOUSER, input), false);
+                        context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_NOUSER, input), false);
                     }
                 }
                 break;
@@ -124,18 +123,18 @@ public class BonfiresCommand {
                 int radius = IntegerArgumentType.getInteger(context, "searchradius");
                 query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresInRadius(new BlockPos(context.getSource().getPosition()), radius, context.getSource().getLevel().dimension().location());
                 if (query.isEmpty()) {
-                    context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_RADIUS_NOMATCH, radius), false);
+                    context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_RADIUS_NOMATCH, radius), false);
                 } else {
-                    context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_RADIUS_MATCH, query.size(), radius), false);
+                    context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_RADIUS_MATCH, query.size(), radius), false);
                     listQueriedBonfires(query, context.getSource());
                 }
                 break;
             case "filters":
-                context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_ALL_DESC, "all"), false);
-                context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_DIM_DESC, "dim"), false);
-                context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_NAME_DESC, "name"), false);
-                context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_OWNER_DESC, "owner"), false);
-                context.getSource().sendSuccess(new TranslatableComponent(LocalStrings.COMMAND_RADIUS_DESC, "radius"), false);
+                context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_ALL_DESC, "all"), false);
+                context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_DIM_DESC, "dim"), false);
+                context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_NAME_DESC, "name"), false);
+                context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_OWNER_DESC, "owner"), false);
+                context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_RADIUS_DESC, "radius"), false);
                 break;
             default:
                 return 0;
@@ -146,25 +145,25 @@ public class BonfiresCommand {
     private static void listQueriedBonfires(List<Bonfire> query, CommandSourceStack sender) {
         query.forEach((bonfires -> {
             GameProfile owner = ServerLifecycleHooks.getCurrentServer().getProfileCache().get(bonfires.getOwner()).orElse(null);
-            String name = new TranslatableComponent(LocalStrings.COMMAND_NA).getString();
+            String name = Component.translatable(LocalStrings.COMMAND_NA).getString();
             if (owner != null) {
                 name = owner.getName();
             }
-            MutableComponent messageName = new TranslatableComponent(LocalStrings.COMMAND_NAME, bonfires.getName()).withStyle(style -> {
-                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, bonfires.getName())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.copy.click")));
+            MutableComponent messageName = Component.translatable(LocalStrings.COMMAND_NAME, bonfires.getName()).withStyle(style -> {
+                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, bonfires.getName())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")));
             });
-            MutableComponent messageID = new TranslatableComponent(LocalStrings.COMMAND_ID, bonfires.getId()).withStyle(style -> {
-                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, bonfires.getId().toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.copy.click")));
+            MutableComponent messageID = Component.translatable(LocalStrings.COMMAND_ID, bonfires.getId()).withStyle(style -> {
+                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, bonfires.getId().toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")));
             });
             String finalName = name;
-            MutableComponent messageOwner = new TranslatableComponent(LocalStrings.COMMAND_OWNER, name).withStyle(style -> {
-                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, finalName)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.copy.click")));
+            MutableComponent messageOwner = Component.translatable(LocalStrings.COMMAND_OWNER, name).withStyle(style -> {
+                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, finalName)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")));
             });
-            MutableComponent messagePos = new TranslatableComponent(LocalStrings.COMMAND_POS, bonfires.getPos().getX(), bonfires.getPos().getY(), bonfires.getPos().getZ()).withStyle(style -> {
-                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "" + bonfires.getPos().getX() + " " + bonfires.getPos().getY() + " " + bonfires.getPos().getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.copy.click")));
+            MutableComponent messagePos = Component.translatable(LocalStrings.COMMAND_POS, bonfires.getPos().getX(), bonfires.getPos().getY(), bonfires.getPos().getZ()).withStyle(style -> {
+                return style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "" + bonfires.getPos().getX() + " " + bonfires.getPos().getY() + " " + bonfires.getPos().getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")));
             });
 
-            TextComponent space = new TextComponent(" ");
+            Component space = Component.literal(" ");
 
             sender.sendSuccess(messageName.append(space).append(messageID).append(space).append(messageOwner).append(space).append(messagePos), false);
         }));

@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -20,7 +21,11 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,7 +47,12 @@ import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
-import wehavecookies56.bonfires.packets.client.*;
+import wehavecookies56.bonfires.packets.client.OpenBonfireGUI;
+import wehavecookies56.bonfires.packets.client.OpenCreateScreen;
+import wehavecookies56.bonfires.packets.client.SyncBonfire;
+import wehavecookies56.bonfires.packets.client.SyncEstusData;
+import wehavecookies56.bonfires.packets.client.SyncReinforceData;
+import wehavecookies56.bonfires.packets.client.SyncSaveData;
 import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
@@ -50,7 +60,6 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -246,7 +255,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void animateTick(BlockState state, Level world, BlockPos pos, Random random) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         if (world.getBlockEntity(pos) != null) {
             BonfireTileEntity bonfire = (BonfireTileEntity) world.getBlockEntity(pos);
             if (bonfire.isLit()) {

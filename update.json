@@ -1,6 +1,7 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
+    "1.19.2-latest": "1.2.4",
     "1.18.2-latest": "1.2.4",
     "1.16.5-latest": "1.2.4",
     "1.12.2-latest": "1.2.2",
@@ -9,7 +10,12 @@
     "1.10.2-latest": "1.0.0"
   },
 
+  "1.19.2": {
+    "1.2.5": "Updated to 1.19, fixed player unable to respawn"
+  },
+
   "1.18.2": {
+    "1.2.5": "Fixed player unable to respawn",
     "1.2.4": "Updated to 1.18, fixed required materials for reinforcing"
   },
 

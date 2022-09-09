@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -29,7 +29,7 @@ public class DimensionTabButton extends Button {
     private Item icon = Items.FILLED_MAP;
 
     public DimensionTabButton(BonfireScreen parent, int buttonId, int x, int y) {
-        super(x, y, 28, 30, new TextComponent(""), b -> {
+        super(x, y, 28, 30, Component.empty(), b -> {
             parent.action(buttonId);
         });
         this.id = buttonId;

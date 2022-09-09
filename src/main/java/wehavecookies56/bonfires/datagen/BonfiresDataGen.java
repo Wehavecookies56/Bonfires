@@ -16,9 +16,9 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.RegistryObject;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
@@ -39,8 +39,8 @@ public class BonfiresDataGen {
         DataGenerator generator = event.getGenerator();
         final ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(new Recipes(generator));
-        generator.addProvider(new Loot(generator));
+        generator.addProvider(true, new Recipes(generator));
+        generator.addProvider(true, new Loot(generator));
     }
 
     public static class Loot extends LootTableProvider {

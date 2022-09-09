@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[40,)"
+loaderVersion="[43,)"
 license="LGPLv3"
 [[mods]] #mandatory
 modId="bonfires" #mandatory
@@ -16,12 +16,12 @@ Bonfires from Dark Souls.
 [[dependencies.bonfires]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[36,)" #mandatory
+    versionRange="[43,)" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.bonfires]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.2,1.19)"
+    versionRange="[1.19.2,1.20)"
     ordering="NONE"
     side="BOTH"

@@ -40,10 +40,12 @@ public class EstusHandler {
 
     @SubscribeEvent
     public void playerClone(PlayerEvent.Clone event) {
+        event.getOriginal().reviveCaps();
         final IEstusHandler original = getHandler(event.getOriginal());
-        final IEstusHandler clone = getHandler(event.getPlayer());
+        final IEstusHandler clone = getHandler(event.getEntity());
         clone.setUses(original.uses());
         clone.setLastRested(original.lastRested());
+        event.getOriginal().invalidateCaps();
     }
 
     public static IEstusHandler getHandler(Player player) {

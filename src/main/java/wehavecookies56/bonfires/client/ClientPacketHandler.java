@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.DistExecutor;
@@ -70,8 +70,8 @@ public class ClientPacketHandler {
             @Override
             public void run() {
                 Gui gui = Minecraft.getInstance().gui;
-                gui.setTitle(new TranslatableComponent(packet.title));
-                gui.setSubtitle(new TranslatableComponent(packet.subtitle));
+                gui.setTitle(Component.translatable(packet.title));
+                gui.setSubtitle(Component.translatable(packet.subtitle));
                 gui.setTimes(packet.fadein, packet.stay, packet.fadeout);
             }
         };
@@ -107,7 +107,7 @@ public class ClientPacketHandler {
                 handler.setLevel(packet.level);
                 if (packet.level != 0) {
                     stack.resetHoverName();
-                    stack.setHoverName(new TranslatableComponent(stack.getHoverName().getString() + " +" + packet.level).setStyle(Style.EMPTY.withItalic(false)));
+                    stack.setHoverName(Component.translatable(stack.getHoverName().getString() + " +" + packet.level).setStyle(Style.EMPTY.withItalic(false)));
                 }
                 Minecraft.getInstance().player.getInventory().setItem(packet.slot, stack);
             }
@@ -146,8 +146,8 @@ public class ClientPacketHandler {
                     formattedDimName = I18n.get(LocalStrings.getDimensionKey(bonfire.getDimension()));
                 }
                 Gui gui = Minecraft.getInstance().gui;
-                gui.setTitle(new TranslatableComponent(bonfire.getName()));
-                gui.setSubtitle(new TranslatableComponent(formattedDimName));
+                gui.setTitle(Component.translatable(bonfire.getName()));
+                gui.setSubtitle(Component.translatable(formattedDimName));
                 gui.setTimes(10, 20, 10);
             }
         };

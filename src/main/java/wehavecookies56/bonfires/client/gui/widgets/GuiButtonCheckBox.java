@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
@@ -18,7 +18,7 @@ public class GuiButtonCheckBox extends AbstractButton {
     private boolean checked;
 
     public GuiButtonCheckBox(int x, int y, String buttonText, boolean checked) {
-        super(x, y, 10, 10, new TranslatableComponent(buttonText));
+        super(x, y, 10, 10, Component.translatable(buttonText));
         this.checked = checked;
     }
 
@@ -55,6 +55,6 @@ public class GuiButtonCheckBox extends AbstractButton {
     @Override
     public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
         this.defaultButtonNarrationText(pNarrationElementOutput);
-        pNarrationElementOutput.add(NarratedElementType.HINT, isChecked() ? new TranslatableComponent(LocalStrings.NARRATION_BUTTON_CHECKBOX_CHECKED) : new TranslatableComponent(LocalStrings.NARRATION_BUTTON_CHECKBOX_UNCHECKED));
+        pNarrationElementOutput.add(NarratedElementType.HINT, isChecked() ? Component.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_CHECKED) : Component.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_UNCHECKED));
     }
 }

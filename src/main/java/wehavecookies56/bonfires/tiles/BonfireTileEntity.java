@@ -5,8 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -134,14 +132,14 @@ public class BonfireTileEntity extends BlockEntity {
                 Bonfire bonfire = BonfireHandler.getHandler(Minecraft.getInstance().level).getRegistry().getBonfire(getID());
                 if (bonfire != null) {
                     if (bonfire.isPublic()) {
-                        return new TranslatableComponent(bonfire.getName());
+                        return Component.translatable(bonfire.getName());
                     } else {
-                        return new TranslatableComponent(LocalStrings.TILEENTITY_BONFIRE_LABEL, bonfire.getName());
+                        return Component.translatable(LocalStrings.TILEENTITY_BONFIRE_LABEL, bonfire.getName());
                     }
                 }
             }
         }
-        return new TextComponent("");
+        return Component.empty();
     }
 
 }

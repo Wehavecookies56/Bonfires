@@ -3,8 +3,7 @@ package wehavecookies56.bonfires.client.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
@@ -20,7 +19,7 @@ public class BonfireButton extends ExtendedButton {
     private Bonfire bonfire;
 
     public BonfireButton(BonfireScreen parent, int id, int x, int y) {
-        super(x, y, 93, Minecraft.getInstance().font.lineHeight+4, new TextComponent(""), button -> {
+        super(x, y, 93, Minecraft.getInstance().font.lineHeight+4, Component.empty(), button -> {
             parent.action(id);
         });
         this.parent = parent;
@@ -38,7 +37,7 @@ public class BonfireButton extends ExtendedButton {
     public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         if (bonfire != null) {
             if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
-                setMessage(new TranslatableComponent(bonfire.getName()));
+                setMessage(Component.translatable(bonfire.getName()));
                 if (visible) {
                     Font fontrenderer = Minecraft.getInstance().font;
                     int colour = new Color(255, 255, 255).hashCode();
@@ -65,7 +64,7 @@ public class BonfireButton extends ExtendedButton {
             }
         } else {
             visible = false;
-            setMessage(new TextComponent(""));
+            setMessage(Component.empty());
         }
     }
 

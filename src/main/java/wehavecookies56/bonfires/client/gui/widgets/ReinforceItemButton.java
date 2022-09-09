@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import wehavecookies56.bonfires.client.gui.ReinforceScreen;
 import wehavecookies56.bonfires.data.ReinforceHandler;
@@ -24,7 +24,7 @@ public class ReinforceItemButton extends Button {
     ReinforceScreen parent;
 
     public ReinforceItemButton(ReinforceScreen parent, int buttonId, int x, int y, int widthIn, int heightIn) {
-        super(x, y, widthIn, heightIn, new TextComponent(""), button -> parent.action(buttonId));
+        super(x, y, widthIn, heightIn, Component.empty(), button -> parent.action(buttonId));
         this.parent = parent;
     }
 
