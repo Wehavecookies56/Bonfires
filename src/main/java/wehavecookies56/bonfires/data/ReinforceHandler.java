@@ -185,7 +185,7 @@ public class ReinforceHandler {
             if (ItemStack.matches(required, player.getInventory().getItem(i))) {
                 return true;
             } else {
-                if (ItemStack.matches(player.getInventory().getItem(i), required)) {
+                if (ItemStack.isSame(player.getInventory().getItem(i), required)) {
                     hasCount += player.getInventory().getItem(i).getCount();
                 }
             }
