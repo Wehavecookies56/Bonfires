@@ -192,6 +192,11 @@ public class ReinforceScreen extends Screen {
     }
 
     @Override
+    public void tick() {
+        updateButtons();
+    }
+
+    @Override
     public boolean isPauseScreen() {
         return false;
     }

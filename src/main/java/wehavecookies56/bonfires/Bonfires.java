@@ -41,7 +41,7 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
     public static final String name = "Bonfires";
-    public static final String version = "1.2.5";
+    public static final String version = "1.2.6";
 
     public Bonfires() {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();

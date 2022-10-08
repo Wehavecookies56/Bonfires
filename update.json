@@ -1,9 +1,9 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
-    "1.19.2-latest": "1.2.5",
-    "1.18.2-latest": "1.2.5",
-    "1.16.5-latest": "1.2.4",
+    "1.19.2-latest": "1.2.6",
+    "1.18.2-latest": "1.2.6",
+    "1.16.5-latest": "1.2.6",
     "1.12.2-latest": "1.2.2",
     "1.12-latest": "1.2.2",
     "1.11-latest": "1.0.1",
@@ -11,15 +11,18 @@
   },
 
   "1.19.2": {
+    "1.2.6": "Fixed reinforcing not working",
     "1.2.5": "Updated to 1.19, fixed player unable to respawn"
   },
 
   "1.18.2": {
+    "1.2.6": "Fixed reinforcing not working",
     "1.2.5": "Fixed player unable to respawn",
     "1.2.4": "Updated to 1.18, fixed required materials for reinforcing"
   },
 
   "1.16.5": {
+    "1.2.6": "Fixed reinforcing not working",
     "1.2.4": "Fixed required materials for reinforcing",
     "1.2.3": "Updated to 1.16, adjusted some recipes, extra sound effects added, titles added when travelling, various small tweaks"
   },
