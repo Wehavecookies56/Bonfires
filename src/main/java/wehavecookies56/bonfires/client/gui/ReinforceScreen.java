@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import wehavecookies56.bonfires.Bonfires;
@@ -119,12 +118,7 @@ public class ReinforceScreen extends Screen {
                 if (itemSelected != -1) {
                     if (ReinforceHandler.hasRequiredItems(mc.player, ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected)))) {
                         ItemStack reinforcedStack = reinforceableItems.get(itemSelected).copy();
-                        ReinforceHandler.getHandler(reinforcedStack).levelup(1);
-                        int level = ReinforceHandler.getHandler(reinforcedStack).level();
-                        if (level != 0) {
-                            reinforcedStack.resetHoverName();
-                            reinforcedStack.setHoverName(Component.translatable(reinforcedStack.getHoverName().getString() + " +" + level).setStyle(Style.EMPTY.withItalic(false)));
-                        }
+                        ReinforceHandler.levelUp(reinforcedStack);
                         reinforcedStack.getTag().putInt("Damage", 0);
                         PacketHandler.sendToServer(new ReinforceItem(slots.get(itemSelected)));
                         mc.player.getInventory().setItem(slots.get(itemSelected), reinforcedStack);
