@@ -22,6 +22,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.apache.commons.lang3.StringUtils;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
@@ -98,6 +99,9 @@ public class ReinforceHandler {
                 levelFromCap = handler.level();
                 maxLevelFromCap = handler.maxLevel();
                 handler.setLevel(0);
+                if (stack.getHoverName().getString().contains("+" + levelFromCap)) {
+                    stack.setHoverName(new StringTextComponent(StringUtils.remove(stack.getHoverName().getString(), "+" + levelFromCap)));
+                }
             }
         }
         if (canReinforce(stack)) {

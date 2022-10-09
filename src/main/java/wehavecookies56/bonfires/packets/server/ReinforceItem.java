@@ -42,16 +42,6 @@ public class ReinforceItem extends Packet<ReinforceItem> {
         ItemStack toReinforce = context.getSender().inventory.getItem(slot);
         ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);
         if (ReinforceHandler.hasHandler(toReinforce)) {
-            if (!toReinforce.hasTag() || !toReinforce.getTag().contains("reinforce_level")) {
-                if (ReinforceHandler.getHandler(toReinforce).level() > 0) {
-
-                }
-            }
-        }
-        if (ReinforceHandler.canReinforce(toReinforce)) {
-
-        }
-        if (ReinforceHandler.hasHandler(toReinforce)) {
             ReinforceHandler.removeRequiredItems(context.getSender(), required);
             ReinforceHandler.levelUp(toReinforce);
             toReinforce.getTag().putInt("Damage", 0);
