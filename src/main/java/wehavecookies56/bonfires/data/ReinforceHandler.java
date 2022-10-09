@@ -11,6 +11,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -100,7 +102,7 @@ public class ReinforceHandler {
                 maxLevelFromCap = handler.maxLevel();
                 handler.setLevel(0);
                 if (stack.getHoverName().getString().contains(" +" + levelFromCap)) {
-                    stack.setHoverName(new StringTextComponent(StringUtils.remove(stack.getHoverName().getString(), " +" + levelFromCap)));
+                    stack.setHoverName(new StringTextComponent(StringUtils.remove(stack.getHoverName().getString(), " +" + levelFromCap)).setStyle(Style.EMPTY.withItalic(false)));
                 }
             }
         }
