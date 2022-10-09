@@ -1,8 +1,6 @@
 package wehavecookies56.bonfires.packets.server;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.data.ReinforceHandler;
@@ -41,10 +39,8 @@ public class ReinforceItem extends Packet<ReinforceItem> {
         ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);
         if (ReinforceHandler.hasHandler(toReinforce)) {
             ReinforceHandler.removeRequiredItems(context.getSender(), required);
-            ReinforceHandler.getHandler(toReinforce).levelup(1);
-            toReinforce.resetHoverName();
+            ReinforceHandler.levelUp(toReinforce);
             toReinforce.getTag().putInt("Damage", 0);
-            toReinforce.setHoverName(new TranslatableComponent(toReinforce.getHoverName().getString() + " +" + ReinforceHandler.getHandler(toReinforce).level()).setStyle(Style.EMPTY.withItalic(false)));
             context.getSender().getInventory().setItem(slot, toReinforce);
             PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(toReinforce), slot), context.getSender());
         }

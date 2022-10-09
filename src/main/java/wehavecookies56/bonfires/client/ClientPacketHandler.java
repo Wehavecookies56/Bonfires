@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -105,10 +104,6 @@ public class ClientPacketHandler {
                 ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(stack);
                 handler.setMaxLevel(packet.maxLevel);
                 handler.setLevel(packet.level);
-                if (packet.level != 0) {
-                    stack.resetHoverName();
-                    stack.setHoverName(new TranslatableComponent(stack.getHoverName().getString() + " +" + packet.level).setStyle(Style.EMPTY.withItalic(false)));
-                }
                 Minecraft.getInstance().player.getInventory().setItem(packet.slot, stack);
             }
         };

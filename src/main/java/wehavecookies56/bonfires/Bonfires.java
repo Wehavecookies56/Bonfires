@@ -41,7 +41,7 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
     public static final String name = "Bonfires";
-    public static final String version = "1.2.6";
+    public static final String version = "1.2.7";
 
     public Bonfires() {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -90,8 +90,7 @@ public class Bonfires {
     public void livingHurt(LivingHurtEvent event) {
         if (event.getSource().getDirectEntity() instanceof Player player) {
             if (ReinforceHandler.hasHandler(player.getMainHandItem())) {
-                ReinforceHandler.IReinforceHandler reinforce = ReinforceHandler.getHandler(player.getMainHandItem());
-                event.setAmount(event.getAmount() + (0.5F * reinforce.level()));
+                event.setAmount(event.getAmount() + (0.5F * ReinforceHandler.getReinforceLevel(player.getMainHandItem()).level()));
             }
         }
     }

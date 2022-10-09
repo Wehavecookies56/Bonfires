@@ -2,6 +2,8 @@ package wehavecookies56.bonfires.data;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -9,12 +11,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wehavecookies56.bonfires.Bonfires;
@@ -62,30 +70,98 @@ public class ReinforceHandler {
         return stack.getCapability(CAPABILITY_REINFORCE, null).isPresent();
     }
 
+    public static boolean canReinforce(ItemStack stack) {
+        Item i = stack.getItem();
+        return i instanceof TieredItem || i instanceof SwordItem || i instanceof EstusFlaskItem;
+    }
+
+    public static final class ReinforceLevel {
+        private int level;
+        private int maxLevel;
+
+        private ReinforceLevel(int level, int maxLevel) {
+            this.level = level;
+            this.maxLevel = maxLevel;
+        }
+
+        public int level() {
+            return level;
+        }
+
+        public int maxLevel() {
+            return maxLevel;
+        }
+    }
+
+    public static ReinforceLevel getReinforceLevel(ItemStack stack) {
+        int levelFromCap = 0;
+        int maxLevelFromCap = 10;
+        if (hasHandler(stack)) {
+            IReinforceHandler handler = getHandler(stack);
+            if (handler.level() > 0) {
+                levelFromCap = handler.level();
+                maxLevelFromCap = handler.maxLevel();
+                handler.setLevel(0);
+                if (stack.getHoverName().getString().contains(" +" + levelFromCap)) {
+                    stack.setHoverName(new TextComponent(StringUtils.remove(stack.getHoverName().getString(), " +" + levelFromCap)).setStyle(Style.EMPTY.withItalic(false)));
+                }
+            }
+        }
+        if (canReinforce(stack)) {
+            if (stack.hasTag()) {
+                if (stack.getTag().contains("reinforce_level")) {
+                    return new ReinforceLevel(stack.getTag().getInt("reinforce_level"), stack.getTag().getInt("reinforce_max"));
+                } else {
+                    stack.getTag().putInt("reinforce_level", levelFromCap);
+                    stack.getTag().putInt("reinforce_max", maxLevelFromCap);
+                    return new ReinforceLevel(levelFromCap, maxLevelFromCap);
+                }
+            } else {
+                CompoundTag tag = new CompoundTag();
+                tag.putInt("reinforce_level", levelFromCap);
+                tag.putInt("reinforce_max", maxLevelFromCap);
+                stack.setTag(tag);
+                return new ReinforceLevel(levelFromCap, maxLevelFromCap);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static void levelUp(ItemStack stack) {
+        ReinforceLevel current = getReinforceLevel(stack);
+        if (current != null) {
+            if (current.level() < stack.getTag().getInt("reinforce_max")) {
+                stack.getTag().putInt("reinforce_level", current.level()+1);
+            }
+        }
+    }
+
     public static ItemStack getRequiredResources(ItemStack toReinforce) {
-        if (hasHandler(toReinforce)) {
+        if (getReinforceLevel(toReinforce) != null) {
+            ReinforceLevel rlevel = getReinforceLevel(toReinforce);
             if (toReinforce.getItem() == ItemSetup.estus_flask.get()) {
-                if (getHandler(toReinforce).level() < getHandler(toReinforce).maxLevel()) {
+                if (rlevel.level() < rlevel.maxLevel()) {
                     return new ItemStack(ItemSetup.undead_bone_shard.get());
                 } else {
                     return ItemStack.EMPTY;
                 }
-            } else if (getHandler(toReinforce).level() < getHandler(toReinforce).maxLevel()) {
+            } else if (rlevel.level() < rlevel.maxLevel()) {
                 int cost = 1;
                 Item material = ItemStack.EMPTY.getItem();
-                if (getHandler(toReinforce).level() >= 0 && getHandler(toReinforce).level() <= 2) {
-                    cost = 2 * (getHandler(toReinforce).level()+1);
+                if (rlevel.level() >= 0 && rlevel.level() <= 2) {
+                    cost = 2 * (rlevel.level()+1);
                     material = ItemSetup.titanite_shard.get();
                 }
-                if (getHandler(toReinforce).level() >= 3 && getHandler(toReinforce).level() <= 5) {
-                    cost = 2 * ((getHandler(toReinforce).level()+1)-3);
+                if (rlevel.level() >= 3 && rlevel.level() <= 5) {
+                    cost = 2 * ((rlevel.level()+1)-3);
                     material = ItemSetup.large_titanite_shard.get();
                 }
-                if (getHandler(toReinforce).level() >= 6 && getHandler(toReinforce).level() <= 8) {
-                    cost = 2 * ((getHandler(toReinforce).level()+1)-6);
+                if (rlevel.level() >= 6 && rlevel.level() <= 8) {
+                    cost = 2 * ((rlevel.level()+1)-6);
                     material = ItemSetup.titanite_chunk.get();
                 }
-                if (getHandler(toReinforce).level() >= 9 && getHandler(toReinforce).level() < 10) {
+                if (rlevel.level() >= 9 && rlevel.level() < 10) {
                     cost = 1;
                     material = ItemSetup.titanite_slab.get();
                 }
