@@ -99,8 +99,8 @@ public class ReinforceHandler {
                 levelFromCap = handler.level();
                 maxLevelFromCap = handler.maxLevel();
                 handler.setLevel(0);
-                if (stack.getHoverName().getString().contains("+" + levelFromCap)) {
-                    stack.setHoverName(new StringTextComponent(StringUtils.remove(stack.getHoverName().getString(), "+" + levelFromCap)));
+                if (stack.getHoverName().getString().contains(" +" + levelFromCap)) {
+                    stack.setHoverName(new StringTextComponent(StringUtils.remove(stack.getHoverName().getString(), " +" + levelFromCap)));
                 }
             }
         }
