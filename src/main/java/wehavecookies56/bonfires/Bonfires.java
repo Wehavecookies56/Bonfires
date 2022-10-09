@@ -6,6 +6,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -14,6 +15,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -27,6 +29,7 @@ import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.SyncEstusData;
 import wehavecookies56.bonfires.packets.client.SyncSaveData;
 import wehavecookies56.bonfires.setup.BlockSetup;
+import wehavecookies56.bonfires.setup.ClientSetup;
 import wehavecookies56.bonfires.setup.CommonSetup;
 import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
@@ -41,7 +44,7 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
     public static final String name = "Bonfires";
-    public static final String version = "1.2.6";
+    public static final String version = "1.2.7";
 
     public Bonfires() {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -91,8 +94,7 @@ public class Bonfires {
         if (event.getSource().getDirectEntity() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getSource().getDirectEntity();
             if (ReinforceHandler.hasHandler(player.getMainHandItem())) {
-                ReinforceHandler.IReinforceHandler reinforce = ReinforceHandler.getHandler(player.getMainHandItem());
-                event.setAmount(event.getAmount() + (0.5F * reinforce.level()));
+                event.setAmount(event.getAmount() + (0.5F * ReinforceHandler.getReinforceLevel(player.getMainHandItem()).level()));
             }
         }
     }

@@ -38,7 +38,7 @@ public class EstusFlaskItem extends Item {
                     stack.getTag().putInt("estus", stack.getTag().getInt("estus") - 1);
                     int heal = 6;
                     if (ReinforceHandler.hasHandler(stack)) {
-                        heal += ReinforceHandler.getHandler(stack).level();
+                        heal += ReinforceHandler.getReinforceLevel(stack).level();
                     }
                     entity.heal(heal);
                 }

@@ -49,15 +49,18 @@ public class ReinforceItemButton extends Button {
                 RenderSystem.popMatrix();
                 stack.popPose();
                 ItemStack item = parent.reinforceableItems.get(i);
-                ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(item);
-                int nextLevel = handler.level()+1;
+                int nextLevel = ReinforceHandler.getReinforceLevel(item).level()+1;
                 String nextLevelText = Integer.toString(nextLevel);
-                if (nextLevel == handler.maxLevel()) {
+                if (nextLevel == ReinforceHandler.getReinforceLevel(item).maxLevel()) {
                     nextLevelText = "MAX";
-                } else if (nextLevel > handler.maxLevel()) {
+                } else if (nextLevel > ReinforceHandler.getReinforceLevel(item).maxLevel()) {
 
                 }
-                drawString(stack, mc.font, parent.reinforceableItems.get(i).getHoverName().getString(), x+2 + 32, ((int)yPos + 16) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
+                String itemName = parent.reinforceableItems.get(i).getHoverName().getString();
+                if (ReinforceHandler.getReinforceLevel(item).level() > 0) {
+                     itemName += " +" + ReinforceHandler.getReinforceLevel(item).level();
+                }
+                drawString(stack, mc.font, itemName, x+2 + 32, ((int)yPos + 16) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
                 //ItemStack required = ReinforceHandler.getRequiredResources(parent.reinforceableItems.get(i));
                 //int textWidth = mc.fontRenderer.getStringWidth(required.getDisplayName());
                 //drawString(mc.fontRenderer, required.getDisplayName(), (x+2 + 220) - textWidth, ((int)yPos + 10) - (mc.fontRenderer.FONT_HEIGHT / 2), new Color(255, 255, 255).hashCode());

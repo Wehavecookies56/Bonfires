@@ -98,10 +98,6 @@ public class ClientPacketHandler {
                 ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(stack);
                 handler.setMaxLevel(packet.maxLevel);
                 handler.setLevel(packet.level);
-                if (packet.level != 0) {
-                    stack.resetHoverName();
-                    stack.setHoverName(new TranslationTextComponent(stack.getHoverName().getString() + " +" + packet.level).setStyle(Style.EMPTY.withItalic(false)));
-                }
                 Minecraft.getInstance().player.inventory.setItem(packet.slot, stack);
             }
         };

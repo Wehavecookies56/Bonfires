@@ -42,13 +42,20 @@ public class ReinforceItem extends Packet<ReinforceItem> {
         ItemStack toReinforce = context.getSender().inventory.getItem(slot);
         ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);
         if (ReinforceHandler.hasHandler(toReinforce)) {
+            if (!toReinforce.hasTag() || !toReinforce.getTag().contains("reinforce_level")) {
+                if (ReinforceHandler.getHandler(toReinforce).level() > 0) {
+
+                }
+            }
+        }
+        if (ReinforceHandler.canReinforce(toReinforce)) {
+
+        }
+        if (ReinforceHandler.hasHandler(toReinforce)) {
             ReinforceHandler.removeRequiredItems(context.getSender(), required);
-            ReinforceHandler.getHandler(toReinforce).levelup(1);
-            toReinforce.resetHoverName();
+            ReinforceHandler.levelUp(toReinforce);
             toReinforce.getTag().putInt("Damage", 0);
-            toReinforce.setHoverName(new TranslationTextComponent(toReinforce.getHoverName().getString() + " +" + ReinforceHandler.getHandler(toReinforce).level()).setStyle(Style.EMPTY.withItalic(false)));
             context.getSender().inventory.setItem(slot, toReinforce);
-            PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(toReinforce), slot), context.getSender());
         }
     }
 }

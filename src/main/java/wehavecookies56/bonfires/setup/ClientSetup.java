@@ -3,8 +3,14 @@ package wehavecookies56.bonfires.setup;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -14,12 +20,14 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
+import wehavecookies56.bonfires.data.ReinforceHandler;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
 
     @SubscribeEvent
     public static void setupClient(final FMLClientSetupEvent event) {
+        MinecraftForge.EVENT_BUS.register(new ClientSetup());
         event.enqueueWork(() -> {
             ItemModelsProperties.register(ItemSetup.estus_flask.get(), new ResourceLocation(Bonfires.modid, "uses"), (stack, world, entity) -> {
                 return entity != null && stack.getTag() != null ? (float) stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses") : 0.0F;
@@ -29,5 +37,33 @@ public class ClientSetup {
 
         ClientRegistry.bindTileEntityRenderer(EntitySetup.BONFIRE.get(), BonfireRenderer::new);
 
+    }
+
+    @SubscribeEvent
+    public void tooltipEvent(ItemTooltipEvent event) {
+        ItemStack stack = event.getItemStack();
+        boolean tryUseCap = true;
+        if (event.getItemStack().hasTag()) {
+            CompoundNBT tag = event.getItemStack().getTag();
+            if (tag.contains("reinforce_level")) {
+                int level = tag.getInt("reinforce_level");
+                if (level > 0) {
+                    ITextComponent component = event.getToolTip().get(0);
+                    StringTextComponent name = (StringTextComponent) component;
+                    name.append(" +" + level);
+                    event.getToolTip().set(0, name);
+                }
+                tryUseCap = false;
+            }
+        }
+        if (tryUseCap && ReinforceHandler.hasHandler(stack)) {
+            ReinforceHandler.IReinforceHandler reinforceHandler = ReinforceHandler.getHandler(stack);
+            if (reinforceHandler.level() > 0) {
+                ITextComponent component = event.getToolTip().get(0);
+                StringTextComponent name = (StringTextComponent) component;
+                name.append(" +" + reinforceHandler.level());
+                event.getToolTip().set(0, name);
+            }
+        }
     }
 }
