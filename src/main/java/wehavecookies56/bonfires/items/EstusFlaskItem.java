@@ -10,6 +10,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.BonfiresGroup;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
 import javax.annotation.Nullable;
@@ -37,7 +38,7 @@ public class EstusFlaskItem extends Item {
                     stack.getTag().putInt("estus", stack.getTag().getInt("estus") - 1);
                     int heal = 6;
                     if (ReinforceHandler.hasHandler(stack)) {
-                        heal += ReinforceHandler.getHandler(stack).level();
+                        heal += ReinforceHandler.getReinforceLevel(stack).level();
                     }
                     entity.heal(heal);
                 }
@@ -90,6 +91,8 @@ public class EstusFlaskItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag advanced) {
+        int level = ReinforceHandler.getReinforceLevel(stack).level();
+        tooltip.add(new TranslatableComponent(LocalStrings.TOOLTIP_ESTUS_HEAL, (6 + level) * 0.5F));
         if (stack.getTag() != null) {
             if (stack.getTag().contains("uses")) {
                 if (stack.getTag().contains("estus")) {

@@ -56,7 +56,8 @@
     "text.bonfires.reinforce": "Select item to reinforce",
     "text.bonfires.max_level": "Max Level",
 
-    "tooltip.bonfires.reinforce": "Reinforced: +%1$s damage",
+    "tooltip.bonfires.estus.heal": "Heals %f hearts",
+    "tooltip.bonfires.reinforce": "Reinforced: +%f damage",
 
     "tileentity.bonfires.bonfire.label": "%1$s (Private)",
 

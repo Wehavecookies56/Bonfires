@@ -62,6 +62,7 @@ public class ReinforceHandler {
         }
     }
 
+    @Deprecated
     public static IReinforceHandler getHandler(ItemStack stack) {
         return stack.getCapability(CAPABILITY_REINFORCE, null).orElse(null);
     }
@@ -72,6 +73,16 @@ public class ReinforceHandler {
 
     public static boolean canReinforce(ItemStack stack) {
         Item i = stack.getItem();
+        for (String s : BonfiresConfig.Common.reinforceBlacklist) {
+            if (ForgeRegistries.ITEMS.containsKey(new ResourceLocation(s))) {
+                Item blacklistedItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(s));
+                if (i == blacklistedItem) {
+                    return false;
+                }
+            } else {
+                Bonfires.LOGGER.info("Unable to find blacklisted item '" + s + "' in the registry");
+            }
+        }
         return i instanceof TieredItem || i instanceof SwordItem || i instanceof EstusFlaskItem;
     }
 
@@ -172,8 +183,10 @@ public class ReinforceHandler {
         return ItemStack.EMPTY;
     }
 
+    @Deprecated
     public static final Capability<IReinforceHandler> CAPABILITY_REINFORCE = CapabilityManager.get(new CapabilityToken<>() {});
 
+    @Deprecated
     public interface IReinforceHandler extends INBTSerializable<CompoundTag> {
         int level();
         int maxLevel();
@@ -182,6 +195,7 @@ public class ReinforceHandler {
         void setMaxLevel(int maxLevel);
     }
 
+    @Deprecated
     public static class Default implements IReinforceHandler {
         private int level = 0;
         private int maxLevel = 10;
@@ -234,6 +248,7 @@ public class ReinforceHandler {
         }
     }
 
+    @Deprecated
     public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
         IReinforceHandler instance = new ReinforceHandler.Default();
 

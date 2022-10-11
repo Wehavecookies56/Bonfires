@@ -5,8 +5,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
-import wehavecookies56.bonfires.packets.PacketHandler;
-import wehavecookies56.bonfires.packets.client.SyncReinforceData;
 
 /**
  * Created by Toby on 06/11/2016.
@@ -42,7 +40,6 @@ public class ReinforceItem extends Packet<ReinforceItem> {
             ReinforceHandler.levelUp(toReinforce);
             toReinforce.getTag().putInt("Damage", 0);
             context.getSender().getInventory().setItem(slot, toReinforce);
-            PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(toReinforce), slot), context.getSender());
         }
     }
 }
