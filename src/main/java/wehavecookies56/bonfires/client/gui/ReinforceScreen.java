@@ -82,8 +82,8 @@ public class ReinforceScreen extends Screen {
         int centerX = (window.getWidth() / 2) - (texWidth / 2);
         int centerY = (window.getHeight() / 2) - (texHeight / 2);
         if (itemSelected != -1) {
-            ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(reinforceableItems.get(itemSelected));
-            if (handler.level() != handler.maxLevel()) {
+            ReinforceHandler.ReinforceLevel reinforceLevel = ReinforceHandler.getReinforceLevel(reinforceableItems.get(itemSelected));
+            if (reinforceLevel.level() != reinforceLevel.maxLevel()) {
                 if (ReinforceHandler.hasRequiredItems(mc.player, ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected)))) {
                     confirm.active = true;
                 } else {
@@ -163,8 +163,8 @@ public class ReinforceScreen extends Screen {
                     hasCount += mc.player.getInventory().getItem(i).getCount();
                 }
             }
-            ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(reinforceableItems.get(itemSelected));
-            if (handler.level() != handler.maxLevel()) {
+            ReinforceHandler.ReinforceLevel reinforceLevel = ReinforceHandler.getReinforceLevel(reinforceableItems.get(itemSelected));
+            if (reinforceLevel.level() != reinforceLevel.maxLevel()) {
                 drawString(stack, font, required.getHoverName().getString() + ": " + hasCount + " / " + required.getCount(), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
             } else {
                 drawString(stack, font, new TranslatableComponent(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
@@ -177,7 +177,7 @@ public class ReinforceScreen extends Screen {
         List<Integer> slots = new ArrayList<>();
 
         for (int i = 0; i < mc.player.getInventory().items.size(); i++) {
-            if (ReinforceHandler.hasHandler(mc.player.getInventory().getItem(i))) {
+            if (ReinforceHandler.canReinforce(mc.player.getInventory().getItem(i))) {
                 items.add(mc.player.getInventory().getItem(i));
                 slots.add(i);
             }
