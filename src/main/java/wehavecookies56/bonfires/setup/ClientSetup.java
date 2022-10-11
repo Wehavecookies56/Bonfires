@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -19,8 +20,10 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
 import wehavecookies56.bonfires.data.ReinforceHandler;
+import wehavecookies56.bonfires.items.EstusFlaskItem;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
@@ -52,6 +55,9 @@ public class ClientSetup {
                     StringTextComponent name = (StringTextComponent) component;
                     name.append(" +" + level);
                     event.getToolTip().set(0, name);
+                    if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
+                        event.getToolTip().add(1, new TranslationTextComponent(LocalStrings.TOOLTIP_REINFORCE, 0.5F * level));
+                    }
                 }
                 tryUseCap = false;
             }
@@ -63,6 +69,9 @@ public class ClientSetup {
                 StringTextComponent name = (StringTextComponent) component;
                 name.append(" +" + reinforceHandler.level());
                 event.getToolTip().set(0, name);
+                if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
+                    event.getToolTip().add(1, new TranslationTextComponent(LocalStrings.TOOLTIP_REINFORCE, 0.5F * reinforceHandler.level()));
+                }
             }
         }
     }

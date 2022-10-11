@@ -10,6 +10,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import wehavecookies56.bonfires.BonfiresGroup;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
 import javax.annotation.Nonnull;
@@ -90,6 +91,8 @@ public class EstusFlaskItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag advanced) {
+        int level = ReinforceHandler.getReinforceLevel(stack).level();
+        tooltip.add(new TranslationTextComponent(LocalStrings.TOOLTIP_ESTUS_HEAL, (6 + level) * 0.5F));
         if (stack.getTag() != null) {
             if (stack.getTag().contains("uses")) {
                 if (stack.getTag().contains("estus")) {

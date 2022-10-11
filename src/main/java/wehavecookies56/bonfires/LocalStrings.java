@@ -47,6 +47,7 @@ public class LocalStrings {
             TEXT_REINFORCE = "text.bonfires.reinforce",
             TEXT_MAX_LEVEL = "text.bonfires.max_level",
 
+            TOOLTIP_ESTUS_HEAL = "tooltip.bonfires.estus.heal",
             TOOLTIP_REINFORCE = "tooltip.bonfires.reinforce",
 
             TILEENTITY_BONFIRE_LABEL = "tileentity.bonfires.bonfire.label",
