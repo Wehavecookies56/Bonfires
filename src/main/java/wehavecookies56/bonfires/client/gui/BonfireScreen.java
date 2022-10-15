@@ -95,14 +95,16 @@ public class BonfireScreen extends Screen {
 
     public BonfireRegistry registry;
     public List<RegistryKey<World>> dimensions;
+    public final boolean canReinforce;
 
-    public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<RegistryKey<World>> dimensions, BonfireRegistry registry) {
+    public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<RegistryKey<World>> dimensions, BonfireRegistry registry, boolean canReinforce) {
         super(new TranslationTextComponent(""));
         this.bonfire = bonfire;
         this.ownerName = ownerName;
         this.registry = registry;
         minecraft = Minecraft.getInstance();
         this.dimensions = dimensions.stream().sorted(Comparator.comparing(RegistryKey::location)).collect(Collectors.toList());
+        this.canReinforce = canReinforce;
     }
 
     public void drawCenteredStringNoShadow(MatrixStack stack, FontRenderer fr, String text, int x, int y, int color) {
@@ -420,7 +422,7 @@ public class BonfireScreen extends Screen {
                 bonfire.visible = false;
             }
         }
-        if (!BonfiresConfig.Common.enableReinforcing) {
+        if (!canReinforce) {
             reinforce.visible = false;
             leave.y = reinforce.y;
         }

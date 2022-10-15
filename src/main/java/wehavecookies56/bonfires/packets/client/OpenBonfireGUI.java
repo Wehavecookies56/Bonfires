@@ -24,20 +24,23 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     public String ownerName;
     public BonfireRegistry registry;
     public List<RegistryKey<World>> dimensions;
+    public boolean canReinforce;
 
     public OpenBonfireGUI(PacketBuffer buffer) {
         super(buffer);
     }
 
-    public OpenBonfireGUI(BonfireTileEntity bonfire, String ownerName, BonfireRegistry registry) {
+    public OpenBonfireGUI(BonfireTileEntity bonfire, String ownerName, BonfireRegistry registry, boolean canReinforce) {
         this.ownerName = ownerName;
         this.tileEntity = bonfire.getBlockPos();
         this.registry = registry;
         this.dimensions = new ArrayList<>(ServerLifecycleHooks.getCurrentServer().levelKeys());
+        this.canReinforce = canReinforce;
     }
 
     @Override
     public void decode(PacketBuffer buffer) {
+        canReinforce = buffer.readBoolean();
         ownerName = buffer.readUtf();
         tileEntity = buffer.readBlockPos();
         registry = new BonfireRegistry();
@@ -51,6 +54,7 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
 
     @Override
     public void encode(PacketBuffer buffer) {
+        buffer.writeBoolean(canReinforce);
         buffer.writeUtf(ownerName);
         buffer.writeBlockPos(tileEntity);
         buffer.writeNbt(registry.writeToNBT(new CompoundNBT(), registry.getBonfires()));

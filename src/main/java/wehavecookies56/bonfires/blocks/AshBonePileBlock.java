@@ -122,7 +122,7 @@ public class AshBonePileBlock extends Block {
                                     PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(player.inventory.getItem(i)), i), (ServerPlayerEntity) player);
                                 }
                             }
-                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry), (ServerPlayerEntity) player);
+                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry, BonfiresConfig.Common.enableReinforcing), (ServerPlayerEntity) player);
                             player.heal(player.getMaxHealth());
                             ((ServerPlayerEntity) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.yRot, false, true);
                             EstusHandler.getHandler(player).setLastRested(te.getID());

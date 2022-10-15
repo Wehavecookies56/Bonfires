@@ -7,6 +7,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -39,13 +40,15 @@ public class ReinforceItem extends Packet<ReinforceItem> {
 
     @Override
     public void handle(NetworkEvent.Context context) {
-        ItemStack toReinforce = context.getSender().inventory.getItem(slot);
-        ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);
-        if (ReinforceHandler.hasHandler(toReinforce)) {
-            ReinforceHandler.removeRequiredItems(context.getSender(), required);
-            ReinforceHandler.levelUp(toReinforce);
-            toReinforce.getTag().putInt("Damage", 0);
-            context.getSender().inventory.setItem(slot, toReinforce);
+        if (BonfiresConfig.Common.enableReinforcing) {
+            ItemStack toReinforce = context.getSender().inventory.getItem(slot);
+            ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);
+            if (ReinforceHandler.canReinforce(toReinforce)) {
+                ReinforceHandler.removeRequiredItems(context.getSender(), required);
+                ReinforceHandler.levelUp(toReinforce);
+                toReinforce.getTag().putInt("Damage", 0);
+                context.getSender().inventory.setItem(slot, toReinforce);
+            }
         }
     }
 }

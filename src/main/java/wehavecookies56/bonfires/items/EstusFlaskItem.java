@@ -9,6 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.BonfiresGroup;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
@@ -37,9 +38,12 @@ public class EstusFlaskItem extends Item {
             if (stack.getTag() != null) {
                 if (stack.getTag().getInt("estus") > 0) {
                     stack.getTag().putInt("estus", stack.getTag().getInt("estus") - 1);
-                    int heal = 6;
-                    if (ReinforceHandler.hasHandler(stack)) {
-                        heal += ReinforceHandler.getReinforceLevel(stack).level();
+                    float heal = (float) BonfiresConfig.Server.estusFlaskBaseHeal;
+                    if (ReinforceHandler.canReinforce(stack)) {
+                        ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(stack);
+                        if (rlevel != null) {
+                            heal += (BonfiresConfig.Server.estusFlaskHealPerLevel * rlevel.level());
+                        }
                     }
                     entity.heal(heal);
                 }
@@ -92,7 +96,7 @@ public class EstusFlaskItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag advanced) {
         int level = ReinforceHandler.getReinforceLevel(stack).level();
-        tooltip.add(new TranslationTextComponent(LocalStrings.TOOLTIP_ESTUS_HEAL, (6 + level) * 0.5F));
+        tooltip.add(new TranslationTextComponent(LocalStrings.TOOLTIP_ESTUS_HEAL, (BonfiresConfig.Server.estusFlaskBaseHeal + (BonfiresConfig.Server.estusFlaskHealPerLevel * level)) * 0.5F));
         if (stack.getTag() != null) {
             if (stack.getTag().contains("uses")) {
                 if (stack.getTag().contains("estus")) {

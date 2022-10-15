@@ -56,7 +56,7 @@ public class ClientSetup {
                     name.append(" +" + level);
                     event.getToolTip().set(0, name);
                     if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                        event.getToolTip().add(1, new TranslationTextComponent(LocalStrings.TOOLTIP_REINFORCE, 0.5F * level));
+                        event.getToolTip().add(1, new TranslationTextComponent(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * level));
                     }
                 }
                 tryUseCap = false;
@@ -70,7 +70,7 @@ public class ClientSetup {
                 name.append(" +" + reinforceHandler.level());
                 event.getToolTip().set(0, name);
                 if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                    event.getToolTip().add(1, new TranslationTextComponent(LocalStrings.TOOLTIP_REINFORCE, 0.5F * reinforceHandler.level()));
+                    event.getToolTip().add(1, new TranslationTextComponent(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * reinforceHandler.level()));
                 }
             }
         }
