@@ -41,7 +41,7 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
     public static final String name = "Bonfires";
-    public static final String version = "1.2.8";
+    public static final String version = "1.2.9";
 
     public Bonfires() {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -53,6 +53,7 @@ public class Bonfires {
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, BonfiresConfig.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BonfiresConfig.COMMON_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, BonfiresConfig.SERVER_SPEC);
 
         MinecraftForge.EVENT_BUS.register(new CommonSetup());
         MinecraftForge.EVENT_BUS.register(this);
@@ -89,8 +90,11 @@ public class Bonfires {
     @SubscribeEvent
     public void livingHurt(LivingHurtEvent event) {
         if (event.getSource().getDirectEntity() instanceof Player player) {
-            if (ReinforceHandler.hasHandler(player.getMainHandItem())) {
-                event.setAmount(event.getAmount() + (0.5F * ReinforceHandler.getReinforceLevel(player.getMainHandItem()).level()));
+            if (ReinforceHandler.canReinforce(player.getMainHandItem())) {
+                ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(player.getMainHandItem());
+                if (rlevel != null) {
+                    event.setAmount((float) (event.getAmount() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())));
+                }
             }
         }
     }

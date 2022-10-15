@@ -17,6 +17,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
 import wehavecookies56.bonfires.data.ReinforceHandler;
@@ -55,7 +56,7 @@ public class ClientSetup {
                     name.append(" +" + level);
                     event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
                     if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                        event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, 0.5F * level));
+                        event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * level));
                     }
                 }
                 tryUseCap = false;
@@ -69,7 +70,7 @@ public class ClientSetup {
                 name.append(" +" + reinforceHandler.level());
                 event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
                 if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                    event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, 0.5F * reinforceHandler.level()));
+                    event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * reinforceHandler.level()));
                 }
             }
         }

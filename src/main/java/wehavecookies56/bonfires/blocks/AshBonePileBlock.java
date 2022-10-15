@@ -137,7 +137,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                                     PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(player.getInventory().getItem(i)), i), (ServerPlayer) player);
                                 }
                             }
-                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry), (ServerPlayer) player);
+                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry, BonfiresConfig.Common.enableReinforcing), (ServerPlayer) player);
                             player.heal(player.getMaxHealth());
                             ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                             EstusHandler.getHandler(player).setLastRested(te.getID());
