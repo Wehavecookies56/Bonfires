@@ -19,7 +19,6 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
 import wehavecookies56.bonfires.Bonfires;
-import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
@@ -104,14 +103,16 @@ public class BonfireScreen extends Screen {
 
     public BonfireRegistry registry;
     public List<ResourceKey<Level>> dimensions;
+    public final boolean canReinforce;
 
-    public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<ResourceKey<Level>> dimensions, BonfireRegistry registry) {
+    public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<ResourceKey<Level>> dimensions, BonfireRegistry registry, boolean canReinforce) {
         super(new TextComponent(""));
         this.bonfire = bonfire;
         this.ownerName = ownerName;
         this.registry = registry;
         minecraft = Minecraft.getInstance();
         this.dimensions = dimensions.stream().sorted(Comparator.comparing(ResourceKey::location)).collect(Collectors.toList());
+        this.canReinforce = canReinforce;
     }
 
     public void drawCenteredStringNoShadow(PoseStack stack, Font fr, String text, int x, int y, int color) {
@@ -428,7 +429,7 @@ public class BonfireScreen extends Screen {
                 bonfire.visible = false;
             }
         }
-        if (!BonfiresConfig.Common.enableReinforcing) {
+        if (!canReinforce) {
             reinforce.visible = false;
             leave.y = reinforce.y;
         }

@@ -44,6 +44,9 @@ public class ReinforceScreen extends Screen {
         super(new TextComponent(""));
         this.parent = parent;
         mc = Minecraft.getInstance();
+        if (!parent.canReinforce) {
+            mc.setScreen(null);
+        }
     }
 
     @Override

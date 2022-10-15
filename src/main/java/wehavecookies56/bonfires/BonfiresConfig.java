@@ -63,11 +63,31 @@ public class BonfiresConfig {
         }
     }
 
+    public static class Server {
+        public static double estusFlaskBaseHeal = 6;
+        public final ForgeConfigSpec.DoubleValue estusFlaskBaseHealConfig;
+
+        public static double estusFlaskHealPerLevel = 1;
+        public final ForgeConfigSpec.DoubleValue estusFlaskHealPerLevelConfig;
+
+        public static double reinforceDamagePerLevel = 0.5;
+        public final ForgeConfigSpec.DoubleValue reinforceDamagePerLevelConfig;
+
+        public Server(ForgeConfigSpec.Builder builder) {
+            this.estusFlaskBaseHealConfig = builder.comment("Set how much the Estus Flask heals by default, 1 = half a heart, default:6").defineInRange("Estus Flask Base Heal", estusFlaskBaseHeal, 0, Double.MAX_VALUE);
+            this.estusFlaskHealPerLevelConfig = builder.comment("Set the amount to increase Estus Flask healing per level, default:1").defineInRange("Estus Flask Heal Per Level", estusFlaskHealPerLevel, 0, Double.MAX_VALUE);
+            this.reinforceDamagePerLevelConfig = builder.comment("Set the amount to increase damage for reinforced tools per level, default:0.5").defineInRange("Reinforce Damage Per Level", reinforceDamagePerLevel, 0, Double.MAX_VALUE);
+        }
+
+    }
+
 
     public static final Client CLIENT;
     public static final ForgeConfigSpec CLIENT_SPEC;
     public static final Common COMMON;
     public static final ForgeConfigSpec COMMON_SPEC;
+    public static final Server SERVER;
+    public static final ForgeConfigSpec SERVER_SPEC;
 
     static {
         Pair<Client, ForgeConfigSpec> clientPair = new ForgeConfigSpec.Builder().configure(Client::new);
@@ -76,6 +96,9 @@ public class BonfiresConfig {
         Pair<Common, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure(Common::new);
         COMMON = commonPair.getLeft();
         COMMON_SPEC = commonPair.getRight();
+        Pair<Server, ForgeConfigSpec> serverPair = new ForgeConfigSpec.Builder().configure(Server::new);
+        SERVER = serverPair.getLeft();
+        SERVER_SPEC = serverPair.getRight();
     }
 
     @SubscribeEvent
@@ -87,6 +110,10 @@ public class BonfiresConfig {
             Common.enableReinforcing = COMMON.enableReinforcingConfig.get();
             Common.enableUBSBonfire = COMMON.enableUBSBonfireConfig.get();
             Common.reinforceBlacklist = (List<String>) COMMON.reinforceBlacklistConfig.get();
+        } else if (event.getConfig().getSpec() == SERVER_SPEC) {
+            Server.estusFlaskBaseHeal = SERVER.estusFlaskBaseHealConfig.get();
+            Server.estusFlaskHealPerLevel = SERVER.estusFlaskHealPerLevelConfig.get();
+            Server.reinforceDamagePerLevel = SERVER.reinforceDamagePerLevelConfig.get();
         }
     }
 }
