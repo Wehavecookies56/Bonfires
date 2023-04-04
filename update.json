@@ -1,9 +1,9 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
-    "1.19.2-latest": "1.2.9",
-    "1.18.2-latest": "1.2.9",
-    "1.16.5-latest": "1.2.9",
+    "1.19.2-latest": "1.2.10",
+    "1.18.2-latest": "1.2.10",
+    "1.16.5-latest": "1.2.10",
     "1.12.2-latest": "1.2.2",
     "1.12-latest": "1.2.2",
     "1.11-latest": "1.0.1",
@@ -11,6 +11,7 @@
   },
 
   "1.19.2": {
+    "1.2.10": "Fixes crash when using a Homeward Bone or Coiled Sword Fragment with destroyed Bonfires",
     "1.2.9": "Fixed a potential crash with reinforced items, 3 new config options",
     "1.2.8": "Fixed Estus Flask healing not increasing from reinforcement, added reinforcement info to tooltips, fixed Reinforce GUI max level display",
     "1.2.7": "Reinforcing using item NBT tag instead of capability, item name only changed in tooltip",
@@ -19,6 +20,7 @@
   },
 
   "1.18.2": {
+    "1.2.10": "Fixes crash when using a Homeward Bone or Coiled Sword Fragment with destroyed Bonfires",
     "1.2.9": "Fixed a potential crash with reinforced items, 3 new config options",
     "1.2.8": "Fixed Estus Flask healing not increasing from reinforcement, added reinforcement info to tooltips, fixed Reinforce GUI max level display",
     "1.2.7": "Reinforcing using item NBT tag instead of capability, item name only changed in tooltip",
@@ -28,6 +30,7 @@
   },
 
   "1.16.5": {
+    "1.2.10": "Fixes crash when using a Homeward Bone or Coiled Sword Fragment with destroyed Bonfires",
     "1.2.9": "Fixed a potential crash with reinforced items, 3 new config options",
     "1.2.8": "Added reinforcement info to tooltips, fixed Reinforce GUI max level display",
     "1.2.7": "Reinforcing using item NBT tag instead of capability, item name only changed in tooltip",

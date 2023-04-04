@@ -36,19 +36,23 @@ public class HomewardBoneItem extends Item {
                 UUID lastRested = EstusHandler.getHandler(player).lastRested();
                 if (lastRested != null) {
                     Bonfire bonfire = BonfireHandler.getServerHandler(world.getServer()).getRegistry().getBonfire(lastRested);
-                    BonfireTeleporter.travelToBonfire((ServerPlayer) player, bonfire.getPos(), bonfire.getDimension());
-                    player.getItemInHand(hand).shrink(1);
-                    return InteractionResultHolder.success(player.getItemInHand(hand));
+                    if (bonfire != null) {
+                        BonfireTeleporter.travelToBonfire((ServerPlayer) player, bonfire.getPos(), bonfire.getDimension());
+                        player.getItemInHand(hand).shrink(1);
+                        return InteractionResultHolder.success(player.getItemInHand(hand));
+                    }
                 }
             }
         } else {
             UUID lastRested = EstusHandler.getHandler(player).lastRested();
             if (lastRested != null) {
                 Bonfire bonfire = BonfireHandler.getHandler(world).getRegistry().getBonfire(lastRested);
-                player.level.playSound(player, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-                player.level.playSound(player, bonfire.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-                DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.displayBonfireTravelled(bonfire));
-                return InteractionResultHolder.success(player.getItemInHand(hand));
+                if (bonfire != null) {
+                    player.level.playSound(player, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+                    player.level.playSound(player, bonfire.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+                    DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.displayBonfireTravelled(bonfire));
+                    return InteractionResultHolder.success(player.getItemInHand(hand));
+                }
             }
         }
         return super.use(world, player, hand);
