@@ -9,11 +9,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.BonfiresGroup;
+import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
@@ -46,10 +45,12 @@ public class HomewardBoneItem extends Item {
             UUID lastRested = EstusHandler.getHandler(player).lastRested();
             if (lastRested != null) {
                 Bonfire bonfire = BonfireHandler.getHandler(world).getRegistry().getBonfire(lastRested);
-                player.level.playSound(player, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
-                player.level.playSound(player, bonfire.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
-                DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.displayBonfireTravelled(bonfire));
-                return ActionResult.success(player.getItemInHand(hand));
+                if (bonfire != null) {
+                    player.level.playSound(player, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+                    player.level.playSound(player, bonfire.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+                    DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.displayBonfireTravelled(bonfire));
+                    return ActionResult.success(player.getItemInHand(hand));
+                }
             }
         }
         return super.use(world, player, hand);
