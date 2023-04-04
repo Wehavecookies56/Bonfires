@@ -36,8 +36,10 @@ public class CoiledSwordFragmentItem extends Item {
                 UUID lastRested = EstusHandler.getHandler(player).lastRested();
                 if (lastRested != null) {
                     Bonfire bonfire = BonfireHandler.getServerHandler(world.getServer()).getRegistry().getBonfire(lastRested);
-                    BonfireTeleporter.travelToBonfire((ServerPlayerEntity) player, bonfire.getPos(), bonfire.getDimension());
-                    return ActionResult.success(player.getItemInHand(hand));
+                    if (bonfire != null) {
+                        BonfireTeleporter.travelToBonfire((ServerPlayerEntity) player, bonfire.getPos(), bonfire.getDimension());
+                        return ActionResult.success(player.getItemInHand(hand));
+                    }
                 }
             }
         } else {
