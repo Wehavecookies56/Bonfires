@@ -121,7 +121,7 @@ public class BonfiresCommand {
                 break;
             case "radius":
                 int radius = IntegerArgumentType.getInteger(context, "searchradius");
-                query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresInRadius(new BlockPos(context.getSource().getPosition()), radius, context.getSource().getLevel().dimension().location());
+                query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresInRadius(new BlockPos((int) context.getSource().getPosition().x, (int) context.getSource().getPosition().y, (int) context.getSource().getPosition().z), radius, context.getSource().getLevel().dimension().location());
                 if (query.isEmpty()) {
                     context.getSource().sendSuccess(Component.translatable(LocalStrings.COMMAND_RADIUS_NOMATCH, radius), false);
                 } else {

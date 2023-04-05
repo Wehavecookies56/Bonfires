@@ -39,7 +39,7 @@ public class SyncSaveData extends Packet<SyncSaveData> {
             UUID key = buffer.readUUID();
             String name = buffer.readUtf();
             UUID owner = buffer.readUUID();
-            BlockPos pos = new BlockPos(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+            BlockPos pos = new BlockPos((int) buffer.readDouble(), (int) buffer.readDouble(), (int) buffer.readDouble());
             ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(buffer.readUtf()));
             boolean isPublic = buffer.readBoolean();
             Bonfire bonfire = new Bonfire(name, key, owner, pos, dim, isPublic);

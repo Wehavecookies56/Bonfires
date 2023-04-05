@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "bonfires:ash_bone_pile"
-  }
+  },
+  "show_notification": true
 }

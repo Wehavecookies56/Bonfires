@@ -26,5 +26,6 @@
   ],
   "result": {
     "item": "bonfires:coiled_sword"
-  }
+  },
+  "show_notification": true
 }

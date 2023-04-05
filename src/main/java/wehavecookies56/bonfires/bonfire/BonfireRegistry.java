@@ -143,7 +143,7 @@ public class BonfireRegistry {
             String name = compound.getString("NAME");
             UUID id = compound.getUUID("ID");
             UUID owner = compound.getUUID("OWNER");
-            BlockPos pos = new BlockPos(compound.getDouble("POSX"), compound.getDouble("POSY"), compound.getDouble("POSZ"));
+            BlockPos pos = new BlockPos((int) compound.getDouble("POSX"), (int) compound.getDouble("POSY"), (int) compound.getDouble("POSZ"));
             ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("DIM")));
             boolean isPublic = compound.getBoolean("PUBLIC");
             Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic);

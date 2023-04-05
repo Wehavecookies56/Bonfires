@@ -23,7 +23,7 @@ public class BonfiresGroup {
             builder
                     .title(Component.translatable(LocalStrings.ITEMGROUP_BONFIRES))
                     .icon(() -> new ItemStack(ItemSetup.coiled_sword.get()))
-                    .displayItems((pEnabledFeatures, pOutput, pDisplayOperatorCreativeTab) -> {
+                    .displayItems((pParams, pOutput) -> {
                         ItemSetup.ITEMS.getEntries().stream().map(RegistryObject::get).map(ItemStack::new).toList().forEach(pOutput::accept);
                         for (int i = 3; i < 16; ++i) {
                             ItemStack stack = new ItemStack(ItemSetup.estus_flask.get());

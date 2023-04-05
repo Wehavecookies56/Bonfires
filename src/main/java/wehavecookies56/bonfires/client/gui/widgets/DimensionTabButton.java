@@ -91,10 +91,10 @@ public class DimensionTabButton extends Button {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
                 blit(stack, getX(), getY(), tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8);
             } else {
                 blit(stack, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8 -1);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8 -1);
             }
         }
     }

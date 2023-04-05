@@ -17,5 +17,6 @@
   ],
   "result": {
     "item": "bonfires:titanite_slab"
-  }
+  },
+  "show_notification": true
 }

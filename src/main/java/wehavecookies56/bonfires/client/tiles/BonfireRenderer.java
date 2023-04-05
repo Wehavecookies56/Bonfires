@@ -1,16 +1,15 @@
 package wehavecookies56.bonfires.client.tiles;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -34,9 +33,6 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
     @Override
     public void render(BonfireTileEntity te, float pPartialTicks, PoseStack stack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
         if (te.isBonfire()) {
-            if (te.isLit()) {
-                renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
-            }
             stack.pushPose();
             stack.translate(0.5, 0.65, 0.5);
             if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getBlock() == BlockSetup.ash_bone_pile.get()) {
@@ -54,8 +50,11 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
                 }
             }
             stack.mulPose(Axis.ZP.rotationDegrees(-130));
-            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemTransforms.TransformType.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, 0);
+            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemDisplayContext.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, Minecraft.getInstance().level, 0);
             stack.popPose();
+            if (te.isLit()) {
+                renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
+            }
         }
     }
 
@@ -71,9 +70,8 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
             int j = (int)(f1 * 255.0F) << 24;
             Font fontrenderer = context.getFont();
             float f2 = (float)(-fontrenderer.width(pDisplayName) / 2);
-            RenderSystem.enableBlend();
-            fontrenderer.drawInBatch(pDisplayName, f2, 0, 0xFFFFFF, true, matrix4f, pBuffer, false, 0, pPackedLight);
-            RenderSystem.disableBlend();
+            fontrenderer.drawInBatch(pDisplayName, f2, 0, 553648127, false, matrix4f, pBuffer, Font.DisplayMode.NORMAL, j, pPackedLight);
+            fontrenderer.drawInBatch(pDisplayName, f2, 0, -1, false, matrix4f, pBuffer, Font.DisplayMode.NORMAL, 0, pPackedLight);
             pMatrixStack.popPose();
         }
     }

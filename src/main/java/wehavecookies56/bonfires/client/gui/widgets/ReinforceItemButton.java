@@ -7,17 +7,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import wehavecookies56.bonfires.client.gui.ReinforceScreen;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ReinforceItemButton extends Button {
 
@@ -49,7 +49,7 @@ public class ReinforceItemButton extends Button {
             Lighting.setupForFlatItems();
         }
 
-        itemRenderer.render(istack, ItemTransforms.TransformType.GUI, false, pstack, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, itemBakedModel);
+        itemRenderer.render(istack, ItemDisplayContext.GUI, false, pstack, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, itemBakedModel);
         multibuffersource$buffersource.endBatch();
         if (flag) {
             Lighting.setupFor3DItems();
