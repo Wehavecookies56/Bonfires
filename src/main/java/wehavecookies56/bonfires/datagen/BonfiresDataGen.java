@@ -1,17 +1,14 @@
 package wehavecookies56.bonfires.datagen;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
@@ -23,12 +20,8 @@ import net.minecraftforge.registries.RegistryObject;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -40,34 +33,17 @@ public class BonfiresDataGen {
         final ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
         generator.addProvider(true, new Recipes(generator));
-        generator.addProvider(true, new Loot(generator));
+        generator.addProvider(true, new LootTableProvider(generator.getPackOutput(), Collections.emptySet(), List.of(new LootTableProvider.SubProviderEntry(BonfiresBlockLoot::new, LootContextParamSets.BLOCK))));
     }
 
-    public static class Loot extends LootTableProvider {
+    public static class BonfiresBlockLoot extends BlockLootSubProvider {
 
-        public Loot(DataGenerator generator) {
-            super(generator);
-        }
-
-
-
-        @Override
-        protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
-            return Arrays.asList(
-               Pair.of(BonfiresBlockLoot::new, LootContextParamSets.BLOCK)
-            );
+        protected BonfiresBlockLoot() {
+            super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
         }
 
         @Override
-        protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
-
-        }
-    }
-
-    public static class BonfiresBlockLoot extends BlockLoot {
-
-        @Override
-        protected void addTables() {
+        protected void generate() {
             dropWhenSilkTouch(BlockSetup.ash_block.get());
             add(BlockSetup.ash_block.get(), new LootTable.Builder().withPool(
                     new LootPool.Builder()

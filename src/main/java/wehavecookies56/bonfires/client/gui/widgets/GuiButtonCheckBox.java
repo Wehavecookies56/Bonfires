@@ -31,11 +31,11 @@ public class GuiButtonCheckBox extends AbstractButton {
     public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             RenderSystem.setShaderTexture(0, new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png"));
-            blit(stack, x, y, 0, 0, 10, 10);
+            blit(stack, getX(), getY(), 0, 0, 10, 10);
             if (checked) {
-                blit(stack, x, y, 10, 0, 10, 10);
+                blit(stack, getX(), getY(), 10, 0, 10, 10);
             }
-            drawString(stack, Minecraft.getInstance().font, getMessage().getString(), x + width + 3, y + 2, new Color(255, 255, 255).hashCode());
+            drawString(stack, Minecraft.getInstance().font, getMessage().getString(), getX() + width + 3, getY() + 2, new Color(255, 255, 255).hashCode());
         }
     }
 
@@ -53,7 +53,7 @@ public class GuiButtonCheckBox extends AbstractButton {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
         this.defaultButtonNarrationText(pNarrationElementOutput);
         pNarrationElementOutput.add(NarratedElementType.HINT, isChecked() ? Component.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_CHECKED) : Component.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_UNCHECKED));
     }

@@ -1,7 +1,5 @@
 package wehavecookies56.bonfires.setup;
 
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,7 +31,6 @@ public class ClientSetup {
             ItemProperties.register(ItemSetup.estus_flask.get(), new ResourceLocation(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
                 return entity != null && stack.getTag() != null ? (float) stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses") : 0.0F;
             });
-            ItemBlockRenderTypes.setRenderLayer(BlockSetup.ash_bone_pile.get(), RenderType.translucent());
         });
     }
 

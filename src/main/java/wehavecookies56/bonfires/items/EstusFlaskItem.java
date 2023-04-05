@@ -1,19 +1,15 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.BonfiresConfig;
-import wehavecookies56.bonfires.BonfiresGroup;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
@@ -26,7 +22,7 @@ import java.util.List;
 public class EstusFlaskItem extends Item {
 
     public EstusFlaskItem() {
-        super(new Properties().tab(BonfiresGroup.INSTANCE).stacksTo(1).food(new FoodProperties.Builder().alwaysEat().nutrition(0).saturationMod(0).build()));
+        super(new Properties().stacksTo(1).food(new FoodProperties.Builder().alwaysEat().nutrition(0).saturationMod(0).build()));
     }
 
     @Override
@@ -78,21 +74,6 @@ public class EstusFlaskItem extends Item {
             return Math.round((float)13 * ((float)stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses")));
         } else {
             return 0;
-        }
-    }
-
-    @Override
-    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
-        if (tab.equals(BonfiresGroup.INSTANCE)) {
-            for (int i = 3; i < 16; ++i) {
-                ItemStack stack = new ItemStack(this);
-                stack.setTag(new CompoundTag());
-                if (stack.getTag() != null) {
-                    stack.getTag().putInt("uses", i);
-                    stack.getTag().putInt("estus", i);
-                }
-                items.add(stack);
-            }
         }
     }
 

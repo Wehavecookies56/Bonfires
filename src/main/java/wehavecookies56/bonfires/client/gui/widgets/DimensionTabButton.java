@@ -29,9 +29,9 @@ public class DimensionTabButton extends Button {
     private Item icon = Items.FILLED_MAP;
 
     public DimensionTabButton(BonfireScreen parent, int buttonId, int x, int y) {
-        super(x, y, 28, 30, Component.empty(), b -> {
+        super(new Builder(Component.empty(), b -> {
             parent.action(buttonId);
-        });
+        }).pos(x, y).size(28, 30));
         this.id = buttonId;
         this.parent = parent;
     }
@@ -90,11 +90,11 @@ public class DimensionTabButton extends Button {
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
-                blit(stack, x, y, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(getIcon(), 1), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8);
+                blit(stack, getX(), getY(), tab_u, tab_v, tab_width, tab_height);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8);
             } else {
-                blit(stack, x, y - 1, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(getIcon(), 1), x + (tab_width / 2) - 8, y + (tab_height / 2) - 8 -1);
+                blit(stack, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8 -1);
             }
         }
     }

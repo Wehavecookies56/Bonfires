@@ -16,9 +16,9 @@ public class BonfirePageButton extends Button {
     private int id;
 
     public BonfirePageButton(BonfireScreen parent, int id, int x, int y, boolean isNext) {
-        super(x, y, 8, 14, Component.empty(), press -> {
+        super(new Builder(Component.empty(), press -> {
             parent.action(id);
-        });
+        }).pos(x, y).size(8, 14));
         this.id = id;
         this.parent = parent;
         this.isNext = isNext;
@@ -35,14 +35,14 @@ public class BonfirePageButton extends Button {
                 u = (256 - texWidth * 2) + texWidth;
             }
             int v = 0;
-            if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
+            if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
                 v = texHeight;
             }
             if (!active) {
                 v = texHeight * 2;
             }
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            blit(stack, x, y, u, v, width, height);
+            blit(stack, getX(), getY(), u, v, width, height);
         }
     }
 }

@@ -16,7 +16,7 @@ public class ScrollBarButton extends Button {
     int minHeight, maxHeight;
 
     public ScrollBarButton(int buttonId, int x, int y, int widthIn, int minHeight, int top, int bottom) {
-        super(x, y, widthIn, minHeight, Component.empty(), button -> {});
+        super(new Builder(Component.empty(), button -> {}).pos(x, y).size(widthIn, minHeight));
         this.top = top;
         this.minHeight = minHeight;
         this.scrollBarHeight = minHeight;
@@ -33,11 +33,11 @@ public class ScrollBarButton extends Button {
         if (visible) {
             RenderSystem.enableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 0.5F);
-            fill(stack, x, top, x + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
+            fill(stack, getX(), top, getX() + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            fill(stack, x, y, x+8, y+scrollBarHeight, new Color(81, 86, 71).hashCode());
-            fill(stack, x+1, y+1, x+1+6, y+1+(scrollBarHeight-2), new Color(114, 118, 95).hashCode());
+            fill(stack, getX(), getY(), getX()+8, getY()+scrollBarHeight, new Color(81, 86, 71).hashCode());
+            fill(stack, getX()+1, getY()+1, getX()+1+6, getY()+1+(scrollBarHeight-2), new Color(114, 118, 95).hashCode());
         }
     }
 
@@ -48,14 +48,14 @@ public class ScrollBarButton extends Button {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (clickX >= x && clickX <= x + width) {
+        if (clickX >= getX() && clickX <= getX() + width) {
             if (active) {
                 if (startY - (clickY - mouseY) >= bottom) {
-                    this.y = bottom;
+                    this.setY(bottom);
                 } else if (startY - (clickY - mouseY) <= top) {
-                    this.y = top;
+                    this.setY(top);
                 } else {
-                    this.y = (int) (startY - (clickY - mouseY));
+                    this.setY((int) (startY - (clickY - mouseY)));
                 }
             }
 
@@ -72,9 +72,9 @@ public class ScrollBarButton extends Button {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         clickX = mouseX;
         clickY = mouseY;
-        startX = x;
-        startY = y;
-        if (clickX >= x && clickX <= x + width && visible) {
+        startX = getX();
+        startY = getY();
+        if (clickX >= getX() && clickX <= getX() + width && visible) {
             playDownSound(Minecraft.getInstance().getSoundManager());
         }
         return false;
@@ -84,10 +84,10 @@ public class ScrollBarButton extends Button {
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
         int scrollFactor = 5;
         if (scrollDelta > 0) {
-            y = (int) Math.max(y - (scrollDelta * scrollFactor), top);
+            setY((int) Math.max(getY() - (scrollDelta * scrollFactor), top));
         }
         if (scrollDelta < 0) {
-            y = (int) Math.min(y - (scrollDelta * scrollFactor), bottom);
+            setY((int) Math.min(getY() - (scrollDelta * scrollFactor), bottom));
         }
         return super.mouseScrolled(mouseX, mouseY, scrollDelta);
     }

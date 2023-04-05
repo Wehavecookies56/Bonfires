@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "bonfires:items/coiled_sword_fragment"
+		"layer0": "bonfires:item/coiled_sword_fragment"
 	}
 }

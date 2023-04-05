@@ -1,7 +1,7 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "bonfires:items/estus_flask_empty"
+		"layer0": "bonfires:item/estus_flask_empty"
 	},
 	"overrides": [
 		{

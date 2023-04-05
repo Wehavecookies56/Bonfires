@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires.packets.server;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -38,7 +38,7 @@ public class Travel extends Packet<Travel> {
         this.x = buffer.readInt();
         this.y = buffer.readInt();
         this.z = buffer.readInt();
-        this.dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buffer.readUtf()));
+        this.dim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(buffer.readUtf()));
     }
 
     @Override

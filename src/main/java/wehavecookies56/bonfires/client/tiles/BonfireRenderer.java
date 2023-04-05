@@ -2,8 +2,7 @@ package wehavecookies56.bonfires.client.tiles;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.joml.Matrix4f;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
@@ -41,19 +41,19 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
             stack.translate(0.5, 0.65, 0.5);
             if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getBlock() == BlockSetup.ash_bone_pile.get()) {
                 if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.NORTH) {
-                    stack.mulPose(Vector3f.YP.rotationDegrees(0));
+                    stack.mulPose(Axis.YP.rotationDegrees(0));
                 }
                 else if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.EAST) {
-                    stack.mulPose(Vector3f.YP.rotationDegrees(90));
+                    stack.mulPose(Axis.YP.rotationDegrees(90));
                 }
                 else if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.SOUTH) {
-                    stack.mulPose(Vector3f.YP.rotationDegrees(180));
+                    stack.mulPose(Axis.YP.rotationDegrees(180));
                 }
                 else if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.WEST) {
-                    stack.mulPose(Vector3f.YP.rotationDegrees(270));
+                    stack.mulPose(Axis.YP.rotationDegrees(270));
                 }
             }
-            stack.mulPose(Vector3f.ZP.rotationDegrees(-130));
+            stack.mulPose(Axis.ZP.rotationDegrees(-130));
             Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemTransforms.TransformType.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, 0);
             stack.popPose();
         }

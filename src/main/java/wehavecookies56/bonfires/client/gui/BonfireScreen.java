@@ -362,8 +362,8 @@ public class BonfireScreen extends Screen {
         if (travelOpen) {
             if (bonfireSelected >= BONFIRE1) {
                 travel.visible = true;
-                travel.x = (width / 2) - 5 + 12;
-                travel.y = (height / 2) + 38;
+                travel.setX((width / 2) - 5 + 12);
+                travel.setY((height / 2) + 38);
             } else {
                 travel.visible = false;
             }
@@ -406,13 +406,13 @@ public class BonfireScreen extends Screen {
             bonfire_next.visible = false;
             bonfire_next.active = false;
             travel.visible = true;
-            travel.x = (width / 4) - (80 / 2);
-            travel.y = (height / 2) - (tex_height / 2) + 20;
+            travel.setX((width / 4) - (80 / 2));
+            travel.setY((height / 2) - (tex_height / 2) + 20);
             if (registry.getBonfire(bonfire.getID()) != null) {
                 if (!registry.getBonfire(bonfire.getID()).isPublic()) {
-                    travel.y = (height / 2) - (tex_height / 2) + 30;
-                    reinforce.y = (height / 2) - (tex_height / 2) + 51;
-                    leave.y = (height / 2) - (tex_height / 2) + 72;
+                    travel.setY((height / 2) - (tex_height / 2) + 30);
+                    reinforce.setY((height / 2) - (tex_height / 2) + 51);
+                    leave.setY((height / 2) - (tex_height / 2) + 72);
                 }
             }
             reinforce.visible = true;
@@ -430,7 +430,7 @@ public class BonfireScreen extends Screen {
         }
         if (!canReinforce) {
             reinforce.visible = false;
-            leave.y = reinforce.y;
+            leave.setY(reinforce.getY());
         }
     }
 
@@ -438,11 +438,11 @@ public class BonfireScreen extends Screen {
     protected void init() {
         pages = new ArrayList<>();
         bonfires = new HashMap<>();
-        addRenderableWidget(travel = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25, 80, 20, Component.translatable(LocalStrings.BUTTON_TRAVEL), button -> action(TRAVEL)));
-        addRenderableWidget(leave = new Button( (width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62, 80, 20, Component.translatable(LocalStrings.BUTTON_LEAVE), button -> action(LEAVE, true)));
-        addRenderableWidget(reinforce = new Button((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41, 80, 20, Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> action(REINFORCE, true)));
-        addRenderableWidget(next = new Button(0, 0, 20, 20, Component.literal(">"), button -> action(NEXT)));
-        addRenderableWidget(prev = new Button(20, 0, 20, 20, Component.literal("<"), button -> action(PREV)));
+        addRenderableWidget(travel = Button.builder(Component.translatable(LocalStrings.BUTTON_TRAVEL), button -> action(TRAVEL)).pos((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25).size(80, 20).build());
+        addRenderableWidget(leave = Button.builder(Component.translatable(LocalStrings.BUTTON_LEAVE), button -> action(LEAVE, true)).pos((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62).size(80, 20).build());
+        addRenderableWidget(reinforce = Button.builder(Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> action(REINFORCE, true)).pos((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41).size(80, 20).build());
+        addRenderableWidget(next = Button.builder(Component.literal(">"), button -> action(NEXT)).pos(0, 0).size(20, 20).build());
+        addRenderableWidget(prev = Button.builder(Component.literal("<"), button -> action(PREV)).pos(20, 0).size(20, 20).build());
         addRenderableWidget(bonfire_next = new BonfirePageButton(this, BONFIRE_NEXT, 0, 0, true));
         addRenderableWidget(bonfire_prev = new BonfirePageButton(this, BONFIRE_PREV, 8, 0, false));
         tabs = new DimensionTabButton[] {
@@ -466,24 +466,24 @@ public class BonfireScreen extends Screen {
             addRenderableWidget(tabs[i]);
             int sixTabs = 6 * 28;
             int gap = travel_width - sixTabs;
-            tabs[i].x = ((width) / 2 - (travel_width / 2) + (i * 28) + gap / 2);
-            tabs[i].y = (height / 2) - (travel_width / 2) + 1;
+            tabs[i].setX(((width) / 2 - (travel_width / 2) + (i * 28) + gap / 2));
+            tabs[i].setY((height / 2) - (travel_width / 2) + 1);
         }
         for (int i = 0; i < bonfireButtons.length; i++) {
             addRenderableWidget(bonfireButtons[i]);
-            bonfireButtons[i].x = (width / 2) - 88 - 12;
-            bonfireButtons[i].y = (height / 2) + (bonfireButtons[i].getHeight()) * i - 50;
+            bonfireButtons[i].setX((width / 2) - 88 - 12);
+            bonfireButtons[i].setY((height / 2) + (bonfireButtons[i].getHeight()) * i - 50);
         }
-        prev.x = ((width) / 2 - (travel_width / 2)) - 8;
-        prev.y = (height / 2) - (travel_width / 2) + 6;
+        prev.setX(((width) / 2 - (travel_width / 2)) - 8);
+        prev.setY((height / 2) - (travel_width / 2) + 6);
         int sixTabs = 6 * 28;
         int gap = travel_width - sixTabs;
-        next.x = ((width) / 2 - (travel_width / 2) + (6 * 28) + gap / 2);
-        next.y = (height / 2) - (travel_width / 2) + 6;
-        bonfire_prev.x = (width / 2) - (travel_width / 2) + 16;
-        bonfire_prev.y = (height / 2) - (travel_height / 2) + 128 - 17;
-        bonfire_next.x = (width / 2) - (travel_width / 2) + 63;
-        bonfire_next.y = (height / 2) - (travel_height / 2) + 128 - 17;
+        next.setX(((width) / 2 - (travel_width / 2) + (6 * 28) + gap / 2));
+        next.setY((height / 2) - (travel_width / 2) + 6);
+        bonfire_prev.setX((width / 2) - (travel_width / 2) + 16);
+        bonfire_prev.setY((height / 2) - (travel_height / 2) + 128 - 17);
+        bonfire_next.setX((width / 2) - (travel_width / 2) + 63);
+        bonfire_next.setY((height / 2) - (travel_height / 2) + 128 - 17);
         updateBonfires();
         dimensions = Lists.reverse(dimensions);
         int plus = 1;

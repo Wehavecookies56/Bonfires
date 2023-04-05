@@ -24,7 +24,7 @@ public class ReinforceItemButton extends Button {
     ReinforceScreen parent;
 
     public ReinforceItemButton(ReinforceScreen parent, int buttonId, int x, int y, int widthIn, int heightIn) {
-        super(x, y, widthIn, heightIn, Component.empty(), button -> parent.action(buttonId));
+        super(new Builder(Component.empty(), button -> parent.action(buttonId)).pos(x, y).size(widthIn, heightIn));
         this.parent = parent;
     }
 
@@ -63,21 +63,21 @@ public class ReinforceItemButton extends Button {
         if (visible) {
             Minecraft mc = Minecraft.getInstance();
             double scale = mc.getWindow().getGuiScale();
-            int scissorX = x, scissorY = y, scissorWidth = 239, scissorHeight = 171;
+            int scissorX = getX(), scissorY = getY(), scissorWidth = 239, scissorHeight = 171;
             //RenderSystem.enableScissor(0, mc.getWindow().getGuiScaledHeight() - (scissorY + scissorHeight) * scale, (scissorWidth + scissorX) * scale, scissorHeight * scale);
             RenderSystem.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
-            int insideWidth = x + width;
+            int insideWidth = getX() + width;
             if (parent.scrollBar.visible) {
                 insideWidth -= 8;
             }
             int elementHeight = 36;
             if (parent.itemSelected != -1 ) {
-                fill(stack, x, y - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth, (int)(y - scrollOffset + elementHeight + (elementHeight * parent.itemSelected)), new Color(160, 160, 160).hashCode());
-                fill(stack, x + 1, y + 1 - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth - 1, (int)(y - scrollOffset + elementHeight + (elementHeight * parent.itemSelected) - 1), new Color(0, 0, 0).hashCode());
+                fill(stack, getX(), getY() - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected)), new Color(160, 160, 160).hashCode());
+                fill(stack, getX() + 1, getY() + 1 - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth - 1, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected) - 1), new Color(0, 0, 0).hashCode());
             }
             for (int i = 0; i < parent.reinforceableItems.size(); i++) {
-                float yPos = y+2 + (((32 + 4) * i) - scrollOffset);
-                drawItem(parent.reinforceableItems.get(i), stack, x+2, (int)yPos, 2);
+                float yPos = getY()+2 + (((32 + 4) * i) - scrollOffset);
+                drawItem(parent.reinforceableItems.get(i), stack, getX()+2, (int)yPos, 2);
                 ItemStack item = parent.reinforceableItems.get(i);
                 int nextLevel = ReinforceHandler.getReinforceLevel(item).level()+1;
                 String nextLevelText = Integer.toString(nextLevel);
@@ -90,7 +90,7 @@ public class ReinforceItemButton extends Button {
                 if (ReinforceHandler.getReinforceLevel(item).level() > 0) {
                     itemName += " +" + ReinforceHandler.getReinforceLevel(item).level();
                 }
-                drawString(stack, mc.font, itemName, x+2 + 32, ((int)yPos + 16) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
+                drawString(stack, mc.font, itemName, getX()+2 + 32, ((int)yPos + 16) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
                 //ItemStack required = ReinforceHandler.getRequiredResources(parent.reinforceableItems.get(i));
                 //int textWidth = mc.font.width(required.getDisplayName());
                 //drawString(stack, mc.font, required.getDisplayName(), (x+2 + 220) - textWidth, ((int)yPos + 10) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
@@ -110,9 +110,9 @@ public class ReinforceItemButton extends Button {
             minusWidth -= 8;
         }
         if (visible && active) {
-            if (mouseX >= x && mouseX <= x + width + minusWidth) {
-                if (mouseY >= y && mouseY <= y + height) {
-                    double truePos = (mouseY - y) + scrollOffset;
+            if (mouseX >= getX() && mouseX <= getX() + width + minusWidth) {
+                if (mouseY >= getY() && mouseY <= getY() + height) {
+                    double truePos = (mouseY - getY()) + scrollOffset;
                     int index = (int)(truePos) / 36;
                     if (parent.reinforceableItems.size()-1 >= index) {
                         parent.itemSelected = (int) (truePos) / 36;

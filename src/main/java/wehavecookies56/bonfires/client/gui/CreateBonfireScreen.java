@@ -83,10 +83,10 @@ public class CreateBonfireScreen extends Screen {
     public void init() {
         super.init();
         addRenderableWidget(nameBox = new NameTextField(minecraft.font, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15));
-        addRenderableWidget(accept = new Button((width / 2) - (80 / 2), (height / 2) - (20 / 2) + 40, 80, 20, Component.translatable(LocalStrings.BUTTON_ACCEPT), press -> action(0)));
+        addRenderableWidget(accept = Button.builder(Component.translatable(LocalStrings.BUTTON_ACCEPT), press -> action(0)).pos((width / 2) - (80 / 2), (height / 2) - (20 / 2) + 40).size(80, 20).build());
         isPrivate = new GuiButtonCheckBox(0, 0, LocalStrings.BUTTON_SET_PRIVATE, false);
-        isPrivate.x = (width / 2) - (isPrivate.getWidth() / 2);
-        isPrivate.y = (height / 2) - (10 / 2) + 20;
+        isPrivate.setX((width / 2) - (isPrivate.getWidth() / 2));
+        isPrivate.setY((height / 2) - (10 / 2) + 20);
         addRenderableWidget(isPrivate);
         nameBox.setMaxLength(14);
         updateButtons();

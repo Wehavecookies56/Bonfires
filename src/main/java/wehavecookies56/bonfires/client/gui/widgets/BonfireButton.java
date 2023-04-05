@@ -49,17 +49,17 @@ public class BonfireButton extends ExtendedButton {
                                         Bonfire b = parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11);
                                         if (bonfire == b) {
                                             colour = 46339;
-                                            fill(stack, x, y, x + width, y + height, 0xFF777777);
+                                            fill(stack, getX(), getY(), getX() + width, getY() + height, 0xFF777777);
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
-                        fill(stack, x, y, x + width, y + height, 0xFF777777);
+                    if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
+                        fill(stack, getX(), getY(), getX() + width, getY() + height, 0xFF777777);
                     }
-                    parent.drawCenteredStringNoShadow(stack, fontrenderer, getMessage().getString(), this.x + width / 2, this.y + height / 2, colour);
+                    parent.drawCenteredStringNoShadow(stack, fontrenderer, getMessage().getString(), this.getX() + width / 2, this.getY() + height / 2, colour);
                 }
             }
         } else {

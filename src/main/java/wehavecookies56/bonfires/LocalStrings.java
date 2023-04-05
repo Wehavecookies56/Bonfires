@@ -55,7 +55,7 @@ public class LocalStrings {
 
             TILEENTITY_BONFIRE_LABEL = "tileentity.bonfires.bonfire.label",
 
-            ITEMGROUP_BONFIRES = "bonfires"
+            ITEMGROUP_BONFIRES = "itemGroup." + Bonfires.modid
     ;
 
     public static String getDimensionKey(ResourceKey<Level> dimension) {

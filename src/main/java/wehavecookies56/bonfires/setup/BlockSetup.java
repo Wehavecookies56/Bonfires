@@ -7,7 +7,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import wehavecookies56.bonfires.Bonfires;
-import wehavecookies56.bonfires.BonfiresGroup;
 import wehavecookies56.bonfires.blocks.AshBlockBlock;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 
@@ -24,7 +23,7 @@ public class BlockSetup {
 
     public static RegistryObject<Block> create(String name, Supplier<? extends Block> block) {
         RegistryObject<Block> newBlock = BLOCKS.register(name, block);
-        ItemSetup.ITEMS.register(name, () -> new BlockItem(newBlock.get(), new Item.Properties().tab(BonfiresGroup.INSTANCE)));
+        ItemSetup.ITEMS.register(name, () -> new BlockItem(newBlock.get(), new Item.Properties()));
         return newBlock;
     }
 }

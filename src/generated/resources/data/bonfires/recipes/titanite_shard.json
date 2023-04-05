@@ -1,9 +1,10 @@
 {
   "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 1000,
+  "experience": 0.25,
   "ingredient": {
     "tag": "forge:obsidian"
   },
-  "result": "bonfires:titanite_shard",
-  "experience": 0.25,
-  "cookingtime": 1000
+  "result": "bonfires:titanite_shard"
 }

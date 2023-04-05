@@ -12,7 +12,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -75,7 +75,7 @@ public class BonfiresCommand {
             case "dim":
                 input = StringArgumentType.getString(context, "dimension");
                 if (input.contains(":")) {
-                    ResourceKey<Level> dimensionKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(input));
+                    ResourceKey<Level> dimensionKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(input));
                     if (ServerLifecycleHooks.getCurrentServer().levelKeys().contains(dimensionKey)) {
                         query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresByDimension(dimensionKey.location());
                         if (query.isEmpty()) {

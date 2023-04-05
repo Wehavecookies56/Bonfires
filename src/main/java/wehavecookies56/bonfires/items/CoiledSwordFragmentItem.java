@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import wehavecookies56.bonfires.BonfiresGroup;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.BonfireHandler;
@@ -26,7 +25,7 @@ import java.util.UUID;
 public class CoiledSwordFragmentItem extends Item {
 
     public CoiledSwordFragmentItem() {
-        super(new Properties().tab(BonfiresGroup.INSTANCE).stacksTo(1));
+        super(new Properties().stacksTo(1));
     }
 
     @Override

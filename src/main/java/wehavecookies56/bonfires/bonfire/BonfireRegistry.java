@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires.bonfire;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -144,7 +144,7 @@ public class BonfireRegistry {
             UUID id = compound.getUUID("ID");
             UUID owner = compound.getUUID("OWNER");
             BlockPos pos = new BlockPos(compound.getDouble("POSX"), compound.getDouble("POSY"), compound.getDouble("POSZ"));
-            ResourceKey<Level> dimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(compound.getString("DIM")));
+            ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("DIM")));
             boolean isPublic = compound.getBoolean("PUBLIC");
             Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic);
             bonfires.put(id, bonfire);

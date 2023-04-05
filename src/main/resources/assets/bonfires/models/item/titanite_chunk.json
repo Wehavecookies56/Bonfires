@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "bonfires:items/titanite_chunk"
+		"layer0": "bonfires:item/titanite_chunk"
 	}
 }

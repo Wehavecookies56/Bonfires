@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import wehavecookies56.bonfires.BonfiresGroup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
 /**
@@ -16,7 +15,7 @@ import wehavecookies56.bonfires.setup.ItemSetup;
 public class EstusShardItem extends Item {
 
     public EstusShardItem() {
-        super(new Properties().tab(BonfiresGroup.INSTANCE));
+        super(new Properties());
     }
 
     @Override

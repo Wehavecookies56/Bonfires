@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +40,7 @@ public class SyncSaveData extends Packet<SyncSaveData> {
             String name = buffer.readUtf();
             UUID owner = buffer.readUUID();
             BlockPos pos = new BlockPos(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-            ResourceKey<Level> dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buffer.readUtf()));
+            ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(buffer.readUtf()));
             boolean isPublic = buffer.readBoolean();
             Bonfire bonfire = new Bonfire(name, key, owner, pos, dim, isPublic);
             bonfires.put(key, bonfire);

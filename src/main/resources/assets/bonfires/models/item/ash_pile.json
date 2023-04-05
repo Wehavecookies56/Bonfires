@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "bonfires:items/ash_pile"
+		"layer0": "bonfires:item/ash_pile"
 	}
 }

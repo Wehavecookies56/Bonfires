@@ -2,15 +2,15 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "name": "self",
-      "rolls": 1.0,
       "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "name": "bonfires:ash_bone_pile"
         }
-      ]
+      ],
+      "name": "self",
+      "rolls": 1.0
     }
   ]
 }

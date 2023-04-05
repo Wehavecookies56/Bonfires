@@ -6,7 +6,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
-import wehavecookies56.bonfires.BonfiresGroup;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -44,7 +43,7 @@ public class CoiledSwordItem extends SwordItem {
             public Ingredient getRepairIngredient() {
                 return null;
             }
-        }, 3, -2.4F, new Properties().stacksTo(1).tab(BonfiresGroup.INSTANCE));
+        }, 3, -2.4F, new Properties().stacksTo(1));
     }
 
     @Override

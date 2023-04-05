@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "bonfires:items/large_titanite_shard"
+		"layer0": "bonfires:item/large_titanite_shard"
 	}
 }

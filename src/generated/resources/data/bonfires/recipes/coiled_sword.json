@@ -1,28 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "equipment",
   "group": "bonfires",
+  "key": {
+    "A": {
+      "item": "bonfires:ash_pile"
+    },
+    "F": {
+      "item": "minecraft:fire_charge"
+    },
+    "L": {
+      "item": "minecraft:lava_bucket"
+    },
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "S": {
+      "item": "minecraft:diamond_sword"
+    }
+  },
   "pattern": [
     "OLO",
     "FSF",
     "OAO"
   ],
-  "key": {
-    "O": {
-      "tag": "forge:obsidian"
-    },
-    "L": {
-      "item": "minecraft:lava_bucket"
-    },
-    "F": {
-      "item": "minecraft:fire_charge"
-    },
-    "S": {
-      "item": "minecraft:diamond_sword"
-    },
-    "A": {
-      "item": "bonfires:ash_pile"
-    }
-  },
   "result": {
     "item": "bonfires:coiled_sword"
   }

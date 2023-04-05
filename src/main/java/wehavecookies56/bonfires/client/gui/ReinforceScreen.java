@@ -105,7 +105,7 @@ public class ReinforceScreen extends Screen {
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
         addRenderableOnly(scrollBar = new ScrollBarButton(SCROLLBAR, (window.getGuiScaledWidth() / 2) + (texWidth / 2) - 16, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 8, 15, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 42 + 155));
         addRenderableOnly(items = new ReinforceItemButton(this, ITEMS, (window.getGuiScaledWidth() / 2) - (texWidth / 2) + 9, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 239, 171));
-        addRenderableWidget(confirm = new Button(centerX + 180, centerY + 14, 60, 20, Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> {}));
+        addRenderableWidget(confirm = Button.builder(Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> {}).pos(centerX + 180, centerY + 14).size(60, 20).build());
         if (reinforceableItems.size() > 1) {
             itemSelected = 0;
         } else {
@@ -152,7 +152,7 @@ public class ReinforceScreen extends Screen {
             scrollBar.active = true;
         }
 
-        float buttonRelativeToBar = scrollBar.y - (scrollBar.top-1);
+        float buttonRelativeToBar = scrollBar.getY() - (scrollBar.top-1);
         float scrollPos = Math.min(buttonRelativeToBar != 0 ? buttonRelativeToBar / (scrollBarHeight) : 0, 1);
         scrollOffset = scrollPos*(listHeight-scrollBarHeight);
         items.drawButtons(stack, mouseX, mouseY, partialTicks, scrollOffset);

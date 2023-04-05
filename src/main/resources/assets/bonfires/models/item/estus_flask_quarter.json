@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "bonfires:items/estus_flask_quarter"
+		"layer0": "bonfires:item/estus_flask_quarter"
 	}
 }

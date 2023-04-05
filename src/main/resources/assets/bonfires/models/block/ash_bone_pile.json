@@ -1,9 +1,10 @@
 {
     "ambientocclusion": "true",
+    "render_type": "minecraft:translucent",
     "textures": {
-        "0": "bonfires:blocks/ash",
-        "1": "bonfires:blocks/bone",
-        "particle": "bonfires:blocks/ash"
+        "0": "bonfires:block/ash",
+        "1": "bonfires:block/bone",
+        "particle": "bonfires:block/ash"
     },
     "elements": [
         {

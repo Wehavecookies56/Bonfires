@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -48,7 +48,7 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
         dimensions = new ArrayList<>();
         int size = buffer.readVarInt();
         for (int i = 0; i < size; ++i) {
-            dimensions.add(ResourceKey.create(Registry.DIMENSION_REGISTRY, buffer.readResourceLocation()));
+            dimensions.add(ResourceKey.create(Registries.DIMENSION, buffer.readResourceLocation()));
         }
     }
 
