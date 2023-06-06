@@ -37,6 +37,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import wehavecookies56.bonfires.BonfiresConfig;
+import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
@@ -135,6 +136,11 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                             PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), (ServerPlayer) player);
                             world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
                             return InteractionResult.SUCCESS;
+                        } else {
+                            //Bonfire lit but not in data, so should not be lit
+                            te.setLit(false);
+                            world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+                            return InteractionResult.SUCCESS;
                         }
                     } else {
                         return InteractionResult.SUCCESS;
@@ -194,10 +200,13 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         world.addFreshEntity(fragment);
                     }
                     if (te.isLit()) {
-                        te.destroyBonfire(te.getID());
                         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                        Bonfire destroyed = BonfireHandler.getServerHandler(server).getRegistry().getBonfire(te.getID());
+                        te.destroyBonfire(te.getID());
                         BonfireHandler.getServerHandler(server).removeBonfire(te.getID());
                         PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getServerHandler(server).getRegistry().getBonfires()));
+                        PacketHandler.sendToAll(new SendBonfiresToClient());
+                        PacketHandler.sendToAll(new DeleteScreenshot(te.getID(), destroyed.getName()));
                     }
                 }
             }

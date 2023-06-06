@@ -32,10 +32,12 @@ public class PacketHandler {
 		registerMessage(SyncBonfire.class, SyncBonfire::encode, SyncBonfire::new, SyncBonfire::handle);
 		registerMessage(SyncReinforceData.class, SyncReinforceData::encode, SyncReinforceData::new, SyncReinforceData::handle);
 		registerMessage(SyncSaveData.class, SyncSaveData::encode, SyncSaveData::new, SyncSaveData::handle);
-		registerMessage(SendDimensionsToClient.class, SendDimensionsToClient::encode, SendDimensionsToClient::new, SendDimensionsToClient::handle);
+		registerMessage(SendBonfiresToClient.class, SendBonfiresToClient::encode, SendBonfiresToClient::new, SendBonfiresToClient::handle);
 		registerMessage(OpenCreateScreen.class, OpenCreateScreen::encode, OpenCreateScreen::new, OpenCreateScreen::handle);
 		registerMessage(DisplayTitle.class, DisplayTitle::encode, DisplayTitle::new, DisplayTitle::handle);
 		registerMessage(SyncEstusData.class, SyncEstusData::encode, SyncEstusData::new, SyncEstusData::handle);
+		registerMessage(QueueBonfireScreenshot.class, QueueBonfireScreenshot::encode, QueueBonfireScreenshot::new, QueueBonfireScreenshot::handle);
+		registerMessage(DeleteScreenshot.class, DeleteScreenshot::encode, DeleteScreenshot::new, DeleteScreenshot::handle);
 
 		//From Client to Server
 		registerMessage(LightBonfire.class, LightBonfire::encode, LightBonfire::new, LightBonfire::handle);

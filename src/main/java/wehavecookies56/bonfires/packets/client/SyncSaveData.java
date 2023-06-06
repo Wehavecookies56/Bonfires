@@ -13,6 +13,7 @@ import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -42,7 +43,8 @@ public class SyncSaveData extends Packet<SyncSaveData> {
             BlockPos pos = new BlockPos(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
             ResourceKey<Level> dim = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buffer.readUtf()));
             boolean isPublic = buffer.readBoolean();
-            Bonfire bonfire = new Bonfire(name, key, owner, pos, dim, isPublic);
+            Instant time = Instant.ofEpochSecond(buffer.readLong(), buffer.readInt());
+            Bonfire bonfire = new Bonfire(name, key, owner, pos, dim, isPublic, time);
             bonfires.put(key, bonfire);
         }
     }
@@ -59,6 +61,8 @@ public class SyncSaveData extends Packet<SyncSaveData> {
             buffer.writeDouble(bonfire.getPos().getZ());
             buffer.writeUtf(bonfire.getDimension().location().toString());
             buffer.writeBoolean(bonfire.isPublic());
+            buffer.writeLong(bonfire.getTimeCreated().getEpochSecond());
+            buffer.writeInt(bonfire.getTimeCreated().getNano());
         }
     }
 
