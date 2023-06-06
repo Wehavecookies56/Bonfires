@@ -1,6 +1,6 @@
 package wehavecookies56.bonfires.client.gui;
 
-import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -8,7 +8,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -18,10 +20,13 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
+import wehavecookies56.bonfires.client.ScreenshotUtils;
 import wehavecookies56.bonfires.client.gui.widgets.BonfireButton;
+import wehavecookies56.bonfires.client.gui.widgets.BonfireCustomButton;
 import wehavecookies56.bonfires.client.gui.widgets.BonfirePageButton;
 import wehavecookies56.bonfires.client.gui.widgets.DimensionTabButton;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -29,12 +34,16 @@ import wehavecookies56.bonfires.packets.server.RequestDimensionsFromServer;
 import wehavecookies56.bonfires.packets.server.Travel;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +53,8 @@ public class BonfireScreen extends Screen {
 
     private final ResourceLocation MENU = new ResourceLocation(Bonfires.modid, "textures/gui/bonfire_menu.png");
     public final ResourceLocation TRAVEL_TEX = new ResourceLocation(Bonfires.modid, "textures/gui/travel_menu.png");
+
+    private BonfireCustomButton screenshot, info;
 
     private Button travel;
     private Button leave;
@@ -86,8 +97,13 @@ public class BonfireScreen extends Screen {
     private final int BONFIRE_NEXT = 18;
     private final int BONFIRE_PREV = 19;
 
+    private final int SCREENSHOT = 21;
+    private final int INFO = 22;
+
     public int dimTabSelected = TAB1;
     public int bonfireSelected = 0;
+
+    public Bonfire selectedInstance;
 
     public DimensionTabButton[] tabs;
     private BonfireButton[] bonfireButtons;
@@ -104,6 +120,11 @@ public class BonfireScreen extends Screen {
     public List<ResourceKey<Level>> dimensions;
     public final boolean canReinforce;
 
+    DynamicTexture dynamicBonfireScreenshot;
+    NativeImage nativeBonfireScreenshot;
+
+    boolean showInfo = true;
+
     public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<ResourceKey<Level>> dimensions, BonfireRegistry registry, boolean canReinforce) {
         super(Component.empty());
         this.bonfire = bonfire;
@@ -112,6 +133,9 @@ public class BonfireScreen extends Screen {
         minecraft = Minecraft.getInstance();
         this.dimensions = dimensions.stream().sorted(Comparator.comparing(ResourceKey::location)).collect(Collectors.toList());
         this.canReinforce = canReinforce;
+        if (BonfiresConfig.Client.renderScreenshotsInGui) {
+            dynamicBonfireScreenshot = new DynamicTexture(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), false);
+        }
     }
 
     public void drawCenteredStringNoShadow(PoseStack stack, Font fr, String text, int x, int y, int color) {
@@ -119,7 +143,7 @@ public class BonfireScreen extends Screen {
     }
 
     private Map<ResourceKey<Level>, List<List<Bonfire>>> createSeries(ResourceKey<Level> dimension) {
-        List<Bonfire> bonfires = registry.getPrivateBonfiresByOwnerAndPublicPerDimension(Minecraft.getInstance().player.getUUID(), dimension.location());
+        List<Bonfire> bonfires = BonfireRegistry.sortBonfiresByTime(registry.getPrivateBonfiresByOwnerAndPublicPerDimension(Minecraft.getInstance().player.getUUID(), dimension.location()));
 
         if (!bonfires.isEmpty()) {
             List<List<Bonfire>> book = new ArrayList<>();
@@ -147,75 +171,146 @@ public class BonfireScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(stack);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, MENU);
-        if (travelOpen) {
-            drawTravelMenu(stack, mouseX, mouseY, partialTicks);
-
-            String formattedName;
-            if (I18n.exists(LocalStrings.getDimensionKey(tabs[dimTabSelected - 5].getDimension()))) {
-                String dimName = (tabs[dimTabSelected - 5].getDimension().location().getPath().replaceAll("_", " "));
-                formattedName = WordUtils.capitalizeFully(dimName);
-            } else {
-                formattedName = I18n.get(LocalStrings.getDimensionKey(tabs[dimTabSelected - 5].getDimension()));
-            }
-            font.draw(stack, formattedName + " (" + tabs[dimTabSelected - 5].getDimension().location() + ")", (width / 2F) - 100, (height / 2F) - 62, 1184274);
-
-            if (bonfireSelected >= BONFIRE1) {
-                super.render(stack, mouseX, mouseY, partialTicks);
-                drawSelectedBonfire(stack, mouseX, mouseY, partialTicks);
-            } else {
-                super.render(stack, mouseX, mouseY, partialTicks);
-            }
-            String pages = "0/0";
-            if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
-                pages = (bonfirePage + 1) + "/" + bonfires.get(tabs[dimTabSelected - 5].getDimension()).size();
-            }
-            int xZero = (width / 2) - (travel_width / 2) + 16;
-            int yZero = (height / 2) - (travel_height / 2) + 128 - 17;
-            drawString(stack, font, pages, xZero + (55 / 2) - font.width(pages) / 2, yZero + (14 / 2) - font.lineHeight / 2, 0xFFFFFF);
-        } else {
-            int tex_width = 90;
-            blit(stack, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
-            super.render(stack, mouseX, mouseY, partialTicks);
-            String name = "";
-            Bonfire currentBonfire = registry.getBonfire(bonfire.getID());
-            if (currentBonfire != null) {
-                name = currentBonfire.getName();
-                if (!currentBonfire.isPublic()) {
-                    drawCenteredStringNoShadow(stack, font, Component.translatable(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
-                }
-            }
-            drawCenteredStringNoShadow(stack, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
-            if (!ownerName.isEmpty())
-                drawCenteredStringNoShadow(stack, font, ownerName, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
+    public void tick() {
+        if (bonfire.isRemoved()) {
+            onClose();
+        }
+        if (bonfire.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getBlockReach()+1) {
+            onClose();
         }
     }
 
-    private void drawSelectedBonfire(PoseStack stack, int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks) {
-        if (bonfireSelected >= BONFIRE1) {
-            if (bonfires != null) {
-                if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
-                    Bonfire b = bonfires.get(tabs[dimTabSelected-5].getDimension()).get(bonfirePage).get(bonfireSelected-11);
-                    if (b != null) {
-                        int nameX = (width / 2) - 10 + 12;
-                        int nameY = (height / 2) - 45;
-                        int nameEndX = nameX + font.width(b.getName());
-                        int nameEndY = nameY + font.lineHeight;
-                        font.draw(stack, b.getName(), nameX, nameY, new Color(255, 255, 255).hashCode());
-                        font.draw(stack, "X:" + b.getPos().getX() + " Y:" + b.getPos().getY() + " Z:" + b.getPos().getZ(), nameX, nameY + font.lineHeight + 3, new Color(255, 255, 255).hashCode());
-                        font.draw(stack, ownerName, nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
-                        if (mouseX >= nameX && mouseX <= nameEndX && mouseY >= nameY && mouseY <= nameEndY) {
-                            List<FormattedCharSequence> lines = new ArrayList<>();
-                            lines.add(Component.translatable("ID: " + b.getId()).getVisualOrderText());
-                            renderTooltip(stack, lines, mouseX, mouseY, font);
+    @Override
+    public void onClose() {
+        if (dynamicBonfireScreenshot != null) {
+            dynamicBonfireScreenshot.close();
+        }
+        super.onClose();
+    }
+
+    @Override
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        if (!ScreenshotUtils.isTimerStarted()) {
+            renderBackground(stack);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            RenderSystem.setShaderTexture(0, MENU);
+            if (travelOpen) {
+                drawTravelMenu(stack, mouseX, mouseY, partialTicks);
+
+                String formattedName;
+                if (I18n.exists(LocalStrings.getDimensionKey(tabs[dimTabSelected - 5].getDimension()))) {
+                    String dimName = (tabs[dimTabSelected - 5].getDimension().location().getPath().replaceAll("_", " "));
+                    formattedName = WordUtils.capitalizeFully(dimName);
+                } else {
+                    formattedName = I18n.get(LocalStrings.getDimensionKey(tabs[dimTabSelected - 5].getDimension()));
+                }
+                font.draw(stack, formattedName + " (" + tabs[dimTabSelected - 5].getDimension().location() + ")", (width / 2F) - 100, (height / 2F) - 62, 1184274);
+
+                if (bonfireSelected >= BONFIRE1) {
+                    drawSelectedBonfire(stack, mouseX, mouseY, partialTicks);
+                    super.render(stack, mouseX, mouseY, partialTicks);
+                } else {
+                    super.render(stack, mouseX, mouseY, partialTicks);
+                }
+                if (selectedInstance != null) {
+                    int nameX = (width / 2) - 10 + 12;
+                    int nameY = (height / 2) - 45;
+                    int nameEndX = nameX + font.width(selectedInstance.getName());
+                    int nameEndY = nameY + font.lineHeight;
+                    if (mouseX >= nameX && mouseX <= nameEndX && mouseY >= nameY && mouseY <= nameEndY) {
+                        List<FormattedCharSequence> lines = new ArrayList<>();
+                        lines.add(Component.translatable("ID: " + selectedInstance.getId()).getVisualOrderText());
+                        lines.add(Component.translatable("TIME: " + selectedInstance.getTimeCreated().toString()).getVisualOrderText());
+                        renderTooltip(stack, lines, mouseX, mouseY, font);
+                    }
+                }
+                for (DimensionTabButton currentTab : tabs) {
+                    if (currentTab.visible) {
+                        if (I18n.exists(LocalStrings.getDimensionKey(currentTab.getDimension()))) {
+                            String dimName = (currentTab.getDimension().location().getPath().replaceAll("_", " "));
+                            formattedName = WordUtils.capitalizeFully(dimName);
+                        } else {
+                            formattedName = I18n.get(LocalStrings.getDimensionKey(currentTab.getDimension()));
+                        }
+                        if (mouseX >= currentTab.getX() && mouseX <= currentTab.getX() + currentTab.getWidth() && mouseY >= currentTab.getY() && mouseY <= currentTab.getY() + currentTab.getHeight()) {
+                            renderTooltip(stack, Component.translatable(formattedName + " (" + currentTab.getDimension().location() + ")"), mouseX, mouseY);
                         }
                     }
                 }
+
+                String pages = "0/0";
+                if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
+                    pages = (bonfirePage + 1) + "/" + bonfires.get(tabs[dimTabSelected - 5].getDimension()).size();
+                }
+                int xZero = (width / 2) - (travel_width / 2) + 16;
+                int yZero = (height / 2) - (travel_height / 2) + 128 - 17;
+                drawString(stack, font, pages, xZero + (55 / 2) - font.width(pages) / 2, yZero + (14 / 2) - font.lineHeight / 2, 0xFFFFFF);
+            } else {
+                int tex_width = 90;
+                blit(stack, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
+                super.render(stack, mouseX, mouseY, partialTicks);
+                String name = "";
+                Bonfire currentBonfire = registry.getBonfire(bonfire.getID());
+                if (currentBonfire != null) {
+                    name = currentBonfire.getName();
+                    if (!currentBonfire.isPublic()) {
+                        drawCenteredStringNoShadow(stack, font, Component.translatable(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
+                    }
+                }
+                drawCenteredStringNoShadow(stack, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
+                if (!ownerName.isEmpty())
+                    drawCenteredStringNoShadow(stack, font, ownerName, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
             }
         }
+    }
+
+    public Bonfire getSelectedBonfire() {
+        if (bonfireSelected >= BONFIRE1) {
+            if (bonfires != null) {
+                if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
+                    return bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(bonfireSelected - 11);
+                }
+            }
+        }
+        return null;
+    }
+
+    private void drawSelectedBonfire(PoseStack stack, int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks) {
+        if (selectedInstance != null) {
+            int nameX = (width / 2) - 10 + 12;
+            int nameY = (height / 2) - 45;
+            if (BonfiresConfig.Client.renderScreenshotsInGui && dynamicBonfireScreenshot.getPixels() != null && screenshotLocation != null && !noScreenshot) {
+                RenderSystem.setShaderTexture(0, screenshotLocation);
+                blit(stack, nameX-3, nameY-5, width/2-103/2, height/2-110/2, 103, 110, width, height);
+            }
+
+            if (showInfo) {
+                font.draw(stack, selectedInstance.getName(), nameX, nameY, new Color(255, 255, 255).hashCode());
+                font.draw(stack, "X:" + selectedInstance.getPos().getX() + " Y:" + selectedInstance.getPos().getY() + " Z:" + selectedInstance.getPos().getZ(), nameX, nameY + font.lineHeight + 3, new Color(255, 255, 255).hashCode());
+                font.draw(stack, ownerName, nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
+            }
+        }
+    }
+
+    @Nullable
+    File getBonfireScreenshot(String bonfireName, UUID bonfireUUID) {
+        Path screenshotsDir = Paths.get(Minecraft.getInstance().gameDirectory.getPath(), "bonfires/");
+        if (Files.exists(screenshotsDir)) {
+            File screenshot = null;
+            File[] files = screenshotsDir.toFile().listFiles();
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    File file = files[i];
+                    String nameNoInvalid = bonfireName.replaceAll("[\\\\/:*?\"<>|]", "_").toLowerCase();
+                    if (file.isFile() && file.getName().equals(nameNoInvalid + "_" + bonfireUUID.toString() + ".png")) {
+                        screenshot = file;
+                        break;
+                    }
+                }
+            }
+            return screenshot;
+        }
+        return null;
     }
 
     private void drawTravelMenu(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
@@ -229,44 +324,53 @@ public class BonfireScreen extends Screen {
         blit(stack, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height);
     }
 
+    public record TooltipToRender(List<FormattedCharSequence> lines, int startX, int startY, int endX, int endY) { }
+
     public void action(int id) {
         action(id, false);
     }
 
+    ResourceLocation screenshotLocation;
+
     public void action(int id, boolean closesScreen) {
         switch (id) {
+            case SCREENSHOT:
+                if (selectedInstance != null) {
+                    if (bonfire.getID().equals(selectedInstance.getId())) {
+                        ScreenshotUtils.startScreenshotTimer(selectedInstance.getName(), selectedInstance.getId());
+                    }
+                }
+                break;
+            case INFO:
+                showInfo = !showInfo;
+                break;
             case TRAVEL:
                 if (!travelOpen) {
                     travelOpen = true;
                     PacketHandler.sendToServer(new RequestDimensionsFromServer());
                 } else {
-                    if (bonfireSelected >= BONFIRE1) {
-                        if (bonfires != null) {
-                            if (bonfires.get(tabs[dimTabSelected-5].getDimension()) != null) {
-                                Bonfire b = bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage).get(bonfireSelected - 11);
-                                Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, Minecraft.getInstance().player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-                                Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, b.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-                                PacketHandler.sendToServer(new Travel(b));
-                                String formattedDimName;
-                                if (I18n.exists(LocalStrings.getDimensionKey(b.getDimension()))) {
-                                    String dimName = (b.getDimension().location().getPath().replaceAll("_", " "));
-                                    formattedDimName = WordUtils.capitalizeFully(dimName);
-                                } else {
-                                    formattedDimName = I18n.get(LocalStrings.getDimensionKey(b.getDimension()));
-                                }
-                                Gui gui = Minecraft.getInstance().gui;
-                                gui.setTitle(Component.translatable(b.getName()));
-                                gui.setSubtitle(Component.translatable(formattedDimName));
-                                gui.setTimes(10, 20, 10);
-                                minecraft.setScreen(null);
-                            }
+                    if (selectedInstance != null) {
+                        Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, Minecraft.getInstance().player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+                        Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, selectedInstance.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+                        PacketHandler.sendToServer(new Travel(selectedInstance));
+                        String formattedDimName;
+                        if (I18n.exists(LocalStrings.getDimensionKey(selectedInstance.getDimension()))) {
+                            String dimName = (selectedInstance.getDimension().location().getPath().replaceAll("_", " "));
+                            formattedDimName = WordUtils.capitalizeFully(dimName);
+                        } else {
+                            formattedDimName = I18n.get(LocalStrings.getDimensionKey(selectedInstance.getDimension()));
                         }
+                        Gui gui = Minecraft.getInstance().gui;
+                        gui.setTitle(Component.translatable(selectedInstance.getName()));
+                        gui.setSubtitle(Component.translatable(formattedDimName));
+                        gui.setTimes(10, 20, 10);
+                        onClose();
                         closesScreen = true;
                     }
                 }
                 break;
             case LEAVE:
-                minecraft.setScreen(null);
+                onClose();
                 break;
             case NEXT:
                 if (currentPage != pages.size()-1) {
@@ -295,55 +399,27 @@ public class BonfireScreen extends Screen {
                 }
                 break;
             case TAB1:
-                dimTabSelected = TAB1;
-                bonfireSelected = 0;
-                bonfirePage = 0;
-                break;
             case TAB2:
-                dimTabSelected = TAB2;
-                bonfireSelected = 0;
-                bonfirePage = 0;
-                break;
             case TAB3:
-                dimTabSelected = TAB3;
-                bonfireSelected = 0;
-                bonfirePage = 0;
-                break;
             case TAB4:
-                dimTabSelected = TAB4;
-                bonfireSelected = 0;
-                bonfirePage = 0;
-                break;
             case TAB5:
-                dimTabSelected = TAB5;
-                bonfireSelected = 0;
-                bonfirePage = 0;
-                break;
             case TAB6:
-                dimTabSelected = TAB6;
+                dimTabSelected = id;
                 bonfireSelected = 0;
                 bonfirePage = 0;
                 break;
             case BONFIRE1:
-                bonfireSelected = BONFIRE1;
-                break;
             case BONFIRE2:
-                bonfireSelected = BONFIRE2;
-                break;
             case BONFIRE3:
-                bonfireSelected = BONFIRE3;
-                break;
             case BONFIRE4:
-                bonfireSelected = BONFIRE4;
-                break;
             case BONFIRE5:
-                bonfireSelected = BONFIRE5;
-                break;
             case BONFIRE6:
-                bonfireSelected = BONFIRE6;
-                break;
             case BONFIRE7:
-                bonfireSelected = BONFIRE7;
+                bonfireSelected = id;
+                selectedInstance = getSelectedBonfire();
+                if (BonfiresConfig.Client.renderScreenshotsInGui) {
+                    loadBonfireScreenshot();
+                }
                 break;
             case REINFORCE:
                 minecraft.setScreen(new ReinforceScreen(this));
@@ -355,6 +431,39 @@ public class BonfireScreen extends Screen {
         }
     }
 
+    public void loadBonfireScreenshot() {
+        if (selectedInstance != null) {
+            File screenshotFile = getBonfireScreenshot(selectedInstance.getName(), selectedInstance.getId());
+            if (screenshotFile != null) {
+                try {
+                    if (nativeBonfireScreenshot != null) {
+                        nativeBonfireScreenshot.close();
+                    }
+                    NativeImage nativeImage = NativeImage.read(new FileInputStream(screenshotFile)); //Screenshot.takeScreenshot(minecraft.getMainRenderTarget());
+                    int i = nativeImage.getWidth();
+                    int j = nativeImage.getHeight();
+                    nativeBonfireScreenshot = new NativeImage(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), false);
+                    nativeImage.resizeSubRectTo(0, 0, i, j, nativeBonfireScreenshot);
+                    dynamicBonfireScreenshot.setPixels(nativeBonfireScreenshot);
+                    dynamicBonfireScreenshot.upload();
+                    screenshotLocation = Minecraft.getInstance().textureManager.register("screenshot", dynamicBonfireScreenshot);
+                    nativeImage.close();
+                    noScreenshot = false;
+                    screenshot.visible = false;
+                    screenshot.active = false;
+                    info.visible = true;
+                    info.active = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                noScreenshot = true;
+            }
+        }
+    }
+
+    boolean noScreenshot = false;
+
     private void updateButtons() {
         for (DimensionTabButton tab : tabs) {
             tab.visible = false;
@@ -364,8 +473,28 @@ public class BonfireScreen extends Screen {
                 travel.visible = true;
                 travel.setX((width / 2) - 5 + 12);
                 travel.setY((height / 2) + 38);
+                if (noScreenshot && BonfiresConfig.Client.renderScreenshotsInGui) {
+                    if (bonfire.getID().equals(selectedInstance.getId())) {
+                        screenshot.visible = true;
+                        screenshot.active = true;
+                    } else {
+                        screenshot.visible = false;
+                        screenshot.active = false;
+                    }
+                    info.visible = false;
+                    info.active = false;
+                } else {
+                    screenshot.visible = false;
+                    screenshot.active = false;
+                    info.visible = BonfiresConfig.Client.renderScreenshotsInGui;
+                    info.active = BonfiresConfig.Client.renderScreenshotsInGui;
+                }
             } else {
                 travel.visible = false;
+                info.visible = false;
+                screenshot.visible = false;
+                info.active = false;
+                screenshot.active = false;
             }
             for (int i = 0; i < tabs.length; i++) {
                 if (i < pages.get(currentPage).size()) {
@@ -421,6 +550,10 @@ public class BonfireScreen extends Screen {
             prev.visible = false;
             prev.active = false;
             next.active = false;
+            info.visible = false;
+            info.active = false;
+            screenshot.visible = false;
+            screenshot.active = false;
             for (DimensionTabButton tab : tabs) {
                 tab.visible = false;
             }
@@ -435,9 +568,25 @@ public class BonfireScreen extends Screen {
     }
 
     @Override
+    public void resize(Minecraft pMinecraft, int pWidth, int pHeight) {
+        super.resize(pMinecraft, pWidth, pHeight);
+        dynamicBonfireScreenshot = new DynamicTexture(pMinecraft.getWindow().getWidth(), pMinecraft.getWindow().getHeight(), false);
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return !ScreenshotUtils.isTimerStarted();
+    }
+
+    @Override
     protected void init() {
+        super.init();
         pages = new ArrayList<>();
         bonfires = new HashMap<>();
+        int selectedX = (width / 2) - 17;
+        int selectedY = (height / 2) - 50;
+        addRenderableWidget(screenshot = new BonfireCustomButton(SCREENSHOT, selectedX + 16 + (103 - 16), selectedY, BonfireCustomButton.ButtonType.SCREENSHOT, button -> action(SCREENSHOT)));
+        addRenderableWidget(info = new BonfireCustomButton(INFO, selectedX + 16 + (103 - 16), selectedY, BonfireCustomButton.ButtonType.INFO, button -> action(INFO)));
         addRenderableWidget(travel = Button.builder(Component.translatable(LocalStrings.BUTTON_TRAVEL), button -> action(TRAVEL)).pos((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 25).size(80, 20).build());
         addRenderableWidget(leave = Button.builder(Component.translatable(LocalStrings.BUTTON_LEAVE), button -> action(LEAVE, true)).pos((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 62).size(80, 20).build());
         addRenderableWidget(reinforce = Button.builder(Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> action(REINFORCE, true)).pos((width / 4) - (80 / 2), (height / 2) - (tex_height / 2) + 41).size(80, 20).build());
@@ -485,7 +634,7 @@ public class BonfireScreen extends Screen {
         bonfire_next.setX((width / 2) - (travel_width / 2) + 63);
         bonfire_next.setY((height / 2) - (travel_height / 2) + 128 - 17);
         updateBonfires();
-        dimensions = Lists.reverse(dimensions);
+        //dimensions = Lists.reverse(dimensions);
         int plus = 1;
         if (dimensions.size() % 6 == 0)
             plus = 0;
@@ -499,22 +648,45 @@ public class BonfireScreen extends Screen {
                 pages.add(dimensions.subList(start, (start) + 6));
             }
         }
+        for (int i = 0; i < pages.size(); i++) {
+            for (int j = 0; j < pages.get(i).size(); j++) {
+                if (Minecraft.getInstance().level.dimension().location().equals(pages.get(i).get(j).location())) {
+                    currentPage = i;
+                    dimTabSelected = j+TAB1;
+                }
+            }
+        }
         updateButtons();
-        super.init();
     }
 
-    public void updateDimensionsFromServer(List<ResourceKey<Level>> dimensions) {
+    public void updateDimensionsFromServer(BonfireRegistry registry, List<ResourceKey<Level>> dimensions) {
         this.dimensions = dimensions;
+        this.registry = registry;
         updateBonfires();
+        updateButtons();
     }
 
     private void updateBonfires() {
         bonfires.clear();
         for (ResourceKey<Level> dim : dimensions) {
             Map<ResourceKey<Level>, List<List<Bonfire>>> series = createSeries(dim);
-            if (series != null)
-                if (series.get(dim) != null)
+            if (series != null) {
+                if (series.get(dim) != null) {
                     bonfires.put(dim, series.get(dim));
+                }
+            }
+        }
+        if (selectedInstance != null && bonfireSelected != 0) {
+            if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
+                List<Bonfire> bonfiresInCurrentPage = bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage);
+                if (bonfiresInCurrentPage.stream().filter(b -> selectedInstance.getId().equals(b.getId())).toList().size() == 0) {
+                    selectedInstance = null;
+                    bonfireSelected = 0;
+                }
+            } else {
+                selectedInstance = null;
+                bonfireSelected = 0;
+            }
         }
     }
 
