@@ -28,9 +28,25 @@ public class BonfiresConfig {
         public static List<String> tabIcons = Arrays.asList("minecraft:overworld=minecraft:grass_block", "minecraft:the_nether=minecraft:netherrack", "minecraft:the_end=minecraft:end_stone", "kingdomkeys:dive_to_the_heart=kingdomkeys:mosaic_stained_glass");
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> tabIconsConfig;
 
+        public static boolean renderScreenshotsInGui = true;
+        public final ForgeConfigSpec.ConfigValue<Boolean> renderScreenshotsInGuiConfig;
+
+        public static boolean enableAutomaticScreenshotOnCreation = true;
+        public final ForgeConfigSpec.ConfigValue<Boolean> enableAutomaticScreenshotOnCreationConfig;
+
+        public static int screenshotWaitTicks = 5;
+        public final ForgeConfigSpec.IntValue screenshotWaitTicksConfig;
+
+        public static boolean deleteScreenshotsOnDestroyed = true;
+        public final ForgeConfigSpec.ConfigValue<Boolean> deleteScreenshotsOnDestroyedConfig;
+
         public Client(ForgeConfigSpec.Builder builder) {
             this.renderTextAboveBonfireConfig = builder.comment("Whether to Render the name of the Bonfire above the Bonfire, default:true").define("Render Text Above Bonfire", renderTextAboveBonfire);
             this.tabIconsConfig = builder.comment("Set the icons to display for the dimension tabs in the Bonfire GUI, mod:dimensionname=mod:itemname").defineList("Bonfire Dimension Tab Icons", tabIcons, input -> validateIcon((String) input));
+            this.renderScreenshotsInGuiConfig = builder.comment("Whether to render screenshots of the Bonfires in the Bonfire GUI, default:true").define("Render Screenshots in GUI", renderScreenshotsInGui);
+            this.enableAutomaticScreenshotOnCreationConfig = builder.comment("Enables creating a screenshot of a Bonfire when it is created, default:true").define("Enable Automatic Screenshot on Creation", enableAutomaticScreenshotOnCreation);
+            this.screenshotWaitTicksConfig = builder.comment("Set the number of ticks to wait to take a screenshot increase this if you are seeing the HUD and GUI in the screenshots, default:5").defineInRange("Screenshot Wait Ticks", screenshotWaitTicks, 1, 100);
+            this.deleteScreenshotsOnDestroyedConfig = builder.comment("Whether to delete Bonfire screenshots when the Bonfire is destroyed, default:true").define("Delete Screenshots on Destroyed", deleteScreenshotsOnDestroyed);
         }
 
         public boolean validateIcon(String input) {
@@ -112,6 +128,10 @@ public class BonfiresConfig {
         if (event.getConfig().getSpec() == CLIENT_SPEC) {
             Client.renderTextAboveBonfire = CLIENT.renderTextAboveBonfireConfig.get();
             Client.tabIcons = (List<String>) CLIENT.tabIconsConfig.get();
+            Client.renderScreenshotsInGui = CLIENT.renderScreenshotsInGuiConfig.get();
+            Client.enableAutomaticScreenshotOnCreation = CLIENT.enableAutomaticScreenshotOnCreationConfig.get();
+            Client.screenshotWaitTicks = CLIENT.screenshotWaitTicksConfig.get();
+            Client.deleteScreenshotsOnDestroyed = CLIENT.deleteScreenshotsOnDestroyedConfig.get();
         } else if (event.getConfig().getSpec() == COMMON_SPEC) {
             Common.enableReinforcing = COMMON.enableReinforcingConfig.get();
             Common.enableUBSBonfire = COMMON.enableUBSBonfireConfig.get();

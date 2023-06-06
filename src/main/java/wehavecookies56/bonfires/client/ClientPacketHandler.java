@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.DistExecutor;
 import org.apache.commons.lang3.text.WordUtils;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
@@ -20,6 +21,9 @@ import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 /**
@@ -36,15 +40,14 @@ public class ClientPacketHandler {
         };
     }
 
-    public static DistExecutor.SafeRunnable setDimensionsFromServer(SendDimensionsToClient packet) {
+    public static DistExecutor.SafeRunnable setBonfiresFromServer(SendBonfiresToClient packet) {
         return new DistExecutor.SafeRunnable() {
             @Override
             public void run() {
-                if (Minecraft.getInstance().screen instanceof BonfireScreen) {
-                    BonfireScreen gui = (BonfireScreen) Minecraft.getInstance().screen;
-                    gui.updateDimensionsFromServer(packet.dimensions);
-                } else {
-                    Bonfires.LOGGER.debug("Bonfire GUI not open when Dimensions requested");
+                if (Minecraft.getInstance().screen != null) {
+                    if (Minecraft.getInstance().screen instanceof BonfireScreen gui) {
+                        gui.updateDimensionsFromServer(packet.registry, packet.dimensions);
+                    }
                 }
             }
         };
@@ -141,4 +144,33 @@ public class ClientPacketHandler {
         };
     }
 
+    public static DistExecutor.SafeRunnable queueBonfireScreenshot(String name, UUID uuid) {
+        return new DistExecutor.SafeRunnable() {
+            @Override
+            public void run() {
+                ScreenshotUtils.startScreenshotTimer(name, uuid);
+            }
+        };
+    }
+
+    public static DistExecutor.SafeRunnable deleteScreenshot(UUID uuid, String name) {
+        return new DistExecutor.SafeRunnable() {
+            @Override
+            public void run() {
+                if (BonfiresConfig.Client.deleteScreenshotsOnDestroyed) {
+                    Path screenshotsDir = Paths.get(Minecraft.getInstance().gameDirectory.getPath(), "bonfires/");
+                    String fileName = ScreenshotUtils.getFileNameString(name, uuid);
+                    File screenshotFile = new File(screenshotsDir.toFile(), fileName);
+                    if (screenshotFile.exists() && screenshotFile.isFile()) {
+                        String path = screenshotFile.getPath();
+                        if (!screenshotFile.delete()) {
+                            Bonfires.LOGGER.warn("Failed to delete screenshot file " + path);
+                        } else {
+                            Bonfires.LOGGER.info("Deleted screenshot for destroyed bonfire " + fileName);
+                        }
+                    }
+                }
+            }
+        };
+    }
 }

@@ -8,6 +8,7 @@ import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -22,6 +23,7 @@ public class SyncBonfire extends Packet<SyncBonfire> {
     public int y;
     public int z;
     public BonfireTileEntity.BonfireType type;
+    public Instant time;
 
     public SyncBonfire(PacketBuffer buffer) {
         super(buffer);

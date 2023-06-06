@@ -4,6 +4,7 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -18,13 +19,16 @@ public class Bonfire {
     RegistryKey<World> dimension;
     boolean isPublic;
 
-    public Bonfire(String name, UUID id, UUID owner, BlockPos pos, RegistryKey<World> dimension, boolean isPublic) {
+    Instant timeCreated;
+
+    public Bonfire(String name, UUID id, UUID owner, BlockPos pos, RegistryKey<World> dimension, boolean isPublic, Instant timeCreated) {
         this.name = name;
         this.id = id;
         this.owner = owner;
         this.pos = pos;
         this.dimension = dimension;
         this.isPublic = isPublic;
+        this.timeCreated = timeCreated;
     }
 
     public String getName() {
@@ -73,5 +77,13 @@ public class Bonfire {
 
     public void setPublic(boolean aPublic) {
         isPublic = aPublic;
+    }
+
+    public Instant getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(Instant timeCreated) {
+        this.timeCreated = timeCreated;
     }
 }

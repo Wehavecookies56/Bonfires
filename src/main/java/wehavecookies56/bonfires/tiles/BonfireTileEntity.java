@@ -16,6 +16,7 @@ import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.setup.EntitySetup;
 
 import javax.annotation.Nullable;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -56,7 +57,7 @@ public class BonfireTileEntity extends TileEntity {
     }
 
     public void createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
-        Bonfire bonfire = new Bonfire(name, id, owner, this.getBlockPos(), this.level.dimension(), isPublic);
+        Bonfire bonfire = new Bonfire(name, id, owner, this.getBlockPos(), this.level.dimension(), isPublic, Instant.now());
         BonfireHandler.getServerHandler(level.getServer()).addBonfire(bonfire);
     }
 

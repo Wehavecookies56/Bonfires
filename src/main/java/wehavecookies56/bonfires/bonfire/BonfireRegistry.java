@@ -6,8 +6,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import wehavecookies56.bonfires.Bonfires;
+import net.minecraftforge.common.util.Constants;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,12 @@ public class BonfireRegistry {
         return list;
     }
 
+    public static List<Bonfire> sortBonfiresByTime(List<Bonfire> bonfiresToSort) {
+        List<Bonfire> sortedList = new ArrayList<>(bonfiresToSort);
+        sortedList.sort(Comparator.comparing(Bonfire::getTimeCreated));
+        return sortedList;
+    }
+
     public List<Bonfire> getPrivateBonfiresByOwnerAndPublic(UUID owner) {
         List<Bonfire> list = new ArrayList<>();
         list.addAll(getBonfiresByPublic(true));
@@ -110,7 +117,7 @@ public class BonfireRegistry {
     }
 
     public boolean addBonfire(Bonfire bonfire) {
-        if (bonfires.containsKey(bonfire.getId())) {
+        if (bonfires.containsKey(bonfire.getId()) || getBonfireAtPos(bonfire.getPos(), bonfire.getDimension()) != null) {
             return false;
         } else {
             bonfires.put(bonfire.getId(), bonfire);
@@ -133,6 +140,10 @@ public class BonfireRegistry {
             bonfireCompound.putDouble("POSX", pair.getValue().getPos().getX());
             bonfireCompound.putDouble("POSY", pair.getValue().getPos().getY());
             bonfireCompound.putDouble("POSZ", pair.getValue().getPos().getZ());
+            CompoundNBT timeCompound = new CompoundNBT();
+            timeCompound.putLong("SECOND", pair.getValue().getTimeCreated().getEpochSecond());
+            timeCompound.putInt("NANO", pair.getValue().getTimeCreated().getNano());
+            bonfireCompound.put("TIME", timeCompound);
             tagCompound.put(pair.getKey().toString(), bonfireCompound);
         }
         return tagCompound;
@@ -147,8 +158,17 @@ public class BonfireRegistry {
             BlockPos pos = new BlockPos(compound.getDouble("POSX"), compound.getDouble("POSY"), compound.getDouble("POSZ"));
             RegistryKey<World> dimension = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(compound.getString("DIM")));
             boolean isPublic = compound.getBoolean("PUBLIC");
-            Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic);
-            bonfires.put(id, bonfire);
+            Instant time;
+            if (compound.contains("TIME", Constants.NBT.TAG_COMPOUND)) {
+                CompoundNBT timeCompound = compound.getCompound("TIME");
+                time = Instant.ofEpochSecond(timeCompound.getLong("SECOND"), timeCompound.getInt("NANO"));
+            } else {
+                time = Instant.now();
+            }
+            Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic, time);
+            if (getBonfireAtPos(pos, dimension) == null) {
+                bonfires.put(id, bonfire);
+            }
         }
     }
 

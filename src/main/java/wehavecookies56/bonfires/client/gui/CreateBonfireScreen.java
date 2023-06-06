@@ -6,13 +6,18 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.TranslationTextComponent;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
+import wehavecookies56.bonfires.client.ScreenshotUtils;
 import wehavecookies56.bonfires.client.gui.widgets.GuiButtonCheckBox;
 import wehavecookies56.bonfires.client.gui.widgets.NameTextField;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
+
+import java.util.UUID;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -31,10 +36,14 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-        super.render(stack, mouseX, mouseY, partialTicks);
-        drawString(stack, minecraft.font, new TranslationTextComponent(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(new TranslationTextComponent(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
-        nameBox.render(stack, mouseX, mouseY, partialTicks);
+        if (!ScreenshotUtils.isTimerStarted()) {
+            super.render(stack, mouseX, mouseY, partialTicks);
+            drawString(stack, minecraft.font, new TranslationTextComponent(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(new TranslationTextComponent(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
+            nameBox.render(stack, mouseX, mouseY, partialTicks);
+        }
     }
+    UUID uuid;
+    String name;
 
     @Override
     public boolean charTyped(char c, int key) {
@@ -58,19 +67,36 @@ public class CreateBonfireScreen extends Screen {
             case 0:
                 if (!nameBox.getValue().isEmpty()) {
                     Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, te.getBlockPos(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 1, 1);
-                    PacketHandler.sendToServer(new LightBonfire(nameBox.getValue(), te, !isPrivate.isChecked()));
-                    minecraft.setScreen(null);
+                    PacketHandler.sendToServer(new LightBonfire(nameBox.getValue(), te, !isPrivate.isChecked(), BonfiresConfig.Client.enableAutomaticScreenshotOnCreation));
+                    if (!BonfiresConfig.Client.enableAutomaticScreenshotOnCreation) {
+                        onClose();
+                    }
                 }
                 break;
         }
         updateButtons();
     }
 
+    @Override
+    public void onClose() {
+        super.onClose();
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return !ScreenshotUtils.isTimerStarted();
+    }
 
     @Override
     public void tick() {
+        if (te.getBlockPos().distManhattan(new Vector3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getReachDistance()+3) {
+            onClose();
+        }
         if (nameBox != null) {
             nameBox.tick();
+        }
+        if (te.isRemoved()) {
+            onClose();
         }
         super.tick();
     }

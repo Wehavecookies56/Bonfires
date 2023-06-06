@@ -28,7 +28,7 @@ if (hasProperty("grgit")) {
 }
 
 def mcver = "1.16.5"
-version = mcver + '-1.2.10' + "-${commitId}"
+version = mcver + '-1.2.11' + "-${commitId}"
 group = 'wehavecookies56.bonfires'
 archivesBaseName = 'Bonfires'
 
@@ -47,6 +47,11 @@ minecraft {
                     source sourceSets.main
                 }
             }
+        }
+
+        client2 {
+            parent runs.client
+            args '--username', 'Dev2'
         }
 
         server {

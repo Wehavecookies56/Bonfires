@@ -13,9 +13,7 @@ import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
-import wehavecookies56.bonfires.packets.client.DisplayTitle;
-import wehavecookies56.bonfires.packets.client.SyncBonfire;
-import wehavecookies56.bonfires.packets.client.SyncSaveData;
+import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
@@ -27,18 +25,19 @@ public class LightBonfire extends Packet<LightBonfire> {
 
     private String name;
     private int x, y, z;
-    private boolean isPublic;
+    private boolean isPublic, createScreenshot;
 
     public LightBonfire(PacketBuffer buffer) {
         super(buffer);
     }
 
-    public LightBonfire(String name, BonfireTileEntity bonfire, boolean isPublic) {
+    public LightBonfire(String name, BonfireTileEntity bonfire, boolean isPublic, boolean createScreenshot) {
         this.name = name;
         this.x = bonfire.getBlockPos().getX();
         this.y = bonfire.getBlockPos().getY();
         this.z = bonfire.getBlockPos().getZ();
         this.isPublic = isPublic;
+        this.createScreenshot = createScreenshot;
     }
 
     @Override
@@ -48,6 +47,7 @@ public class LightBonfire extends Packet<LightBonfire> {
         this.y = buffer.readInt();
         this.z = buffer.readInt();
         this.isPublic = buffer.readBoolean();
+        this.createScreenshot = buffer.readBoolean();
     }
 
     @Override
@@ -57,6 +57,7 @@ public class LightBonfire extends Packet<LightBonfire> {
         buffer.writeInt(y);
         buffer.writeInt(z);
         buffer.writeBoolean(isPublic);
+        buffer.writeBoolean(createScreenshot);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class LightBonfire extends Packet<LightBonfire> {
         PlayerEntity player = context.getSender();
         if (player != null) {
             BonfireTileEntity te = (BonfireTileEntity) player.level.getBlockEntity(pos);
-            if (te != null) {
+            if (te != null && !te.isLit()) {
                 te.setLit(true);
                 UUID id = UUID.randomUUID();
                 te.createBonfire(name, id, player.getUUID(), isPublic);
@@ -76,6 +77,10 @@ public class LightBonfire extends Packet<LightBonfire> {
                 BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger((ServerPlayerEntity) player);
                 PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
                 PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level).getRegistry().getBonfires()));
+                PacketHandler.sendToAll(new SendBonfiresToClient());
+                if (createScreenshot) {
+                    PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), (ServerPlayerEntity) player);
+                }
                 PacketHandler.sendTo(new DisplayTitle(LocalStrings.TEXT_LIT, name, 15, 20, 15), (ServerPlayerEntity) player);
                 Bonfires.LOGGER.info("Bonfire" + "'" + name + "'" + " lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayName().getString());
             }
