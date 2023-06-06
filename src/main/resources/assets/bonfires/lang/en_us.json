@@ -58,6 +58,8 @@
 
     "tooltip.bonfires.estus.heal": "Heals %f hearts",
     "tooltip.bonfires.reinforce": "Reinforced: +%f damage",
+    "tooltip.bonfires.info": "Toggle Bonfire Info",
+    "tooltip.bonfires.screenshot": "Capture Bonfire Screenshot",
 
     "tileentity.bonfires.bonfire.label": "%1$s (Private)",
 

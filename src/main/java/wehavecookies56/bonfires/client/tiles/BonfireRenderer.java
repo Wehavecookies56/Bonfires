@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
+import wehavecookies56.bonfires.client.ScreenshotUtils;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
@@ -56,6 +57,9 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
             stack.mulPose(Vector3f.ZP.rotationDegrees(-130));
             Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemTransforms.TransformType.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, 0);
             stack.popPose();
+            if (te.isLit() && !ScreenshotUtils.isTimerStarted()) {
+                renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
+            }
         }
     }
 
