@@ -35,7 +35,7 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
     @Override
     public void render(BonfireTileEntity te, float pPartialTicks, PoseStack stack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
         if (te.isBonfire()) {
-            if (te.isLit()) {
+            if (te.isLit() && !ScreenshotUtils.isTimerStarted()) {
                 renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
             }
             stack.pushPose();
