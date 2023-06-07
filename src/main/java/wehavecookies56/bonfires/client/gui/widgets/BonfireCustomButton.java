@@ -4,7 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import wehavecookies56.bonfires.Bonfires;
@@ -31,7 +32,7 @@ public class BonfireCustomButton extends Button {
 
     ButtonType type;
     public BonfireCustomButton(int buttonId, int x, int y, ButtonType type, OnPress onPress) {
-        super(x, y, 16, 16, Component.empty(), onPress);
+        super(x, y, 16, 16, new TextComponent(""), onPress);
         this.id = buttonId;
         this.type = type;
     }
@@ -49,7 +50,7 @@ public class BonfireCustomButton extends Button {
             blit(stack, x, y, type.u, type.v, width, height);
             if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
                 List<FormattedCharSequence> lines = new ArrayList<>();
-                lines.add(Component.translatable(type.translationKey).getVisualOrderText());
+                lines.add(new TranslatableComponent(type.translationKey).getVisualOrderText());
                 Minecraft.getInstance().screen.renderTooltip(stack, lines, mouseX, mouseY);
             }
         }
