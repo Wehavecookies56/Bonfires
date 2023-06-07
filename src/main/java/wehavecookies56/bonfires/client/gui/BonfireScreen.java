@@ -171,7 +171,7 @@ public class BonfireScreen extends Screen {
         if (bonfire.isRemoved()) {
             onClose();
         }
-        if (bonfire.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getReachDistance()+1) {
+        if (bonfire.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getReachDistance()+3) {
             onClose();
         }
     }

@@ -32,7 +32,7 @@ public class BonfireRenderer extends TileEntityRenderer<BonfireTileEntity> {
     @Override
     public void render(BonfireTileEntity te, float pPartialTicks, MatrixStack stack, IRenderTypeBuffer pBuffer, int pCombinedLight, int pCombinedOverlay) {
         if (te.isBonfire()) {
-            if (te.isLit()) {
+            if (te.isLit() && !ScreenshotUtils.isTimerStarted()) {
                 renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
             }
             stack.pushPose();
