@@ -4,9 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderHighlightEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -97,18 +95,8 @@ public class ScreenshotUtils {
     }
 
     @SubscribeEvent
-    public static void renderOverlays(RenderGuiOverlayEvent event) {
+    public static void renderOverlays(RenderGameOverlayEvent.Pre event) {
         event.setCanceled(timerStarted);
-    }
-
-    @SubscribeEvent
-    public static void renderHand(RenderHandEvent event) {
-        //event.setCanceled(timerStarted);
-    }
-
-    @SubscribeEvent
-    public static void renderHitBoxes(RenderHighlightEvent event){
-        //event.setCanceled(timerStarted);
     }
 
 }
