@@ -1,17 +1,19 @@
 package wehavecookies56.bonfires.client.gui;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.*;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.text.WordUtils;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
@@ -28,9 +30,8 @@ import wehavecookies56.bonfires.packets.server.RequestDimensionsFromServer;
 import wehavecookies56.bonfires.packets.server.Travel;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-import java.awt.*;
-import java.util.*;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -171,7 +173,7 @@ public class BonfireScreen extends Screen {
         if (bonfire.isRemoved()) {
             onClose();
         }
-        if (bonfire.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getReachDistance()+3) {
+        if (bonfire.getBlockPos().distManhattan(new Vector3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getAttributeValue(ForgeMod.REACH_DISTANCE.get())+4) {
             onClose();
         }
     }
@@ -218,7 +220,7 @@ public class BonfireScreen extends Screen {
                         List<IReorderingProcessor> lines = new ArrayList<>();
                         lines.add(new TranslationTextComponent("ID: " + selectedInstance.getId()).getVisualOrderText());
                         lines.add(new TranslationTextComponent("TIME: " + selectedInstance.getTimeCreated().toString()).getVisualOrderText());
-                        renderTooltip(stack, lines, mouseX, mouseY, font);
+                        renderTooltip(stack, lines, mouseX, mouseY);
                     }
                 }
                 for (DimensionTabButton currentTab : tabs) {
@@ -251,7 +253,7 @@ public class BonfireScreen extends Screen {
                 if (currentBonfire != null) {
                     name = currentBonfire.getName();
                     if (!currentBonfire.isPublic()) {
-                        drawCenteredStringNoShadow(stack, font, new TranslatableComponent(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
+                        drawCenteredStringNoShadow(stack, font, new TranslationTextComponent(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
                     }
                 }
                 drawCenteredStringNoShadow(stack, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());

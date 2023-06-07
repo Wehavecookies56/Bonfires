@@ -8,6 +8,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.ForgeMod;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.ScreenshotUtils;
@@ -89,7 +90,7 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void tick() {
-        if (te.getBlockPos().distManhattan(new Vector3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getReachDistance()+3) {
+        if (te.getBlockPos().distManhattan(new Vector3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getAttributeValue(ForgeMod.REACH_DISTANCE.get())+4) {
             onClose();
         }
         if (nameBox != null) {

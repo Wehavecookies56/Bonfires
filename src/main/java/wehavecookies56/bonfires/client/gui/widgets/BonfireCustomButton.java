@@ -1,13 +1,13 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import wehavecookies56.bonfires.Bonfires;
 
 import java.util.ArrayList;
@@ -31,26 +31,26 @@ public class BonfireCustomButton extends Button {
     }
 
     ButtonType type;
-    public BonfireCustomButton(int buttonId, int x, int y, ButtonType type, OnPress onPress) {
-        super(x, y, 16, 16, new TextComponent(""), onPress);
+    public BonfireCustomButton(int buttonId, int x, int y, ButtonType type, IPressable onPress) {
+        super(x, y, 16, 16, new StringTextComponent(""), onPress);
         this.id = buttonId;
         this.type = type;
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            RenderSystem.setShaderColor(1, 1, 1, 1);
+            RenderSystem.color4f(1, 1, 1, 1);
             if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
-                RenderSystem.setShaderColor(1, 1, 1, 1);
+                RenderSystem.color4f(1, 1, 1, 1);
             } else {
-                RenderSystem.setShaderColor(0.8F, 0.8F, 0.8F, 1F);
+                RenderSystem.color4f(0.8F, 0.8F, 0.8F, 1F);
             }
-            RenderSystem.setShaderTexture(0, TRAVEL_TEX);
+            Minecraft.getInstance().textureManager.bind(TRAVEL_TEX);
             blit(stack, x, y, type.u, type.v, width, height);
             if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
-                List<FormattedCharSequence> lines = new ArrayList<>();
-                lines.add(new TranslatableComponent(type.translationKey).getVisualOrderText());
+                List<IReorderingProcessor> lines = new ArrayList<>();
+                lines.add(new TranslationTextComponent(type.translationKey).getVisualOrderText());
                 Minecraft.getInstance().screen.renderTooltip(stack, lines, mouseX, mouseY);
             }
         }

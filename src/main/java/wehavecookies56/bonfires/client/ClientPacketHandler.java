@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.DistExecutor;
@@ -45,7 +44,8 @@ public class ClientPacketHandler {
             @Override
             public void run() {
                 if (Minecraft.getInstance().screen != null) {
-                    if (Minecraft.getInstance().screen instanceof BonfireScreen gui) {
+                    if (Minecraft.getInstance().screen instanceof BonfireScreen) {
+                        BonfireScreen gui = (BonfireScreen) Minecraft.getInstance().screen;
                         gui.updateDimensionsFromServer(packet.registry, packet.dimensions);
                     }
                 }

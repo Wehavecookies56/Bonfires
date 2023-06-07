@@ -1,9 +1,9 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class DeleteScreenshot extends Packet<DeleteScreenshot> {
 
-    public DeleteScreenshot(FriendlyByteBuf buffer) {
+    public DeleteScreenshot(PacketBuffer buffer) {
         super(buffer);
     }
 
@@ -24,13 +24,13 @@ public class DeleteScreenshot extends Packet<DeleteScreenshot> {
     }
 
     @Override
-    public void decode(FriendlyByteBuf buffer) {
+    public void decode(PacketBuffer buffer) {
         uuid = buffer.readUUID();
         name = buffer.readUtf();
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void encode(PacketBuffer buffer) {
         buffer.writeUUID(uuid);
         buffer.writeUtf(name);
     }

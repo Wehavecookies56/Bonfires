@@ -1,9 +1,9 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class QueueBonfireScreenshot extends Packet<QueueBonfireScreenshot> {
 
-    public QueueBonfireScreenshot(FriendlyByteBuf buffer) {
+    public QueueBonfireScreenshot(PacketBuffer buffer) {
         super(buffer);
     }
 
@@ -23,13 +23,13 @@ public class QueueBonfireScreenshot extends Packet<QueueBonfireScreenshot> {
     }
 
     @Override
-    public void decode(FriendlyByteBuf buffer) {
+    public void decode(PacketBuffer buffer) {
         name = buffer.readUtf();
         uuid = buffer.readUUID();
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void encode(PacketBuffer buffer) {
         buffer.writeUtf(name);
         buffer.writeUUID(uuid);
     }

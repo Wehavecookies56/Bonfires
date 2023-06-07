@@ -1,8 +1,8 @@
 package wehavecookies56.bonfires.client;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Screenshot;
+import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.util.ScreenShotHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
@@ -54,7 +54,7 @@ public class ScreenshotUtils {
             e.printStackTrace();
         }
         //String nameNoInvalid = bonfireName.replaceAll("[\\\\/:*?\"<>|]", "_").toLowerCase();
-        NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
+        NativeImage image = ScreenShotHelper.takeScreenshot(Minecraft.getInstance().getMainRenderTarget().width, Minecraft.getInstance().getMainRenderTarget().height, Minecraft.getInstance().getMainRenderTarget());
 
         try {
             image.writeToFile(fileToCreate);
@@ -81,10 +81,12 @@ public class ScreenshotUtils {
                         Minecraft.getInstance().options.hideGui = false;
                         takeScreenshot(name, uuid);
                         if (Minecraft.getInstance().screen != null) {
-                            if (Minecraft.getInstance().screen instanceof CreateBonfireScreen create) {
+                            if (Minecraft.getInstance().screen instanceof CreateBonfireScreen) {
+                                CreateBonfireScreen create = (CreateBonfireScreen) Minecraft.getInstance().screen;
                                 create.onClose();
                             }
-                            if (Minecraft.getInstance().screen instanceof BonfireScreen bonfire) {
+                            if (Minecraft.getInstance().screen instanceof BonfireScreen) {
+                                BonfireScreen bonfire = (BonfireScreen) Minecraft.getInstance().screen;
                                 bonfire.loadBonfireScreenshot();
                             }
                         }
