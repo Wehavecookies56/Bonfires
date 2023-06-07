@@ -89,7 +89,7 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void tick() {
-        if (te.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getBlockReach()+1) {
+        if (te.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getBlockReach()+3) {
             onClose();
         }
         if (nameBox != null) {
