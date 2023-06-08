@@ -28,5 +28,6 @@
     "recipes": [
       "bonfires:homeward_bone"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

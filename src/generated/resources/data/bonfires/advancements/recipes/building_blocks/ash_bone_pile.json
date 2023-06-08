@@ -30,5 +30,6 @@
     "recipes": [
       "bonfires:ash_bone_pile"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

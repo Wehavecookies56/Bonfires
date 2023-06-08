@@ -1,8 +1,8 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -37,20 +37,19 @@ public class BonfireCustomButton extends Button {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            RenderSystem.setShaderColor(1, 1, 1, 1);
+            guiGraphics.setColor(1, 1, 1, 1);
             if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
                 RenderSystem.setShaderColor(1, 1, 1, 1);
             } else {
                 RenderSystem.setShaderColor(0.8F, 0.8F, 0.8F, 1F);
             }
-            RenderSystem.setShaderTexture(0, TRAVEL_TEX);
-            blit(stack, getX(), getY(), type.u, type.v, width, height);
+            guiGraphics.blit(TRAVEL_TEX, getX(), getY(), type.u, type.v, width, height);
             if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
                 List<FormattedCharSequence> lines = new ArrayList<>();
                 lines.add(Component.translatable(type.translationKey).getVisualOrderText());
-                Minecraft.getInstance().screen.renderTooltip(stack, lines, mouseX, mouseY);
+                guiGraphics.renderTooltip(Minecraft.getInstance().font, lines, mouseX, mouseY);
             }
         }
     }

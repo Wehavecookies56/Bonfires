@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Vec3i;
@@ -35,11 +35,11 @@ public class CreateBonfireScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!ScreenshotUtils.isTimerStarted()) {
-            super.render(stack, mouseX, mouseY, partialTicks);
-            drawString(stack, minecraft.font, Component.translatable(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(Component.translatable(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
-            nameBox.render(stack, mouseX, mouseY, partialTicks);
+            super.render(guiGraphics, mouseX, mouseY, partialTicks);
+            guiGraphics.drawString(minecraft.font, Component.translatable(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(Component.translatable(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
+            nameBox.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
     UUID uuid;

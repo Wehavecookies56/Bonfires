@@ -1,14 +1,14 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -34,7 +34,7 @@ public class BonfireButton extends ExtendedButton {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (bonfire != null) {
             if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
                 setMessage(Component.translatable(bonfire.getName()));
@@ -49,7 +49,7 @@ public class BonfireButton extends ExtendedButton {
                                         Bonfire b = parent.bonfires.get(parent.tabs[parent.dimTabSelected - 5].getDimension()).get(parent.bonfirePage).get(parent.bonfireSelected - 11);
                                         if (bonfire == b) {
                                             colour = 46339;
-                                            fill(stack, getX(), getY(), getX() + width, getY() + height, 0xFF777777);
+                                            guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, 0xFF777777);
                                         }
                                     }
                                 }
@@ -57,9 +57,9 @@ public class BonfireButton extends ExtendedButton {
                         }
                     }
                     if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
-                        fill(stack, getX(), getY(), getX() + width, getY() + height, 0xFF777777);
+                        guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, 0xFF777777);
                     }
-                    parent.drawCenteredStringNoShadow(stack, fontrenderer, getMessage().getString(), this.getX() + width / 2, this.getY() + height / 2, colour);
+                    parent.drawCenteredStringNoShadow(guiGraphics, fontrenderer, getMessage().getString(), this.getX() + width / 2, this.getY() + height / 2, colour);
                 }
             }
         } else {

@@ -29,7 +29,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -64,7 +63,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     boolean dropFragment = false;
 
     public AshBonePileBlock() {
-        super(BlockBehaviour.Properties.of(Material.SAND).sound(SoundType.SAND).noOcclusion().strength(0.8F).lightLevel(AshBonePileBlock::getLightValue));
+        super(BlockBehaviour.Properties.of().sound(SoundType.SAND).noOcclusion().strength(0.8F).lightLevel(AshBonePileBlock::getLightValue));
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(LIT, false));
     }
 
@@ -118,7 +117,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         if (registry.getBonfire(te.getID()) != null) {
                             GameProfile profile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner()).get();
                             for (int i = 0; i < player.getInventory().items.size(); i++) {
-                                if (!ItemStack.isSame(player.getInventory().getItem(i), ItemStack.EMPTY)) {
+                                if (!ItemStack.isSameItem(player.getInventory().getItem(i), ItemStack.EMPTY)) {
                                     if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
                                         if (player.getInventory().getItem(i).hasTag()) {
                                             player.getInventory().getItem(i).getTag().putInt("estus", player.getInventory().getItem(i).getTag().getInt("uses"));
@@ -182,9 +181,9 @@ public class AshBonePileBlock extends Block implements EntityBlock {
             return 0;
         }
     }
-
+    
     @Override
-    public boolean isPossibleToRespawnInThis() {
+    public boolean isPossibleToRespawnInThis(BlockState p_279289_) {
         return true;
     }
 

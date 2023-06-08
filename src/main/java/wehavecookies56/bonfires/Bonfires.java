@@ -27,10 +27,7 @@ import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.SyncEstusData;
 import wehavecookies56.bonfires.packets.client.SyncSaveData;
-import wehavecookies56.bonfires.setup.BlockSetup;
-import wehavecookies56.bonfires.setup.CommonSetup;
-import wehavecookies56.bonfires.setup.EntitySetup;
-import wehavecookies56.bonfires.setup.ItemSetup;
+import wehavecookies56.bonfires.setup.*;
 
 import java.util.Random;
 
@@ -49,6 +46,7 @@ public class Bonfires {
         BlockSetup.BLOCKS.register(modEventBus);
         ItemSetup.ITEMS.register(modEventBus);
         EntitySetup.TILE_ENTITIES.register(modEventBus);
+        CreativeTabSetup.TABS.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, BonfiresConfig.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BonfiresConfig.COMMON_SPEC);
@@ -64,7 +62,7 @@ public class Bonfires {
             Random r = new Random();
             double percent = r.nextDouble() * 100;
             if (percent > 65) {
-                event.getDrops().add(new ItemEntity(event.getEntity().level, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), new ItemStack(ItemSetup.ash_pile.get())));
+                event.getDrops().add(new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), new ItemStack(ItemSetup.ash_pile.get())));
             }
         }
     }
@@ -81,7 +79,7 @@ public class Bonfires {
 
     @SubscribeEvent
     public void changeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getEntity().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
         }
     }

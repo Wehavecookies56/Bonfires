@@ -9,8 +9,8 @@
           "name": "bonfires:ash_bone_pile"
         }
       ],
-      "name": "self",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "bonfires:blocks/ash_bone_pile"
 }

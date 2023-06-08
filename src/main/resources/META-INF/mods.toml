@@ -1,27 +1,27 @@
 modLoader="javafml" #mandatory
-loaderVersion="[43,)"
-license="LGPLv3"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
 [[mods]] #mandatory
-modId="bonfires" #mandatory
-version="${file.jarVersion}" #mandatory
+modId="${mod_id}" #mandatory
+version="${mod_version}" #mandatory
 displayName="Bonfires"
 updateJSONURL="https://raw.githubusercontent.com/Wehavecookies56/Bonfires/master/update.json" #optional
 displayURL="https://www.curseforge.com/minecraft/mc-mods/bonfires" #optional
 logoFile="bonfires.png" #optional
 credits="FromSoftware and Bandai Namco for Dark Souls, Massive thanks to Prophecy_Wrecker for creating far better textures for everything in the mod" #optional
-authors="Wehavecookies56" #optional
+authors="${mod_authors}" #optional
 description='''
-Bonfires from Dark Souls.
+${mod_description}
 '''
-[[dependencies.bonfires]] #optional
+[[dependencies.${mod_id}]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[43,)" #mandatory
+    versionRange="${forge_version_range}" #mandatory
     ordering="NONE"
     side="BOTH"
-[[dependencies.bonfires]]
+[[dependencies.${mod_id}]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2,1.20)"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"

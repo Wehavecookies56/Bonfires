@@ -276,7 +276,7 @@ public class ReinforceHandler {
             if (ItemStack.matches(required, player.getInventory().getItem(i))) {
                 return true;
             } else {
-                if (ItemStack.isSame(player.getInventory().getItem(i), required)) {
+                if (ItemStack.isSameItem(player.getInventory().getItem(i), required)) {
                     hasCount += player.getInventory().getItem(i).getCount();
                 }
             }
@@ -293,7 +293,7 @@ public class ReinforceHandler {
             int remaining = required.getCount();
             for (int i = 0; i < player.getInventory().items.size(); i++) {
                 ItemStack item = player.getInventory().getItem(i);
-                if (ItemStack.isSame(required, item)) {
+                if (ItemStack.isSameItem(required, item)) {
                     if (item.getCount() >= remaining) {
                         item.shrink(remaining);
                         return;

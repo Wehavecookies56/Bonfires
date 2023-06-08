@@ -1,9 +1,8 @@
 package wehavecookies56.bonfires.client.gui;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -17,7 +16,7 @@ import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.server.ReinforceItem;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,14 +133,13 @@ public class ReinforceScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(stack);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(guiGraphics);
         Window window = mc.getWindow();
         int centerX = (window.getGuiScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
-        RenderSystem.setShaderTexture(0, texture);
-        blit(stack, centerX, centerY, 0, 0, texWidth, texHeight);
-        super.render(stack, mouseX, mouseY, partialTicks);
+        guiGraphics.blit(texture, centerX, centerY, 0, 0, texWidth, texHeight);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
         int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.top);
         int listHeight = (36 * reinforceableItems.size());
         if (scrollBarHeight >= listHeight) {
@@ -155,21 +153,21 @@ public class ReinforceScreen extends Screen {
         float buttonRelativeToBar = scrollBar.getY() - (scrollBar.top-1);
         float scrollPos = Math.min(buttonRelativeToBar != 0 ? buttonRelativeToBar / (scrollBarHeight) : 0, 1);
         scrollOffset = scrollPos*(listHeight-scrollBarHeight);
-        items.drawButtons(stack, mouseX, mouseY, partialTicks, scrollOffset);
-        drawString(stack, font, Component.translatable(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
+        items.drawButtons(guiGraphics, mouseX, mouseY, partialTicks, scrollOffset);
+        guiGraphics.drawString(font, Component.translatable(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
         if (itemSelected != -1) {
             ItemStack required = ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected));
             int hasCount = 0;
             for (int i = 0; i < mc.player.getInventory().items.size(); i++) {
-                if (ItemStack.isSame(mc.player.getInventory().getItem(i), required)) {
+                if (ItemStack.isSameItem(mc.player.getInventory().getItem(i), required)) {
                     hasCount += mc.player.getInventory().getItem(i).getCount();
                 }
             }
             ReinforceHandler.ReinforceLevel reinforceLevel = ReinforceHandler.getReinforceLevel(reinforceableItems.get(itemSelected));
             if (reinforceLevel.level() != reinforceLevel.maxLevel()) {
-                drawString(stack, font, required.getHoverName().getString() + ": " + hasCount + " / " + required.getCount(), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
+                guiGraphics.drawString(font, required.getHoverName().getString() + ": " + hasCount + " / " + required.getCount(), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
             } else {
-                drawString(stack, font, Component.translatable(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
+                guiGraphics.drawString(font, Component.translatable(LocalStrings.TEXT_MAX_LEVEL), centerX + 10, centerY + 24, new Color(255, 255, 255).hashCode());
             }
         }
     }

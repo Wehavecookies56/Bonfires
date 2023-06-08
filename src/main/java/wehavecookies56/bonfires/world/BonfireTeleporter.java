@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.ITeleporter;
 
@@ -30,7 +31,8 @@ public class BonfireTeleporter implements ITeleporter {
         for (int i = 0; i <= 3; i++) {
             Direction dir = Direction.from2DDataValue(i);
             BlockPos newPos = bonfirePos.relative(dir);
-            if (world.getBlockState(new BlockPos(newPos)).getBlock().isPossibleToRespawnInThis()) {
+            BlockState state = world.getBlockState(new BlockPos(newPos));
+            if (state.getBlock().isPossibleToRespawnInThis(state)) {
                 return new Vec3(newPos.getX() + 0.5D, newPos.getY() + 0.5, newPos.getZ() + 0.5);
             }
         }
@@ -50,13 +52,13 @@ public class BonfireTeleporter implements ITeleporter {
 
     public static void travelToBonfire(ServerPlayer player, BlockPos destination, ResourceKey<Level> dimension) {
         BonfireTeleporter tp = new BonfireTeleporter(destination);
-        ServerLevel destinationWorld = (ServerLevel) player.level;
-        player.level.playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-        player.level.playSound(null, destination, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-        if (!player.level.dimension().location().equals(dimension.location())) {
-            destinationWorld = player.level.getServer().getLevel(dimension);
+        ServerLevel destinationWorld = (ServerLevel) player.level();
+        player.level().playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+        player.level().playSound(null, destination, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+        if (!player.level().dimension().location().equals(dimension.location())) {
+            destinationWorld = player.level().getServer().getLevel(dimension);
             player.changeDimension(destinationWorld, tp);
         }
-        tp.placeEntity(player, (ServerLevel) player.level, destinationWorld, 0, (portal) -> player);
+        tp.placeEntity(player, (ServerLevel) player.level(), destinationWorld, 0, (portal) -> player);
     }
 }

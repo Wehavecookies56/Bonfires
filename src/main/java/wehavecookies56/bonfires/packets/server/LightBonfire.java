@@ -65,18 +65,18 @@ public class LightBonfire extends Packet<LightBonfire> {
         BlockPos pos = new BlockPos(x, y, z);
         Player player = context.getSender();
         if (player != null) {
-            BonfireTileEntity te = (BonfireTileEntity) player.level.getBlockEntity(pos);
+            BonfireTileEntity te = (BonfireTileEntity) player.level().getBlockEntity(pos);
             if (te != null && !te.isLit()) {
                 te.setLit(true);
                 UUID id = UUID.randomUUID();
                 te.createBonfire(name, id, player.getUUID(), isPublic);
                 te.setID(id);
-                player.level.setBlock(pos, player.level.getBlockState(pos).setValue(AshBonePileBlock.LIT, true), 2);
+                player.level().setBlock(pos, player.level().getBlockState(pos).setValue(AshBonePileBlock.LIT, true), 2);
                 ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
                 BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger((ServerPlayer) player);
                 PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
-                PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level).getRegistry().getBonfires()));
+                PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level()).getRegistry().getBonfires()));
                 PacketHandler.sendToAll(new SendBonfiresToClient());
                 if (createScreenshot) {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), (ServerPlayer) player);

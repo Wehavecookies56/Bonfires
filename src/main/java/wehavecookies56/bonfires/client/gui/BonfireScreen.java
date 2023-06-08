@@ -1,11 +1,10 @@
 package wehavecookies56.bonfires.client.gui;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -138,8 +137,8 @@ public class BonfireScreen extends Screen {
         }
     }
 
-    public void drawCenteredStringNoShadow(PoseStack stack, Font fr, String text, int x, int y, int color) {
-        fr.draw(stack, text, (x - (fr.width(text) / 2F)), (y - (fr.lineHeight / 2F)), color);
+    public void drawCenteredStringNoShadow(GuiGraphics guiGraphics, Font fr, String text, int x, int y, int color) {
+        guiGraphics.drawString(fr, text,(x - (fr.width(text) / 2F)), (y - (fr.lineHeight / 2F)), color, false);
     }
 
     private Map<ResourceKey<Level>, List<List<Bonfire>>> createSeries(ResourceKey<Level> dimension) {
@@ -189,13 +188,13 @@ public class BonfireScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!ScreenshotUtils.isTimerStarted()) {
-            renderBackground(stack);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.setShaderTexture(0, MENU);
+            renderBackground(guiGraphics);
+            guiGraphics.setColor(1, 1, 1, 1);
+            Font font = Minecraft.getInstance().font;
             if (travelOpen) {
-                drawTravelMenu(stack, mouseX, mouseY, partialTicks);
+                drawTravelMenu(guiGraphics, mouseX, mouseY, partialTicks);
 
                 String formattedName;
                 if (I18n.exists(LocalStrings.getDimensionKey(tabs[dimTabSelected - 5].getDimension()))) {
@@ -204,13 +203,13 @@ public class BonfireScreen extends Screen {
                 } else {
                     formattedName = I18n.get(LocalStrings.getDimensionKey(tabs[dimTabSelected - 5].getDimension()));
                 }
-                font.draw(stack, formattedName + " (" + tabs[dimTabSelected - 5].getDimension().location() + ")", (width / 2F) - 100, (height / 2F) - 62, 1184274);
+                guiGraphics.drawString(font, formattedName + " (" + tabs[dimTabSelected - 5].getDimension().location() + ")", (int)((width / 2F) - 100), (int)((height / 2F) - 62), 1184274);
 
                 if (bonfireSelected >= BONFIRE1) {
-                    drawSelectedBonfire(stack, mouseX, mouseY, partialTicks);
-                    super.render(stack, mouseX, mouseY, partialTicks);
+                    drawSelectedBonfire(guiGraphics, mouseX, mouseY, partialTicks);
+                    super.render(guiGraphics, mouseX, mouseY, partialTicks);
                 } else {
-                    super.render(stack, mouseX, mouseY, partialTicks);
+                    super.render(guiGraphics, mouseX, mouseY, partialTicks);
                 }
                 if (selectedInstance != null) {
                     int nameX = (width / 2) - 10 + 12;
@@ -221,7 +220,7 @@ public class BonfireScreen extends Screen {
                         List<FormattedCharSequence> lines = new ArrayList<>();
                         lines.add(Component.translatable("ID: " + selectedInstance.getId()).getVisualOrderText());
                         lines.add(Component.translatable("TIME: " + selectedInstance.getTimeCreated().toString()).getVisualOrderText());
-                        renderTooltip(stack, lines, mouseX, mouseY, font);
+                        guiGraphics.renderTooltip(font, lines, mouseX, mouseY);
                     }
                 }
                 for (DimensionTabButton currentTab : tabs) {
@@ -233,7 +232,7 @@ public class BonfireScreen extends Screen {
                             formattedName = I18n.get(LocalStrings.getDimensionKey(currentTab.getDimension()));
                         }
                         if (mouseX >= currentTab.getX() && mouseX <= currentTab.getX() + currentTab.getWidth() && mouseY >= currentTab.getY() && mouseY <= currentTab.getY() + currentTab.getHeight()) {
-                            renderTooltip(stack, Component.translatable(formattedName + " (" + currentTab.getDimension().location() + ")"), mouseX, mouseY);
+                            guiGraphics.renderTooltip(font, Component.translatable(formattedName + " (" + currentTab.getDimension().location() + ")"), mouseX, mouseY);
                         }
                     }
                 }
@@ -244,22 +243,22 @@ public class BonfireScreen extends Screen {
                 }
                 int xZero = (width / 2) - (travel_width / 2) + 16;
                 int yZero = (height / 2) - (travel_height / 2) + 128 - 17;
-                drawString(stack, font, pages, xZero + (55 / 2) - font.width(pages) / 2, yZero + (14 / 2) - font.lineHeight / 2, 0xFFFFFF);
+                guiGraphics.drawString(font, pages, xZero + (55 / 2) - font.width(pages) / 2, yZero + (14 / 2) - font.lineHeight / 2, 0xFFFFFF);
             } else {
                 int tex_width = 90;
-                blit(stack, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
-                super.render(stack, mouseX, mouseY, partialTicks);
+                guiGraphics.blit(MENU, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
+                super.render(guiGraphics, mouseX, mouseY, partialTicks);
                 String name = "";
                 Bonfire currentBonfire = registry.getBonfire(bonfire.getID());
                 if (currentBonfire != null) {
                     name = currentBonfire.getName();
                     if (!currentBonfire.isPublic()) {
-                        drawCenteredStringNoShadow(stack, font, Component.translatable(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
+                        drawCenteredStringNoShadow(guiGraphics, font, Component.translatable(LocalStrings.TEXT_PRIVATE).getString(), (width / 4), (height / 2) - (tex_height / 2) + 20, new Color(255, 255, 255).hashCode());
                     }
                 }
-                drawCenteredStringNoShadow(stack, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
+                drawCenteredStringNoShadow(guiGraphics, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
                 if (!ownerName.isEmpty())
-                    drawCenteredStringNoShadow(stack, font, ownerName, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
+                    drawCenteredStringNoShadow(guiGraphics, font, ownerName, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
             }
         }
     }
@@ -275,19 +274,19 @@ public class BonfireScreen extends Screen {
         return null;
     }
 
-    private void drawSelectedBonfire(PoseStack stack, int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks) {
+    private void drawSelectedBonfire(GuiGraphics guiGraphics, int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks) {
         if (selectedInstance != null) {
             int nameX = (width / 2) - 10 + 12;
             int nameY = (height / 2) - 45;
             if (BonfiresConfig.Client.renderScreenshotsInGui && dynamicBonfireScreenshot.getPixels() != null && screenshotLocation != null && !noScreenshot) {
-                RenderSystem.setShaderTexture(0, screenshotLocation);
-                blit(stack, nameX-3, nameY-5, width/2-103/2, height/2-110/2, 103, 110, width, height);
+                guiGraphics.blit(screenshotLocation, nameX-3, nameY-5, width/2-103/2, height/2-110/2, 103, 110, width, height);
             }
 
             if (showInfo) {
-                font.draw(stack, selectedInstance.getName(), nameX, nameY, new Color(255, 255, 255).hashCode());
-                font.draw(stack, "X:" + selectedInstance.getPos().getX() + " Y:" + selectedInstance.getPos().getY() + " Z:" + selectedInstance.getPos().getZ(), nameX, nameY + font.lineHeight + 3, new Color(255, 255, 255).hashCode());
-                font.draw(stack, ownerName, nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
+                Font font = Minecraft.getInstance().font;
+                guiGraphics.drawString(font, selectedInstance.getName(), nameX, nameY, new Color(255, 255, 255).hashCode());
+                guiGraphics.drawString(font, "X:" + selectedInstance.getPos().getX() + " Y:" + selectedInstance.getPos().getY() + " Z:" + selectedInstance.getPos().getZ(), nameX, nameY + font.lineHeight + 3, new Color(255, 255, 255).hashCode());
+                guiGraphics.drawString(font, ownerName, nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
             }
         }
     }
@@ -313,18 +312,14 @@ public class BonfireScreen extends Screen {
         return null;
     }
 
-    private void drawTravelMenu(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    private void drawTravelMenu(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         int trueWidth = 219;
-        RenderSystem.setShaderTexture(0, TRAVEL_TEX);
         //RenderHelper.enableGUIStandardItemLighting();
         for (DimensionTabButton tab : tabs) {
-            tab.render(stack, mouseX, mouseY, partialTicks);
+            tab.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
-        RenderSystem.setShaderTexture(0, TRAVEL_TEX);
-        blit(stack, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height);
+        guiGraphics.blit(TRAVEL_TEX, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height);
     }
-
-    public record TooltipToRender(List<FormattedCharSequence> lines, int startX, int startY, int endX, int endY) { }
 
     public void action(int id) {
         action(id, false);

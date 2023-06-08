@@ -22,8 +22,8 @@ public class EstusShardItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         if (!world.isClientSide) {
             for (int i = 0; i < player.getInventory().items.size(); ++i) {
-                if (!ItemStack.isSame(player.getItemInHand(hand), ItemStack.EMPTY)) {
-                    if (!ItemStack.isSame(player.getInventory().getItem(i), ItemStack.EMPTY)) {
+                if (!ItemStack.isSameItem(player.getItemInHand(hand), ItemStack.EMPTY)) {
+                    if (!ItemStack.isSameItem(player.getInventory().getItem(i), ItemStack.EMPTY)) {
                         if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
                             CompoundTag compound = player.getInventory().getItem(i).getTag();
                             if (compound != null) {

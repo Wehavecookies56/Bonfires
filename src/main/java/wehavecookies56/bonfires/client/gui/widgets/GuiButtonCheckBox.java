@@ -1,8 +1,7 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -11,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class GuiButtonCheckBox extends AbstractButton {
 
@@ -27,15 +26,16 @@ public class GuiButtonCheckBox extends AbstractButton {
         this.checked = !checked;
     }
 
+    private final ResourceLocation TEXTURE = new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png");
+
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            RenderSystem.setShaderTexture(0, new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png"));
-            blit(stack, getX(), getY(), 0, 0, 10, 10);
+            guiGraphics.blit(TEXTURE, getX(), getY(), 0, 0, 10, 10);
             if (checked) {
-                blit(stack, getX(), getY(), 10, 0, 10, 10);
+                guiGraphics.blit(TEXTURE, getX(), getY(), 10, 0, 10, 10);
             }
-            drawString(stack, Minecraft.getInstance().font, getMessage().getString(), getX() + width + 3, getY() + 2, new Color(255, 255, 255).hashCode());
+            guiGraphics.drawString(Minecraft.getInstance().font, getMessage().getString(), getX() + width + 3, getY() + 2, new Color(255, 255, 255).hashCode());
         }
     }
 

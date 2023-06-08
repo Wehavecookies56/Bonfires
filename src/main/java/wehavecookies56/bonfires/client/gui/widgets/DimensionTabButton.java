@@ -1,8 +1,6 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -79,22 +77,21 @@ public class DimensionTabButton extends Button {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             int tab_width = 28;
             int tab_height = 30;
             int tab_u = 28;
             int tab_v = parent.travel_height;
-            RenderSystem.setShaderTexture(0, parent.TRAVEL_TEX);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
+            guiGraphics.setColor(1, 1, 1, 1);
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
-                blit(stack, getX(), getY(), tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8);
+                guiGraphics.blit(parent.TRAVEL_TEX, getX(), getY(), tab_u, tab_v, tab_width, tab_height);
+                guiGraphics.renderFakeItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8);
             } else {
-                blit(stack, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height);
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8 -1);
+                guiGraphics.blit(parent.TRAVEL_TEX, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height);
+                guiGraphics.renderFakeItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8 -1);
             }
         }
     }

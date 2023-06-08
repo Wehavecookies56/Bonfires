@@ -1,7 +1,6 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
@@ -25,9 +24,8 @@ public class BonfirePageButton extends Button {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            RenderSystem.setShaderTexture(0, parent.TRAVEL_TEX);
             int texWidth = 8;
             int texHeight = 14;
             int u = 256 - texWidth * 2;
@@ -41,8 +39,8 @@ public class BonfirePageButton extends Button {
             if (!active) {
                 v = texHeight * 2;
             }
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            blit(stack, getX(), getY(), u, v, width, height);
+            guiGraphics.setColor(1, 1, 1, 1);
+            guiGraphics.blit(parent.TRAVEL_TEX, getX(), getY(), u, v, width, height);
         }
     }
 }

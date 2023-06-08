@@ -28,5 +28,6 @@
     "recipes": [
       "bonfires:titanite_shard"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

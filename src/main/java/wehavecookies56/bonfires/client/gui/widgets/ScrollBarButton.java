@@ -1,12 +1,12 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ScrollBarButton extends Button {
 
@@ -29,15 +29,13 @@ public class ScrollBarButton extends Button {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            RenderSystem.enableBlend();
-            RenderSystem.setShaderColor(1, 1, 1, 0.5F);
-            fill(stack, getX(), top, getX() + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
-            RenderSystem.disableBlend();
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            fill(stack, getX(), getY(), getX()+8, getY()+scrollBarHeight, new Color(81, 86, 71).hashCode());
-            fill(stack, getX()+1, getY()+1, getX()+1+6, getY()+1+(scrollBarHeight-2), new Color(114, 118, 95).hashCode());
+            guiGraphics.setColor(1, 1, 1, 0.5F);
+            guiGraphics.fill(getX(), top, getX() + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
+            guiGraphics.setColor(1, 1, 1, 1);
+            guiGraphics.fill(getX(), getY(), getX()+8, getY()+scrollBarHeight, new Color(81, 86, 71).hashCode());
+            guiGraphics.fill(getX()+1, getY()+1, getX()+1+6, getY()+1+(scrollBarHeight-2), new Color(114, 118, 95).hashCode());
         }
     }
 

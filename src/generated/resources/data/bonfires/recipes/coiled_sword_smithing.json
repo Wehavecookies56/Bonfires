@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:smithing",
+  "type": "minecraft:smithing_transform",
   "addition": {
     "item": "bonfires:coiled_sword_fragment"
   },
@@ -8,5 +8,8 @@
   },
   "result": {
     "item": "bonfires:coiled_sword"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
   }
 }

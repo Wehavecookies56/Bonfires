@@ -47,8 +47,8 @@ public class HomewardBoneItem extends Item {
             if (lastRested != null) {
                 Bonfire bonfire = BonfireHandler.getHandler(world).getRegistry().getBonfire(lastRested);
                 if (bonfire != null) {
-                    player.level.playSound(player, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-                    player.level.playSound(player, bonfire.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+                    player.level().playSound(player, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
+                    player.level().playSound(player, bonfire.getPos(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
                     DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.displayBonfireTravelled(bonfire));
                     return InteractionResultHolder.success(player.getItemInHand(hand));
                 }
