@@ -1,6 +1,7 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -31,7 +32,7 @@ public class ReinforceItemButton extends Button {
         if (!istack.isEmpty()) {
             BakedModel bakedmodel = Minecraft.getInstance().getItemRenderer().getModel(istack, Minecraft.getInstance().level, Minecraft.getInstance().player, 0);
             guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate((float)(x + 8), (float)(y + 8), (float)(150));
+            guiGraphics.pose().translate((float)(x + 16), (float)(y + 16), (float)(150));
 
             try {
                 guiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
@@ -75,8 +76,8 @@ public class ReinforceItemButton extends Button {
             double scale = mc.getWindow().getGuiScale();
             int scissorX = getX(), scissorY = getY(), scissorWidth = 239, scissorHeight = 171;
             //RenderSystem.enableScissor(0, mc.getWindow().getGuiScaledHeight() - (scissorY + scissorHeight) * scale, (scissorWidth + scissorX) * scale, scissorHeight * scale);
-            //RenderSystem.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
-            guiGraphics.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
+            RenderSystem.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
+            //guiGraphics.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
             int insideWidth = getX() + width;
             if (parent.scrollBar.visible) {
                 insideWidth -= 8;
@@ -106,8 +107,8 @@ public class ReinforceItemButton extends Button {
                 //int textWidth = mc.font.width(required.getDisplayName());
                 //drawString(stack, mc.font, required.getDisplayName(), (x+2 + 220) - textWidth, ((int)yPos + 10) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
             }
-            //RenderSystem.disableScissor();
-            guiGraphics.disableScissor();
+            RenderSystem.disableScissor();
+            //guiGraphics.disableScissor();
         }
     }
 

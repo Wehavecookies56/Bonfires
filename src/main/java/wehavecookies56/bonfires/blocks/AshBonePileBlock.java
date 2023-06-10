@@ -60,11 +60,11 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
-    boolean dropFragment = false;
+    public static final BooleanProperty EXPLODED = BooleanProperty.create("exploded");
 
     public AshBonePileBlock() {
         super(BlockBehaviour.Properties.of().sound(SoundType.SAND).noOcclusion().strength(0.8F).lightLevel(AshBonePileBlock::getLightValue));
-        registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(LIT, false));
+        registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(LIT, false).setValue(EXPLODED, false));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(LIT, false);
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(LIT, false).setValue(EXPLODED, false);
     }
 
 
@@ -87,7 +87,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {
         super.createBlockStateDefinition(stateBuilder);
-        stateBuilder.add(FACING, LIT);
+        stateBuilder.add(FACING, LIT, EXPLODED);
     }
 
     @SuppressWarnings("deprecation")
@@ -194,9 +194,10 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                 BonfireTileEntity te = (BonfireTileEntity) world.getBlockEntity(pos);
                 if (te != null) {
                     if (te.isBonfire()) {
-                        dropFragment = true;
-                        ItemEntity fragment = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ItemSetup.coiled_sword_fragment.get()));
-                        world.addFreshEntity(fragment);
+                        if (!state.getValue(EXPLODED)) {
+                            ItemEntity fragment = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ItemSetup.coiled_sword_fragment.get()));
+                            world.addFreshEntity(fragment);
+                        }
                     }
                     if (te.isLit()) {
                         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -219,10 +220,10 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion) {
         if (BonfiresConfig.Common.enableUBSBonfire) {
             if (!world.isClientSide) {
-                if (dropFragment) {
-                    ItemEntity shard = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ItemSetup.undead_bone_shard.get()));
-                    world.addFreshEntity(shard);
-                }
+                ItemEntity shard = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ItemSetup.undead_bone_shard.get()));
+                world.addFreshEntity(shard);
+                state = state.setValue(EXPLODED, true);
+                world.setBlock(pos, state, 3);
             }
         }
         super.onBlockExploded(state, world, pos, explosion);

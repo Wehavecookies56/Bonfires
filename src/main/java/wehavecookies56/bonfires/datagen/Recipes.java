@@ -60,7 +60,7 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_ash_bone_pile", InventoryChangeTrigger.TriggerInstance.hasItems(BlockSetup.ash_bone_pile.get()))
                 .save(recipeConsumer);
 
-        SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(Items.IRON_SWORD), Ingredient.of(ItemSetup.coiled_sword_fragment.get()), RecipeCategory.COMBAT, ItemSetup.coiled_sword.get())
+        SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.FIRE_CHARGE), Ingredient.of(Items.IRON_SWORD), Ingredient.of(ItemSetup.coiled_sword_fragment.get()), RecipeCategory.COMBAT, ItemSetup.coiled_sword.get())
                 .unlocks("has_coiled_sword_fragment", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.coiled_sword_fragment.get()))
                 .save(recipeConsumer, new ResourceLocation(Bonfires.modid, "coiled_sword_smithing"));
 

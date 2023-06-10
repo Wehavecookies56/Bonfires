@@ -203,7 +203,7 @@ public class BonfireScreen extends Screen {
                 } else {
                     formattedName = I18n.get(LocalStrings.getDimensionKey(tabs[dimTabSelected - 5].getDimension()));
                 }
-                guiGraphics.drawString(font, formattedName + " (" + tabs[dimTabSelected - 5].getDimension().location() + ")", (int)((width / 2F) - 100), (int)((height / 2F) - 62), 1184274);
+                guiGraphics.drawString(font, formattedName + " (" + tabs[dimTabSelected - 5].getDimension().location() + ")", (int)((width / 2F) - 100), (int)((height / 2F) - 62), 1184274, false);
 
                 if (bonfireSelected >= BONFIRE1) {
                     drawSelectedBonfire(guiGraphics, mouseX, mouseY, partialTicks);
