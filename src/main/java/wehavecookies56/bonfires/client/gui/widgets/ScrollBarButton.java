@@ -82,12 +82,14 @@ public class ScrollBarButton extends Button {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-        int scrollFactor = 5;
-        if (scrollDelta > 0) {
-            setY((int) Math.max(getY() - (scrollDelta * scrollFactor), top));
-        }
-        if (scrollDelta < 0) {
-            setY((int) Math.min(getY() - (scrollDelta * scrollFactor), bottom));
+        if (visible) {
+            int scrollFactor = 5;
+            if (scrollDelta > 0) {
+                setY((int) Math.max(getY() - (scrollDelta * scrollFactor), top));
+            }
+            if (scrollDelta < 0) {
+                setY((int) Math.min(getY() - (scrollDelta * scrollFactor), bottom));
+            }
         }
         return super.mouseScrolled(mouseX, mouseY, scrollDelta);
     }
