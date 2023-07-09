@@ -1,6 +1,7 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
+    "1.20.1-latest": "1.2.13",
     "1.20-latest": "1.2.12",
     "1.19.4-latest": "1.2.11",
     "1.19.3-latest": "1.2.10",
@@ -11,6 +12,10 @@
     "1.12-latest": "1.2.2",
     "1.11-latest": "1.0.1",
     "1.10.2-latest": "1.0.0"
+  },
+
+  "1.20.1": {
+    "1.20.1": "Fixed error constantly spamming log"
   },
 
   "1.20": {

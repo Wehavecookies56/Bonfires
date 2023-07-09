@@ -97,7 +97,7 @@ public class ScreenshotUtils {
     }
 
     @SubscribeEvent
-    public static void renderOverlays(RenderGuiOverlayEvent event) {
+    public static void renderOverlays(RenderGuiOverlayEvent.Pre event) {
         event.setCanceled(timerStarted);
     }
 
