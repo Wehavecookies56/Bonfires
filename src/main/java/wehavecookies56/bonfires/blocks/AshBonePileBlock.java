@@ -189,7 +189,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moving) {
-        if (newState.getBlock() == Blocks.AIR) {
+        if (newState.getBlock() != this) {
             if (!world.isClientSide()) {
                 BonfireTileEntity te = (BonfireTileEntity) world.getBlockEntity(pos);
                 if (te != null) {
