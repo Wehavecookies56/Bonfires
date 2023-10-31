@@ -18,7 +18,6 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
-import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -42,7 +41,6 @@ public class ClientSetup {
     @SubscribeEvent
     public void tooltipEvent(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
-        boolean tryUseCap = true;
         if (event.getItemStack().hasTag()) {
             CompoundTag tag = event.getItemStack().getTag();
             if (tag.contains("reinforce_level")) {
@@ -55,19 +53,6 @@ public class ClientSetup {
                     if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
                         event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * level));
                     }
-                }
-                tryUseCap = false;
-            }
-        }
-        if (tryUseCap && ReinforceHandler.hasHandler(stack)) {
-            ReinforceHandler.IReinforceHandler reinforceHandler = ReinforceHandler.getHandler(stack);
-            if (reinforceHandler.level() > 0) {
-                Component component = event.getToolTip().get(0);
-                MutableComponent name = (MutableComponent) component;
-                name.append(" +" + reinforceHandler.level());
-                event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
-                if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                    event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * reinforceHandler.level()));
                 }
             }
         }
