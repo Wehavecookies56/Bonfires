@@ -93,7 +93,6 @@ public class Bonfires {
                 ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(player.getMainHandItem());
                 if (rlevel != null) {
                     event.setAmount((float) ((event.getAmount() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())) * player.getAttackStrengthScale(0)));
-                    System.out.println(event.getAmount());
                 }
             }
         }
