@@ -51,7 +51,7 @@ public class CoiledSwordItem extends SwordItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if ((attacker instanceof Player player && player.getAttackStrengthScale(0) == 1.0F) || !(attacker instanceof Player)) {
-            attacker.level().playSound(null, attacker, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+            attacker.level.playSound(null, attacker, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
             target.setSecondsOnFire(3);
         }
         return super.hurtEnemy(stack, target, attacker);
