@@ -3,6 +3,8 @@ package wehavecookies56.bonfires;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -11,6 +13,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -91,10 +94,22 @@ public class Bonfires {
             if (ReinforceHandler.canReinforce(player.getMainHandItem())) {
                 ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(player.getMainHandItem());
                 if (rlevel != null) {
-                    event.setAmount((float) ((event.getAmount() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())) * player.getAttackStrengthScale(0)));
+                    event.setAmount((float) ((event.getAmount() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())) * player.getAttackStrengthScale(attackTicker)));
                 }
             }
         }
+    }
+
+    int attackTicker = 0;
+
+    @SubscribeEvent
+    public void attackEntity(AttackEntityEvent event) {
+        Player player = event.getPlayer();
+        if (player.getAttackStrengthScale(0) == 1.0F) {
+            player.level.playSound(null, player, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+            event.getTarget().setSecondsOnFire(3);
+        }
+        attackTicker = player.attackStrengthTicker;
     }
 
     @SubscribeEvent
