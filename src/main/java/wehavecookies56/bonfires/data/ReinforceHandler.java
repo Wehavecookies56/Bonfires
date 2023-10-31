@@ -1,9 +1,6 @@
 package wehavecookies56.bonfires.data;
 
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -11,20 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
@@ -38,37 +22,6 @@ public class ReinforceHandler {
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new ReinforceHandler());
-    }
-
-    @SubscribeEvent
-    public static void register(RegisterCapabilitiesEvent event) {
-        event.register(IReinforceHandler.class);
-    }
-
-    @SubscribeEvent
-    public void attachCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
-        for (String s : BonfiresConfig.Common.reinforceBlacklist) {
-            if (ForgeRegistries.ITEMS.containsKey(new ResourceLocation(s))) {
-                Item blacklistedItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(s));
-                if (event.getObject().getItem() == blacklistedItem) {
-                    return;
-                }
-            } else {
-                Bonfires.LOGGER.info("Unable to find blacklisted item '" + s + "' in the registry");
-            }
-        }
-        if (event.getObject().getItem() instanceof TieredItem || event.getObject().getItem() instanceof SwordItem || event.getObject().getItem() instanceof EstusFlaskItem) {
-            event.addCapability(new ResourceLocation(Bonfires.modid, "reinforce"), new Provider());
-        }
-    }
-
-    @Deprecated
-    public static IReinforceHandler getHandler(ItemStack stack) {
-        return stack.getCapability(CAPABILITY_REINFORCE, null).orElse(null);
-    }
-
-    public static boolean hasHandler(ItemStack stack) {
-        return stack.getCapability(CAPABILITY_REINFORCE, null).isPresent();
     }
 
     public static boolean canReinforce(ItemStack stack) {
@@ -107,17 +60,6 @@ public class ReinforceHandler {
     public static ReinforceLevel getReinforceLevel(ItemStack stack) {
         int levelFromCap = 0;
         int maxLevelFromCap = 10;
-        if (hasHandler(stack)) {
-            IReinforceHandler handler = getHandler(stack);
-            if (handler.level() > 0) {
-                levelFromCap = handler.level();
-                maxLevelFromCap = handler.maxLevel();
-                handler.setLevel(0);
-                if (stack.getHoverName().getString().contains(" +" + levelFromCap)) {
-                    stack.setHoverName(new TextComponent(StringUtils.remove(stack.getHoverName().getString(), " +" + levelFromCap)).setStyle(Style.EMPTY.withItalic(false)));
-                }
-            }
-        }
         if (canReinforce(stack)) {
             if (stack.hasTag()) {
                 if (stack.getTag().contains("reinforce_level")) {
@@ -181,92 +123,6 @@ public class ReinforceHandler {
 
         }
         return ItemStack.EMPTY;
-    }
-
-    @Deprecated
-    public static final Capability<IReinforceHandler> CAPABILITY_REINFORCE = CapabilityManager.get(new CapabilityToken<>() {});
-
-    @Deprecated
-    public interface IReinforceHandler extends INBTSerializable<CompoundTag> {
-        int level();
-        int maxLevel();
-        void setLevel(int level);
-        void levelup(int levelup);
-        void setMaxLevel(int maxLevel);
-    }
-
-    @Deprecated
-    public static class Default implements IReinforceHandler {
-        private int level = 0;
-        private int maxLevel = 10;
-
-        @Override
-        public int level() {
-            return level;
-        }
-
-        @Override
-        public void setLevel(int level) {
-            if (level > maxLevel) {
-                this.level = maxLevel;
-            } else {
-                this.level = level;
-            }
-        }
-
-        @Override
-        public void levelup(int levelup) {
-            if (level + levelup <= maxLevel) {
-                level += levelup;
-            } else {
-                level = maxLevel;
-            }
-        }
-
-        @Override
-        public int maxLevel() {
-            return maxLevel;
-        }
-
-        @Override
-        public void setMaxLevel(int maxLevel) {
-            this.maxLevel = maxLevel;
-        }
-
-        @Override
-        public CompoundTag serializeNBT() {
-            final CompoundTag tag = new CompoundTag();
-            tag.putInt("level", level());
-            tag.putInt("maxLevel", maxLevel());
-            return tag;
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag tag) {
-            setLevel(tag.getInt("level"));
-            setMaxLevel(tag.getInt("maxLevel"));
-        }
-    }
-
-    @Deprecated
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
-        IReinforceHandler instance = new ReinforceHandler.Default();
-
-        @Override
-        public CompoundTag serializeNBT() {
-            return instance.serializeNBT();
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            instance.deserializeNBT(nbt);
-        }
-
-        @NotNull
-        @Override
-        public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-            return CAPABILITY_REINFORCE.orEmpty(cap, LazyOptional.of(() -> instance));
-        }
     }
 
     public static boolean hasRequiredItems(Player player, ItemStack required) {

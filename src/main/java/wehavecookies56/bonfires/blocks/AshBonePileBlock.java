@@ -20,7 +20,10 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +44,6 @@ import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
-import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.setup.EntitySetup;
@@ -123,9 +125,6 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                                             player.getInventory().getItem(i).getTag().putInt("estus", player.getInventory().getItem(i).getTag().getInt("uses"));
                                         }
                                     }
-                                }
-                                if (ReinforceHandler.hasHandler(player.getInventory().getItem(i))) {
-                                    PacketHandler.sendTo(new SyncReinforceData(ReinforceHandler.getHandler(player.getInventory().getItem(i)), i), (ServerPlayer) player);
                                 }
                             }
                             PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry, BonfiresConfig.Common.enableReinforcing), (ServerPlayer) player);
