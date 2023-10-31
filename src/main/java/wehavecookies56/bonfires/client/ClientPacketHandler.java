@@ -17,7 +17,6 @@ import wehavecookies56.bonfires.client.gui.BonfireScreen;
 import wehavecookies56.bonfires.client.gui.CreateBonfireScreen;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
-import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
@@ -90,19 +89,6 @@ public class ClientPacketHandler {
                             te.setID(packet.id);
                     }
                 }
-            }
-        };
-    }
-
-    public static DistExecutor.SafeRunnable syncReinforceData(SyncReinforceData packet) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(packet.slot);
-                ReinforceHandler.IReinforceHandler handler = ReinforceHandler.getHandler(stack);
-                handler.setMaxLevel(packet.maxLevel);
-                handler.setLevel(packet.level);
-                Minecraft.getInstance().player.getInventory().setItem(packet.slot, stack);
             }
         };
     }
