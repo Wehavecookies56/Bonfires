@@ -1,12 +1,13 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
-    "1.20.1-latest": "1.2.13",
-    "1.20-latest": "1.2.12",
-    "1.19.4-latest": "1.2.11",
+    "1.20.2-latest": "1.2.14",
+    "1.20.1-latest": "1.2.14",
+    "1.20-latest": "1.2.14",
+    "1.19.4-latest": "1.2.14",
     "1.19.3-latest": "1.2.10",
-    "1.19.2-latest": "1.2.11",
-    "1.18.2-latest": "1.2.11",
+    "1.19.2-latest": "1.2.14",
+    "1.18.2-latest": "1.2.14",
     "1.16.5-latest": "1.2.11",
     "1.12.2-latest": "1.2.2",
     "1.12-latest": "1.2.2",
@@ -14,8 +15,13 @@
     "1.10.2-latest": "1.0.0"
   },
 
+  "1.20.2": {
+    "1.2.14": "Updated to 1.20.2 and fixed Bonfires not getting removed properly by fluids and reinforced damage scaling on cooldown"
+  },
+
   "1.20.1": {
-    "1.20.1": "Fixed error constantly spamming log"
+    "1.2.14": "Fixed Bonfires not getting removed properly by fluids and reinforced damage scaling on cooldown",
+    "1.2.13": "Fixed error constantly spamming log"
   },
 
   "1.20": {
@@ -23,6 +29,7 @@
   },
 
   "1.19.4": {
+    "1.2.14": "Fixed reinforced damage scaling on cooldown",
     "1.2.12": "Fixed Undead Bone Shard drop and reinforce menu scroll wheel",
     "1.2.11": "Various fixes and tweaks, Screenshots are now created for Bonfires to display in the GUI",
     "1.2.10": "Updated to 1.19.4"
@@ -33,6 +40,7 @@
   },
 
   "1.19.2": {
+    "1.2.14": "Fixed reinforced damage scaling on cooldown",
     "1.2.12": "Fixed Undead Bone Shard drop and reinforce menu scroll wheel",
     "1.2.11": "Various fixes and tweaks, Screenshots are now created for Bonfires to display in the GUI",
     "1.2.10": "Fixes crash when using a Homeward Bone or Coiled Sword Fragment with destroyed Bonfires",
@@ -44,6 +52,7 @@
   },
 
   "1.18.2": {
+    "1.2.14": "Fixed reinforced damage scaling on cooldown",
     "1.2.12": "Fixed Undead Bone Shard drop and reinforce menu scroll wheel",
     "1.2.11": "Various fixes and tweaks, Screenshots are now created for Bonfires to display in the GUI",
     "1.2.10": "Fixes crash when using a Homeward Bone or Coiled Sword Fragment with destroyed Bonfires",
