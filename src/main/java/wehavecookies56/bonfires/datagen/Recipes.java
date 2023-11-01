@@ -12,8 +12,6 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
-import java.util.function.Consumer;
-
 public class Recipes extends RecipeProvider {
 
     DataGenerator generator;
@@ -24,7 +22,7 @@ public class Recipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
+    protected void buildRecipes(RecipeOutput recipeConsumer) {
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, BlockSetup.ash_block.get())
                 .requires(ItemSetup.ash_pile.get(), 9)

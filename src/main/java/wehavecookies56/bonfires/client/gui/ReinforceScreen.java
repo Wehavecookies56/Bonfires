@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -73,9 +74,9 @@ public class ReinforceScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-        scrollBar.mouseScrolled(mouseX, mouseY, scrollDelta);
-        return super.mouseScrolled(mouseX, mouseY, scrollDelta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+        scrollBar.mouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+        return super.mouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
     }
 
     public void updateButtons() {
@@ -134,12 +135,14 @@ public class ReinforceScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         Window window = mc.getWindow();
         int centerX = (window.getGuiScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
         guiGraphics.blit(texture, centerX, centerY, 0, 0, texWidth, texHeight);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        for(Renderable renderable : this.renderables) {
+            renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
+        }
         int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.top);
         int listHeight = (36 * reinforceableItems.size());
         if (scrollBarHeight >= listHeight) {

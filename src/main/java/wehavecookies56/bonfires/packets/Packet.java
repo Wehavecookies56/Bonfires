@@ -1,9 +1,7 @@
 package wehavecookies56.bonfires.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public abstract class Packet<T extends Packet<T>> {
 
@@ -15,11 +13,10 @@ public abstract class Packet<T extends Packet<T>> {
 
     public abstract void decode(FriendlyByteBuf buffer);
     public abstract void encode(FriendlyByteBuf buffer);
-    public final void handle(Supplier<NetworkEvent.Context> contextSup) {
-        NetworkEvent.Context context = contextSup.get();
+    public final void handlePacket(CustomPayloadEvent.Context context) {
         context.enqueueWork(() -> handle(context));
         context.setPacketHandled(true);
     }
 
-    public abstract void handle(NetworkEvent.Context context);
+    protected abstract void handle(CustomPayloadEvent.Context context);
 }

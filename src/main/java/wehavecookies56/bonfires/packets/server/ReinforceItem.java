@@ -2,7 +2,7 @@ package wehavecookies56.bonfires.packets.server;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -33,7 +33,7 @@ public class ReinforceItem extends Packet<ReinforceItem> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         if (BonfiresConfig.Common.enableReinforcing) {
             ItemStack toReinforce = context.getSender().getInventory().getItem(slot);
             ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);

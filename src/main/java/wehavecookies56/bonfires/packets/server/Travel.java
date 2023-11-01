@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
@@ -50,7 +50,7 @@ public class Travel extends Packet<Travel> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         ServerPlayer player = context.getSender();
         BlockPos pos = new BlockPos(x, y, z);
         BonfireTeleporter.travelToBonfire(player, pos, dim);

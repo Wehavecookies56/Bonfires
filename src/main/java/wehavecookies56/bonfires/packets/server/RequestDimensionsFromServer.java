@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires.packets.server;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -23,7 +23,7 @@ public class RequestDimensionsFromServer extends Packet<RequestDimensionsFromSer
     public void encode(FriendlyByteBuf buffer) {}
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(context.getSender().server).getRegistry().getBonfires()), context.getSender());
         PacketHandler.sendTo(new SendBonfiresToClient(), context.getSender());
     }

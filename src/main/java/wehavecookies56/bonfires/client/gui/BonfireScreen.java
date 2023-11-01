@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.language.I18n;
@@ -190,7 +191,7 @@ public class BonfireScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!ScreenshotUtils.isTimerStarted()) {
-            renderBackground(guiGraphics);
+            renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
             guiGraphics.setColor(1, 1, 1, 1);
             Font font = Minecraft.getInstance().font;
             if (travelOpen) {
@@ -207,9 +208,13 @@ public class BonfireScreen extends Screen {
 
                 if (bonfireSelected >= BONFIRE1) {
                     drawSelectedBonfire(guiGraphics, mouseX, mouseY, partialTicks);
-                    super.render(guiGraphics, mouseX, mouseY, partialTicks);
+                    for(Renderable renderable : this.renderables) {
+                        renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
+                    }
                 } else {
-                    super.render(guiGraphics, mouseX, mouseY, partialTicks);
+                    for(Renderable renderable : this.renderables) {
+                        renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
+                    }
                 }
                 if (selectedInstance != null) {
                     int nameX = (width / 2) - 10 + 12;
@@ -247,7 +252,9 @@ public class BonfireScreen extends Screen {
             } else {
                 int tex_width = 90;
                 guiGraphics.blit(MENU, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
-                super.render(guiGraphics, mouseX, mouseY, partialTicks);
+                for(Renderable renderable : this.renderables) {
+                    renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
+                }
                 String name = "";
                 Bonfire currentBonfire = registry.getBonfire(bonfire.getID());
                 if (currentBonfire != null) {

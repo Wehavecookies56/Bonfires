@@ -19,7 +19,7 @@ public class CommonSetup {
         EstusHandler.init();
         ReinforceHandler.init();
         BonfireHandler.init();
-        BonfireLitTrigger.TRIGGER_BONFIRE_LIT = CriteriaTriggers.register(new BonfireLitTrigger());
+        BonfireLitTrigger.TRIGGER_BONFIRE_LIT = CriteriaTriggers.register(BonfireLitTrigger.ID.toString(), new BonfireLitTrigger());
     }
 
 }

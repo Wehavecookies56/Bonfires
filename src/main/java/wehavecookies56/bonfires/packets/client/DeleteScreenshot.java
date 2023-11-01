@@ -2,8 +2,8 @@ package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
@@ -36,7 +36,7 @@ public class DeleteScreenshot extends Packet<DeleteScreenshot> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.deleteScreenshot(uuid, name));
     }
 }

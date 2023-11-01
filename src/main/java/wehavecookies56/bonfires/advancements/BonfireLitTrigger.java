@@ -7,13 +7,11 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.critereon.DeserializationContext;
-import net.minecraft.advancements.critereon.SerializationContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 import wehavecookies56.bonfires.Bonfires;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,14 +20,8 @@ public class BonfireLitTrigger implements CriterionTrigger<BonfireLitTrigger.Ins
 
     public static BonfireLitTrigger TRIGGER_BONFIRE_LIT;
 
-    private static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "bonfire_lit");
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "bonfire_lit");
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.newHashMap();
-
-    @Override
-    @Nonnull
-    public ResourceLocation getId() {
-        return ID;
-    }
 
     @Override
     public void addPlayerListener(PlayerAdvancements pPlayerAdvancements, Listener<Instance> pListener) {
@@ -58,8 +50,6 @@ public class BonfireLitTrigger implements CriterionTrigger<BonfireLitTrigger.Ins
         this.listeners.remove(pPlayerAdvancements);
     }
 
-
-
     @Override
     public Instance createInstance(JsonObject pObject, DeserializationContext pConditions) {
         return new BonfireLitTrigger.Instance();
@@ -73,14 +63,8 @@ public class BonfireLitTrigger implements CriterionTrigger<BonfireLitTrigger.Ins
     }
 
     static class Instance implements CriterionTriggerInstance {
-
         @Override
-        public ResourceLocation getCriterion() {
-            return BonfireLitTrigger.ID;
-        }
-
-        @Override
-        public JsonObject serializeToJson(SerializationContext pContext) {
+        public JsonObject serializeToJson() {
             return new JsonObject();
         }
     }
