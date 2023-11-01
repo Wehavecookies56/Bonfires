@@ -53,7 +53,7 @@ public class ReinforceItemButton extends Button {
                 crashreportcategory.setDetail("Item Type", () -> {
                     return String.valueOf((Object)istack.getItem());
                 });
-                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(istack.getItem())));
+                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getKey(istack.getItem())));
                 crashreportcategory.setDetail("Item Damage", () -> {
                     return String.valueOf(istack.getDamageValue());
                 });

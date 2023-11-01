@@ -210,8 +210,7 @@ public class BonfireScreen extends Screen {
                     drawSelectedBonfire(guiGraphics, mouseX, mouseY, partialTicks);
                     for(Renderable renderable : this.renderables) {
                         renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
-                    }
-                } else {
+                    }                } else {
                     for(Renderable renderable : this.renderables) {
                         renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
                     }

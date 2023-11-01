@@ -3,13 +3,11 @@ package wehavecookies56.bonfires.client;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
+import net.neoforged.neoforge.event.TickEvent;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
@@ -100,15 +98,4 @@ public class ScreenshotUtils {
     public static void renderOverlays(RenderGuiOverlayEvent.Pre event) {
         event.setCanceled(timerStarted);
     }
-
-    @SubscribeEvent
-    public static void renderHand(RenderHandEvent event) {
-        //event.setCanceled(timerStarted);
-    }
-
-    @SubscribeEvent
-    public static void renderHitBoxes(RenderHighlightEvent event){
-        //event.setCanceled(timerStarted);
-    }
-
 }

@@ -11,7 +11,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.world.BonfireTeleporter;

@@ -142,8 +142,7 @@ public class ReinforceScreen extends Screen {
         guiGraphics.blit(texture, centerX, centerY, 0, 0, texWidth, texHeight);
         for(Renderable renderable : this.renderables) {
             renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
-        }
-        int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.top);
+        }        int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.top);
         int listHeight = (36 * reinforceableItems.size());
         if (scrollBarHeight >= listHeight) {
             scrollBar.visible = false;

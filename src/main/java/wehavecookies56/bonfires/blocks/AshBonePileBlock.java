@@ -38,7 +38,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;

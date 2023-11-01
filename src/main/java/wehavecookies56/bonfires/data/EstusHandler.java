@@ -5,13 +5,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.capabilities.*;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import wehavecookies56.bonfires.Bonfires;
 
 import javax.annotation.Nonnull;
@@ -25,11 +25,8 @@ import java.util.UUID;
 public class EstusHandler {
 
     public static void init() {
-        MinecraftForge.EVENT_BUS.register(new EstusHandler());
+        NeoForge.EVENT_BUS.register(new EstusHandler());
     }
-
-    @SubscribeEvent
-    public static void register(RegisterCapabilitiesEvent event) {}
 
     @SubscribeEvent
     public void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {

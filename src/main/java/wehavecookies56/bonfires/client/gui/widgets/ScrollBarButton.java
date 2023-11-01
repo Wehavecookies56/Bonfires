@@ -91,6 +91,4 @@ public class ScrollBarButton extends Button {
         return super.mouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
     }
 
-
-
 }

@@ -1,9 +1,9 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.neoforge.network.NetworkEvent;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
@@ -43,7 +43,7 @@ public class DisplayTitle extends Packet<DisplayTitle> {
     }
 
     @Override
-    public void handle(CustomPayloadEvent.Context context) {
+    public void handle(NetworkEvent.Context context) {
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.displayTitle(this));
     }
 }

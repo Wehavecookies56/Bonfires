@@ -2,22 +2,25 @@ package wehavecookies56.bonfires.datagen;
 
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
+
+import java.util.concurrent.CompletableFuture;
 
 public class Recipes extends RecipeProvider {
 
     DataGenerator generator;
 
-    public Recipes(DataGenerator generator) {
-        super(generator.getPackOutput());
+    public Recipes(DataGenerator generator, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(generator.getPackOutput(), lookupProvider);
         this.generator = generator;
     }
 

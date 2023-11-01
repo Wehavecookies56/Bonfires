@@ -50,6 +50,8 @@ public class BonfireLitTrigger implements CriterionTrigger<BonfireLitTrigger.Ins
         this.listeners.remove(pPlayerAdvancements);
     }
 
+
+
     @Override
     public Instance createInstance(JsonObject pObject, DeserializationContext pConditions) {
         return new BonfireLitTrigger.Instance();
@@ -63,6 +65,7 @@ public class BonfireLitTrigger implements CriterionTrigger<BonfireLitTrigger.Ins
     }
 
     static class Instance implements CriterionTriggerInstance {
+
         @Override
         public JsonObject serializeToJson() {
             return new JsonObject();

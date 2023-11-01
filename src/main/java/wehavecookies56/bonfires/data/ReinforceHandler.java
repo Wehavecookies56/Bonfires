@@ -1,16 +1,13 @@
 package wehavecookies56.bonfires.data;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
@@ -21,11 +18,6 @@ import wehavecookies56.bonfires.setup.ItemSetup;
  */
 
 public class ReinforceHandler {
-
-    public static void init() {
-        MinecraftForge.EVENT_BUS.register(new ReinforceHandler());
-    }
-
     public static boolean canReinforce(ItemStack stack) {
         Item i = stack.getItem();
         for (String s : BonfiresConfig.Common.reinforceBlacklist) {
