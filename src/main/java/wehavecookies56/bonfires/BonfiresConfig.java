@@ -35,6 +35,9 @@ public class BonfiresConfig {
         public static boolean deleteScreenshotsOnDestroyed = true;
         public final ForgeConfigSpec.ConfigValue<Boolean> deleteScreenshotsOnDestroyedConfig;
 
+        public static List<String> hiddenDimensions = new ArrayList<>();
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> hiddenDimensionsConfig;
+
         public Client(ForgeConfigSpec.Builder builder) {
             this.renderTextAboveBonfireConfig = builder.comment("Whether to Render the name of the Bonfire above the Bonfire, default:true").define("Render Text Above Bonfire", renderTextAboveBonfire);
             this.tabIconsConfig = builder.comment("Set the icons to display for the dimension tabs in the Bonfire GUI, mod:dimensionname=mod:itemname").defineList("Bonfire Dimension Tab Icons", tabIcons, input -> validateIcon((String) input));
@@ -42,6 +45,7 @@ public class BonfiresConfig {
             this.enableAutomaticScreenshotOnCreationConfig = builder.comment("Enables creating a screenshot of a Bonfire when it is created, default:true").define("Enable Automatic Screenshot on Creation", enableAutomaticScreenshotOnCreation);
             this.screenshotWaitTicksConfig = builder.comment("Set the number of ticks to wait to take a screenshot increase this if you are seeing the HUD and GUI in the screenshots, default:5").defineInRange("Screenshot Wait Ticks", screenshotWaitTicks, 1, 100);
             this.deleteScreenshotsOnDestroyedConfig = builder.comment("Whether to delete Bonfire screenshots when the Bonfire is destroyed, default:true").define("Delete Screenshots on Destroyed", deleteScreenshotsOnDestroyed);
+            this.hiddenDimensionsConfig = builder.comment("List of dimensions to hide from the Bonfire GUI useful if you can't place a bonfire in the dimension, mod:dimensionname").defineList("Hidden Dimensions in GUI", hiddenDimensions, input -> ((String)input).contains(":"));
         }
 
         public boolean validateIcon(String input) {
@@ -126,6 +130,7 @@ public class BonfiresConfig {
             Client.enableAutomaticScreenshotOnCreation = CLIENT.enableAutomaticScreenshotOnCreationConfig.get();
             Client.screenshotWaitTicks = CLIENT.screenshotWaitTicksConfig.get();
             Client.deleteScreenshotsOnDestroyed = CLIENT.deleteScreenshotsOnDestroyedConfig.get();
+            Client.hiddenDimensions = (List<String>) CLIENT.hiddenDimensionsConfig.get();
         } else if (event.getConfig().getSpec() == COMMON_SPEC) {
             Common.enableReinforcing = COMMON.enableReinforcingConfig.get();
             Common.enableUBSBonfire = COMMON.enableUBSBonfireConfig.get();

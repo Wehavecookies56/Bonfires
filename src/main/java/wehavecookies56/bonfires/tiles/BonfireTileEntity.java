@@ -31,6 +31,9 @@ public class BonfireTileEntity extends BlockEntity {
     private boolean lit = false;
     private UUID id = UUID.randomUUID();
 
+    private boolean unlitPrivate = false;
+    private String unlitName;
+
     public enum BonfireType {
         BONFIRE, PRIMAL, NONE
     }
@@ -50,6 +53,11 @@ public class BonfireTileEntity extends BlockEntity {
         type = BonfireType.values()[compound.getInt("type")];
         lit = compound.getBoolean("lit");
         id = compound.getUUID("bonfire_id");
+        if (compound.contains("unlit")) {
+            CompoundTag unlit = compound.getCompound("unlit");
+            setNameInternal(unlit.getString("name"));
+            unlitPrivate = unlit.getBoolean("private");
+        }
     }
 
     @Override
@@ -58,12 +66,19 @@ public class BonfireTileEntity extends BlockEntity {
         compound.putInt("type", type.ordinal());
         compound.putBoolean("lit", lit);
         compound.putUUID("bonfire_id", id);
+        if (unlitName != null && !unlitName.isEmpty()) {
+            CompoundTag unlit = new CompoundTag();
+            unlit.putString("name", unlitName);
+            unlit.putBoolean("private", unlitPrivate);
+            compound.put("unlit", unlit);
+        }
         super.saveAdditional(compound);
     }
 
-    public void createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
+    public Bonfire createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
         Bonfire bonfire = new Bonfire(name, id, owner, this.getBlockPos(), this.level.dimension(), isPublic, Instant.now());
         BonfireHandler.getServerHandler(level.getServer()).addBonfire(bonfire);
+        return bonfire;
     }
 
     public void destroyBonfire(UUID id) {
@@ -104,6 +119,32 @@ public class BonfireTileEntity extends BlockEntity {
     public void setID(UUID id) {
         this.id = id;
         setChanged();
+    }
+
+    private void setNameInternal(String name) {
+        this.unlitName = name.substring(0, Math.min(name.length(), 14));
+    }
+
+    public void setUnlitName(String name) {
+        setNameInternal(name);
+        setChanged();
+    }
+
+    public String getUnlitName() {
+        return unlitName;
+    }
+
+    public void setUnlitPrivate(boolean unlitPrivate) {
+        this.unlitPrivate = unlitPrivate;
+        setChanged();
+    }
+
+    public boolean isUnlitPrivate() {
+        return unlitPrivate;
+    }
+
+    public boolean hasUnlitName() {
+        return unlitName != null && !unlitName.isEmpty();
     }
 
     @Override

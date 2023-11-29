@@ -105,7 +105,7 @@ public class Bonfires {
     @SubscribeEvent
     public void attackEntity(AttackEntityEvent event) {
         Player player = event.getPlayer();
-        if (player.getAttackStrengthScale(0) == 1.0F) {
+        if (player.getAttackStrengthScale(0) == 1.0F && player.getMainHandItem().getItem() == ItemSetup.coiled_sword.get()) {
             player.level.playSound(null, player, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
             event.getTarget().setSecondsOnFire(3);
         }
