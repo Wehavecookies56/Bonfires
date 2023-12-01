@@ -52,6 +52,7 @@ public class LocalStrings {
 
             TOOLTIP_ESTUS_HEAL = "tooltip.bonfires.estus.heal",
             TOOLTIP_REINFORCE = "tooltip.bonfires.reinforce",
+            TOOLTIP_UNLIT = "tooltip.bonfires.unlit",
 
             TILEENTITY_BONFIRE_LABEL = "tileentity.bonfires.bonfire.label",
 
