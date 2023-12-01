@@ -23,6 +23,14 @@ public class BonfireRegistry {
         bonfires = new HashMap<>();
     }
 
+    public BonfireRegistry getFilteredRegistry(List<UUID> filter) {
+        BonfireRegistry registry = new BonfireRegistry();
+        Map<UUID, Bonfire> bonfires = this.getBonfires();
+        filter.forEach(bonfires::remove);
+        registry.setBonfires(bonfires);
+        return registry;
+    }
+
     public Map<UUID, Bonfire> getBonfires() {
         return bonfires;
     }

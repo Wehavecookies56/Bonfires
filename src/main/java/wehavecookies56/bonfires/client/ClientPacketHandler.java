@@ -33,7 +33,7 @@ public class ClientPacketHandler {
         return new DistExecutor.SafeRunnable() {
             @Override
             public void run() {
-                Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions, packet.registry, packet.canReinforce));
+                Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.registry, packet.canReinforce));
             }
         };
     }
@@ -44,7 +44,7 @@ public class ClientPacketHandler {
             public void run() {
                 if (Minecraft.getInstance().screen != null) {
                     if (Minecraft.getInstance().screen instanceof BonfireScreen gui) {
-                        gui.updateDimensionsFromServer(packet.registry, packet.dimensions);
+                        gui.updateDimensionsFromServer(packet.registry, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList());
                     }
                 }
             }
