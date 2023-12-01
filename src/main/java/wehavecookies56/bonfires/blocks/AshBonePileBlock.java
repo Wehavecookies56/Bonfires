@@ -4,6 +4,9 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -16,6 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -40,18 +44,21 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import wehavecookies56.bonfires.BonfiresConfig;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.*;
+import wehavecookies56.bonfires.packets.server.LightBonfire;
 import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -106,15 +113,24 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                 if (!te.isLit()) {
                     if (!world.isClientSide) {
                         if (BonfireHandler.getServerHandler(world.getServer()).getRegistry().getBonfire(te.getID()) == null) {
-                            PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayer) player);
-                            world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+                            if (!te.hasUnlitName()) {
+                                PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayer) player);
+                                world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+                            }
                             return InteractionResult.SUCCESS;
                         }
                     } else {
+                        if (te.hasUnlitName()) {
+                            PacketHandler.sendToServer(new LightBonfire(te.getUnlitName(), te, !te.isUnlitPrivate(), BonfiresConfig.Client.enableAutomaticScreenshotOnCreation));
+                        }
                         return InteractionResult.SUCCESS;
                     }
                 } else {
                     if (!world.isClientSide) {
+                        if (te.hasUnlitName()) {
+                            te.setUnlitName("");
+                            return InteractionResult.SUCCESS;
+                        }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
                             GameProfile profile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner()).get();
@@ -132,17 +148,13 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                             ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                             EstusHandler.getHandler(player).setLastRested(te.getID());
                             PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), (ServerPlayer) player);
-                            world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
-                            return InteractionResult.SUCCESS;
                         } else {
                             //Bonfire lit but not in data, so should not be lit
                             te.setLit(false);
-                            world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
-                            return InteractionResult.SUCCESS;
                         }
-                    } else {
-                        return InteractionResult.SUCCESS;
+                        world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
                     }
+                    return InteractionResult.SUCCESS;
                 }
             } else {
                 if (player.getItemInHand(hand) != ItemStack.EMPTY) {
@@ -157,6 +169,24 @@ public class AshBonePileBlock extends Block implements EntityBlock {
             }
         }
         return super.use(state, world, pos, player, hand, hit);
+    }
+
+    @Override
+    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @org.jetbrains.annotations.Nullable LivingEntity pPlacer, ItemStack pStack) {
+        CompoundTag compoundtag = pStack.getTag();
+        if (compoundtag != null && compoundtag.contains("bonfire_private")) {
+            pLevel.setBlock(pPos, pState, 2);
+            BonfireTileEntity te = new BonfireTileEntity(pPos, pState);
+            te.setBonfire(true);
+            te.setLit(false);
+            te.setBonfireType(BonfireTileEntity.BonfireType.BONFIRE);
+            if (compoundtag.contains("bonfire_name")) {
+                te.setUnlitName(compoundtag.getString("bonfire_name"));
+                te.setUnlitPrivate(compoundtag.getBoolean("bonfire_private"));
+            }
+            pLevel.setBlockEntity(te);
+        }
+        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
     }
 
     public void placeItem(Level world, BonfireTileEntity te, BlockPos pos, Player player, InteractionHand hand, BonfireTileEntity.BonfireType type) {
@@ -282,5 +312,23 @@ public class AshBonePileBlock extends Block implements EntityBlock {
         return EntitySetup.BONFIRE.get().create(pPos, pState);
     }
 
-
+    @Override
+    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
+        super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
+        if(pStack.getTag() != null) {
+            CompoundTag tag = pStack.getTag();
+            if (tag.contains("bonfire_private")) {
+                MutableComponent text = Component.translatable(LocalStrings.TOOLTIP_UNLIT);
+                if (tag.contains("bonfire_name")) {
+                    text.append(" ");
+                    text.append(Component.translatable(tag.getString("bonfire_name")));
+                }
+                if (tag.getBoolean("bonfire_private")) {
+                    text.append(" ");
+                    text.append(Component.translatable(LocalStrings.TEXT_PRIVATE));
+                }
+                pTooltip.add(text);
+            }
+        }
+    }
 }
