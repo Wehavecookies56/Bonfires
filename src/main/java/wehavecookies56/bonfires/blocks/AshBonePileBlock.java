@@ -234,12 +234,10 @@ public class AshBonePileBlock extends Block implements EntityBlock {
             stack.getTag().putBoolean("bonfire_private", true);
             int[] random = new Random().ints(2,0, 9999).toArray();
             stack.getTag().putString("bonfire_name", "Bonfire" + random[0]);
-            stack.setHoverName(new TranslatableComponent(LocalStrings.TOOLTIP_UNLIT).append(new TranslatableComponent(" \"Bonfire%s\" ", random[0])).append(new TranslatableComponent(LocalStrings.TEXT_PRIVATE)));
             items.add(stack);
             stack = stack.copy();
             stack.getTag().putBoolean("bonfire_private", false);
             stack.getTag().putString("bonfire_name", "Bonfire" + random[1]);
-            stack.setHoverName(new TranslatableComponent(LocalStrings.TOOLTIP_UNLIT).append(new TranslatableComponent(" \"Bonfire%s\" ", random[1])));
             items.add(stack);
         }
 
@@ -352,7 +350,16 @@ public class AshBonePileBlock extends Block implements EntityBlock {
         if(pStack.getTag() != null) {
             CompoundTag tag = pStack.getTag();
             if (tag.contains("bonfire_private")) {
-
+                TranslatableComponent text = new TranslatableComponent(LocalStrings.TOOLTIP_UNLIT);
+                if (tag.contains("bonfire_name")) {
+                    text.append(" ");
+                    text.append(new TranslatableComponent(tag.getString("bonfire_name")));
+                }
+                if (tag.getBoolean("bonfire_private")) {
+                    text.append(" ");
+                    text.append(new TranslatableComponent(LocalStrings.TEXT_PRIVATE));
+                }
+                pTooltip.add(text);
             }
         }
     }
