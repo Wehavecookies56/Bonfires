@@ -8,7 +8,10 @@ import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.RegistryObject;
+import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
+
+import java.util.Random;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -34,6 +37,22 @@ public class BonfiresGroup {
                             }
                             pOutput.accept(stack);
                         }
+                        ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile.get());
+                        stack.setTag(new CompoundTag());
+                        if (stack.getTag() != null) {
+                            stack.getTag().putBoolean("bonfire_private", false);
+                        }
+                        stack.setHoverName(Component.translatable(LocalStrings.TOOLTIP_UNLIT));
+                        pOutput.accept(stack);
+                        stack = stack.copy();
+                        stack.getTag().putBoolean("bonfire_private", true);
+                        int[] random = new Random().ints(2,0, 9999).toArray();
+                        stack.getTag().putString("bonfire_name", "Bonfire" + random[0]);
+                        pOutput.accept(stack);
+                        stack = stack.copy();
+                        stack.getTag().putBoolean("bonfire_private", false);
+                        stack.getTag().putString("bonfire_name", "Bonfire" + random[1]);
+                        pOutput.accept(stack);
                     });
         });
     }
