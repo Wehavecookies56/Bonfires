@@ -5,7 +5,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.DistExecutor;
 import org.apache.commons.lang3.text.WordUtils;
@@ -34,7 +33,7 @@ public class ClientPacketHandler {
         return new DistExecutor.SafeRunnable() {
             @Override
             public void run() {
-                Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions, packet.registry, packet.canReinforce));
+                Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.registry, packet.canReinforce));
             }
         };
     }
@@ -45,7 +44,7 @@ public class ClientPacketHandler {
             public void run() {
                 if (Minecraft.getInstance().screen != null) {
                     if (Minecraft.getInstance().screen instanceof BonfireScreen gui) {
-                        gui.updateDimensionsFromServer(packet.registry, packet.dimensions);
+                        gui.updateDimensionsFromServer(packet.registry, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList());
                     }
                 }
             }
