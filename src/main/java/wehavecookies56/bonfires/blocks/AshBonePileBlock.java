@@ -133,7 +133,13 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
-                            GameProfile profile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner()).get();
+                            GameProfile profile;
+                            Optional<GameProfile> cachedProfile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner());
+                            if (cachedProfile.isPresent()) {
+                                profile = cachedProfile.get();
+                            } else {
+                                profile = new GameProfile(registry.getBonfire(te.getID()).getOwner(), "Unknown");
+                            }
                             for (int i = 0; i < player.getInventory().items.size(); i++) {
                                 if (!ItemStack.isSameItem(player.getInventory().getItem(i), ItemStack.EMPTY)) {
                                     if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {

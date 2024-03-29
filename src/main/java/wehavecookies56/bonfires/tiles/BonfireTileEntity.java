@@ -6,7 +6,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -53,20 +52,6 @@ public class BonfireTileEntity extends BlockEntity {
                 }
             }
         }
-    }
-
-    public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {
-        /*
-        BonfireTileEntity te = (BonfireTileEntity) t;
-        if (te.bonfireInstance == null) {
-            if (level != null) {
-                if (!level.isClientSide) {
-                    te.bonfireInstance = BonfireHandler.getServerHandler(level.getServer()).getRegistry().getBonfire(te.id);
-                }
-            }
-        }
-
-         */
     }
 
     @Override

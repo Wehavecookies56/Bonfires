@@ -159,23 +159,25 @@ public class BonfireRegistry {
 
     public void readFromNBT(CompoundTag tagCompound, Map<UUID, Bonfire> bonfires) {
         for (String key : tagCompound.getAllKeys()) {
-            CompoundTag compound = tagCompound.getCompound(key);
-            String name = compound.getString("NAME");
-            UUID id = compound.getUUID("ID");
-            UUID owner = compound.getUUID("OWNER");
-            BlockPos pos = new BlockPos((int) compound.getDouble("POSX"), (int) compound.getDouble("POSY"), (int) compound.getDouble("POSZ"));
-            ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("DIM")));
-            boolean isPublic = compound.getBoolean("PUBLIC");
-            Instant time;
-            if (compound.contains("TIME", Tag.TAG_COMPOUND)) {
-                CompoundTag timeCompound = compound.getCompound("TIME");
-                time = Instant.ofEpochSecond(timeCompound.getLong("SECOND"), timeCompound.getInt("NANO"));
-            } else {
-                time = Instant.now();
-            }
-            Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic, time);
-            if (getBonfireAtPos(pos, dimension) == null) {
-                bonfires.put(id, bonfire);
+            if (!key.equals("loaded_old_data")) {
+                CompoundTag compound = tagCompound.getCompound(key);
+                String name = compound.getString("NAME");
+                UUID id = compound.getUUID("ID");
+                UUID owner = compound.getUUID("OWNER");
+                BlockPos pos = new BlockPos((int) compound.getDouble("POSX"), (int) compound.getDouble("POSY"), (int) compound.getDouble("POSZ"));
+                ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("DIM")));
+                boolean isPublic = compound.getBoolean("PUBLIC");
+                Instant time;
+                if (compound.contains("TIME", Tag.TAG_COMPOUND)) {
+                    CompoundTag timeCompound = compound.getCompound("TIME");
+                    time = Instant.ofEpochSecond(timeCompound.getLong("SECOND"), timeCompound.getInt("NANO"));
+                } else {
+                    time = Instant.now();
+                }
+                Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic, time);
+                if (getBonfireAtPos(pos, dimension) == null) {
+                    bonfires.put(id, bonfire);
+                }
             }
         }
     }
