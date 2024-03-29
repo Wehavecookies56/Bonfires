@@ -1,7 +1,9 @@
 package wehavecookies56.bonfires.items;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
@@ -23,6 +25,20 @@ public class EstusFlaskItem extends Item {
 
     public EstusFlaskItem() {
         super(new Properties().stacksTo(1).food(new FoodProperties.Builder().alwaysEat().nutrition(0).saturationMod(0).build()));
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int p_41407_, boolean p_41408_) {
+        if (stack.getTag() == null) {
+            stack.setTag(new CompoundTag());
+        }
+        if (!stack.getTag().contains("estus")) {
+            stack.getTag().putInt("estus", 3);
+        }
+        if (!stack.getTag().contains("uses")) {
+            stack.getTag().putInt("uses", 3);
+        }
+        super.inventoryTick(stack, level, entity, p_41407_, p_41408_);
     }
 
     @Override

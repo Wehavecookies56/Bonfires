@@ -233,7 +233,6 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         Bonfire destroyed = BonfireHandler.getServerHandler(server).getRegistry().getBonfire(te.getID());
                         te.destroyBonfire(te.getID());
                         BonfireHandler.getServerHandler(server).removeBonfire(te.getID());
-                        PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getServerHandler(server).getRegistry().getBonfires()));
                         PacketHandler.sendToAll(new SendBonfiresToClient());
                         PacketHandler.sendToAll(new DeleteScreenshot(te.getID(), destroyed.getName()));
                     }

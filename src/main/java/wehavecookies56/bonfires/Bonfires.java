@@ -12,22 +12,22 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.SyncEstusData;
-import wehavecookies56.bonfires.packets.client.SyncSaveData;
-import wehavecookies56.bonfires.setup.*;
+import wehavecookies56.bonfires.setup.BlockSetup;
+import wehavecookies56.bonfires.setup.CreativeTabSetup;
+import wehavecookies56.bonfires.setup.EntitySetup;
+import wehavecookies56.bonfires.setup.ItemSetup;
 
 import java.util.Random;
 
@@ -39,18 +39,21 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
 
-    public Bonfires() {
+    public Bonfires(IEventBus modEventBus) {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         BlockSetup.BLOCKS.register(modEventBus);
         ItemSetup.ITEMS.register(modEventBus);
         EntitySetup.TILE_ENTITIES.register(modEventBus);
         CreativeTabSetup.TABS.register(modEventBus);
+        EstusHandler.ATTACHMENT_TYPES.register(modEventBus);
+        BonfireLitTrigger.CRITERION_TRIGGERS.register(modEventBus);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, BonfiresConfig.CLIENT_SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BonfiresConfig.COMMON_SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, BonfiresConfig.SERVER_SPEC);
+        modEventBus.addListener(PacketHandler::register);
+
+        modLoadingContext.registerConfig(ModConfig.Type.CLIENT, BonfiresConfig.CLIENT_SPEC);
+        modLoadingContext.registerConfig(ModConfig.Type.COMMON, BonfiresConfig.COMMON_SPEC);
+        modLoadingContext.registerConfig(ModConfig.Type.SERVER, BonfiresConfig.SERVER_SPEC);
 
         NeoForge.EVENT_BUS.register(this);
     }
@@ -70,16 +73,8 @@ public class Bonfires {
     public void entityJoinWorld(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide) {
             if (event.getEntity() instanceof ServerPlayer player) {
-                PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry().getBonfires()), player);
                 PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void changeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.getEntity().level().isClientSide) {
-            PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getEntity().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
         }
     }
 

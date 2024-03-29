@@ -1,9 +1,10 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
@@ -16,6 +17,8 @@ import java.util.UUID;
  */
 public class SyncBonfire extends Packet<SyncBonfire> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "sync_bonfire");
+
     public boolean bonfire;
     public boolean lit;
     public UUID id;
@@ -26,7 +29,7 @@ public class SyncBonfire extends Packet<SyncBonfire> {
     public Instant time;
 
     public SyncBonfire(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     public SyncBonfire(boolean bonfire, BonfireTileEntity.BonfireType type, boolean lit, UUID id, BonfireTileEntity entityBonfire) {
@@ -52,7 +55,7 @@ public class SyncBonfire extends Packet<SyncBonfire> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeBoolean(bonfire);
         buffer.writeInt(type.ordinal());
         buffer.writeBoolean(lit);
@@ -64,7 +67,14 @@ public class SyncBonfire extends Packet<SyncBonfire> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.syncBonfire(this));
+    public void handle(PlayPayloadContext context) {
+        if (FMLEnvironment.dist.isClient()) {
+            ClientPacketHandler.syncBonfire(this);
+        }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

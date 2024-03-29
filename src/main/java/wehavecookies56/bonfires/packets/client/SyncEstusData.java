@@ -1,9 +1,10 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -12,16 +13,15 @@ import java.util.UUID;
 
 public class SyncEstusData extends Packet<SyncEstusData> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "sync_estus_data");
+
     public SyncEstusData(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     UUID lastRested;
-    int uses;
-
     public SyncEstusData(EstusHandler.IEstusHandler handler) {
         this.lastRested = handler.lastRested();
-        this.uses = handler.uses();
     }
 
     @Override
@@ -29,21 +29,25 @@ public class SyncEstusData extends Packet<SyncEstusData> {
         if (buffer.readBoolean()) {
             this.lastRested = buffer.readUUID();
         }
-        this.uses = buffer.readInt();
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeBoolean(this.lastRested != null);
         if (this.lastRested != null) {
             buffer.writeUUID(this.lastRested);
         }
-        buffer.writeInt(this.uses);
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.syncEstusData(this.lastRested, this.uses));
+    public void handle(PlayPayloadContext context) {
+        if (FMLEnvironment.dist.isClient()) {
+            ClientPacketHandler.syncEstusData(this.lastRested);
+        }
+    }
 
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

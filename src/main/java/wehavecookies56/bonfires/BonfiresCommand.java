@@ -64,7 +64,7 @@ public class BonfiresCommand {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         switch (filter) {
             case "all":
-                query = new ArrayList<>(BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfires().values());
+                query = new ArrayList<>(BonfireHandler.getServerHandler(server).getRegistry().getBonfires().values());
                 if (query.isEmpty()) {
                     context.getSource().sendSuccess(() -> Component.translatable(LocalStrings.COMMAND_NOMATCH, "all"), false);
                 } else {
@@ -77,7 +77,7 @@ public class BonfiresCommand {
                 if (input.contains(":")) {
                     ResourceKey<Level> dimensionKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(input));
                     if (ServerLifecycleHooks.getCurrentServer().levelKeys().contains(dimensionKey)) {
-                        query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresByDimension(dimensionKey.location());
+                        query = BonfireHandler.getServerHandler(server).getRegistry().getBonfiresByDimension(dimensionKey.location());
                         if (query.isEmpty()) {
                             context.getSource().sendSuccess(() -> Component.translatable(LocalStrings.COMMAND_DIM_NOMATCH, input), false);
                         } else {
@@ -93,7 +93,7 @@ public class BonfiresCommand {
                 break;
             case "name":
                 input = StringArgumentType.getString(context, "bonfirename");
-                query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresByName(input);
+                query = BonfireHandler.getServerHandler(server).getRegistry().getBonfiresByName(input);
                 if (query.isEmpty()) {
                     context.getSource().sendSuccess(() -> Component.translatable(LocalStrings.COMMAND_NOMATCH, input), false);
                 } else {
@@ -107,7 +107,7 @@ public class BonfiresCommand {
                 if (ownerProfile != null) {
                     UUID ownerID = ownerProfile.getId();
                     if (ownerID != null) {
-                        query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresByOwner(ownerID);
+                        query = BonfireHandler.getServerHandler(server).getRegistry().getBonfiresByOwner(ownerID);
                         if (query.isEmpty()) {
                             context.getSource().sendSuccess(() -> Component.translatable(LocalStrings.COMMAND_NOMATCH, input), false);
                         } else {
@@ -121,7 +121,7 @@ public class BonfiresCommand {
                 break;
             case "radius":
                 int radius = IntegerArgumentType.getInteger(context, "searchradius");
-                query = BonfireHandler.getHandler(context.getSource().getLevel()).getRegistry().getBonfiresInRadius(new BlockPos((int) context.getSource().getPosition().x, (int) context.getSource().getPosition().y, (int) context.getSource().getPosition().z), radius, context.getSource().getLevel().dimension().location());
+                query = BonfireHandler.getServerHandler(server).getRegistry().getBonfiresInRadius(new BlockPos((int) context.getSource().getPosition().x, (int) context.getSource().getPosition().y, (int) context.getSource().getPosition().z), radius, context.getSource().getLevel().dimension().location());
                 if (query.isEmpty()) {
                     context.getSource().sendSuccess(() -> Component.translatable(LocalStrings.COMMAND_RADIUS_NOMATCH, radius), false);
                 } else {

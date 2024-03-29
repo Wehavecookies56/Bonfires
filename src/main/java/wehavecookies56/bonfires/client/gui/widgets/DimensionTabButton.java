@@ -2,6 +2,7 @@ package wehavecookies56.bonfires.client.gui.widgets;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -9,7 +10,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
@@ -43,8 +43,8 @@ public class DimensionTabButton extends Button {
                     String dimID = split[0];
                     String item = split[1];
                     if (dimID.equals(dimension.location().toString())) {
-                        if (ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item))) {
-                            return icon = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
+                        if (BuiltInRegistries.ITEM.containsKey(new ResourceLocation(item))) {
+                            return icon = BuiltInRegistries.ITEM.get(new ResourceLocation(item));
                         } else {
                             return icon;
                         }
@@ -77,7 +77,7 @@ public class DimensionTabButton extends Button {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             int tab_width = 28;
             int tab_height = 30;

@@ -9,7 +9,7 @@
 		"description": {
 			"translate": "advancements.bonfires.bonfire_lit.desc"
 		},
-		"frame": "goal"
+		"frame": "challenge"
 	},
 	"parent": "bonfires:bonfires/ash_bone_pile",
 	"criteria": {

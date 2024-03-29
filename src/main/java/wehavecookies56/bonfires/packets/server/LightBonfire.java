@@ -2,17 +2,20 @@ package wehavecookies56.bonfires.packets.server;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
-import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
-import wehavecookies56.bonfires.packets.client.*;
+import wehavecookies56.bonfires.packets.client.DisplayTitle;
+import wehavecookies56.bonfires.packets.client.QueueBonfireScreenshot;
+import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
+import wehavecookies56.bonfires.packets.client.SyncBonfire;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
@@ -22,12 +25,14 @@ import java.util.UUID;
  */
 public class LightBonfire extends Packet<LightBonfire> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "light_bonfire");
+
     private String name;
     private int x, y, z;
     private boolean isPublic, createScreenshot;
 
     public LightBonfire(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     public LightBonfire(String name, BonfireTileEntity bonfire, boolean isPublic, boolean createScreenshot) {
@@ -50,7 +55,7 @@ public class LightBonfire extends Packet<LightBonfire> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(name);
         buffer.writeInt(x);
         buffer.writeInt(y);
@@ -60,9 +65,9 @@ public class LightBonfire extends Packet<LightBonfire> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(PlayPayloadContext context) {
         BlockPos pos = new BlockPos(x, y, z);
-        ServerPlayer player = context.getSender();
+        ServerPlayer player = (ServerPlayer) context.player().get();
         if (player != null) {
             BonfireTileEntity te = (BonfireTileEntity) player.level().getBlockEntity(pos);
             if (te != null && !te.isLit()) {
@@ -73,9 +78,8 @@ public class LightBonfire extends Packet<LightBonfire> {
                 player.level().setBlock(pos, player.level().getBlockState(pos).setValue(AshBonePileBlock.LIT, true), 2);
                 player.setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
-                BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger(player);
+                ((BonfireLitTrigger)BonfireLitTrigger.TRIGGER_BONFIRE_LIT.get()).trigger(player);
                 PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
-                PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level()).getRegistry().getBonfires()));
                 PacketHandler.sendToAll(new SendBonfiresToClient());
                 if (createScreenshot) {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), player);
@@ -84,5 +88,10 @@ public class LightBonfire extends Packet<LightBonfire> {
                 Bonfires.LOGGER.info("Bonfire" + "'" + name + "'" + " lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayName().getString());
             }
         }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

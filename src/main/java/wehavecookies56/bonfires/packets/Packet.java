@@ -1,24 +1,11 @@
 package wehavecookies56.bonfires.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
-import java.util.function.Supplier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-public abstract class Packet<T extends Packet<T>> {
-
-    public Packet(FriendlyByteBuf buffer) {
-        decode(buffer);
-    }
-
-    public Packet() {}
+public abstract class Packet<T extends Packet<T>> implements CustomPacketPayload {
+    public abstract void handle(final PlayPayloadContext context);
 
     public abstract void decode(FriendlyByteBuf buffer);
-    public abstract void encode(FriendlyByteBuf buffer);
-    public final void handle(Supplier<NetworkEvent.Context> contextSup) {
-        NetworkEvent.Context context = contextSup.get();
-        context.enqueueWork(() -> handle(context));
-        context.setPacketHandled(true);
-    }
-
-    public abstract void handle(NetworkEvent.Context context);
 }

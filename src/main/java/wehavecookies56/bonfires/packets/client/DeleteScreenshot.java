@@ -1,9 +1,10 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
@@ -11,12 +12,14 @@ import java.util.UUID;
 
 public class DeleteScreenshot extends Packet<DeleteScreenshot> {
 
-    public DeleteScreenshot(FriendlyByteBuf buffer) {
-        super(buffer);
-    }
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "delete_screenshot");
 
     UUID uuid;
     String name;
+
+    public DeleteScreenshot(FriendlyByteBuf buffer) {
+        decode(buffer);
+    }
 
     public DeleteScreenshot(UUID uuid, String name) {
         this.uuid = uuid;
@@ -30,13 +33,20 @@ public class DeleteScreenshot extends Packet<DeleteScreenshot> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUUID(uuid);
         buffer.writeUtf(name);
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.deleteScreenshot(uuid, name));
+    public void handle(PlayPayloadContext context) {
+        if (FMLEnvironment.dist.isClient()) {
+            ClientPacketHandler.deleteScreenshot(uuid, name);
+        }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

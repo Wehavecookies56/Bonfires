@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -53,7 +54,7 @@ public class ReinforceItemButton extends Button {
                 crashreportcategory.setDetail("Item Type", () -> {
                     return String.valueOf((Object)istack.getItem());
                 });
-                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getKey(istack.getItem())));
+                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(BuiltInRegistries.ITEM.getKey(istack.getItem())));
                 crashreportcategory.setDetail("Item Damage", () -> {
                     return String.valueOf(istack.getDamageValue());
                 });
@@ -113,7 +114,7 @@ public class ReinforceItemButton extends Button {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
+    public void renderWidget(GuiGraphics guiGraphics, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
 
     }
 

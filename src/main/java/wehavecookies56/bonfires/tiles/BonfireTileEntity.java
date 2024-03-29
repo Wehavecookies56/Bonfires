@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -29,9 +30,10 @@ public class BonfireTileEntity extends BlockEntity {
     private boolean lit = false;
     private UUID id = UUID.randomUUID();
 
+    private Bonfire bonfireInstance;
+
     private boolean unlitPrivate = false;
     private String unlitName;
-
     public enum BonfireType {
         BONFIRE, PRIMAL, NONE
     }
@@ -42,7 +44,30 @@ public class BonfireTileEntity extends BlockEntity {
         super(EntitySetup.BONFIRE.get(), pos, state);
     }
 
+    @Override
+    public void onLoad() {
+        if (bonfireInstance == null) {
+            if (level != null) {
+                if (!level.isClientSide) {
+                    bonfireInstance = BonfireHandler.getServerHandler(level.getServer()).getRegistry().getBonfire(id);
+                }
+            }
+        }
+    }
 
+    public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {
+        /*
+        BonfireTileEntity te = (BonfireTileEntity) t;
+        if (te.bonfireInstance == null) {
+            if (level != null) {
+                if (!level.isClientSide) {
+                    te.bonfireInstance = BonfireHandler.getServerHandler(level.getServer()).getRegistry().getBonfire(te.id);
+                }
+            }
+        }
+
+         */
+    }
 
     @Override
     public void load(CompoundTag compound) {
@@ -55,6 +80,9 @@ public class BonfireTileEntity extends BlockEntity {
             CompoundTag unlit = compound.getCompound("unlit");
             setNameInternal(unlit.getString("name"));
             unlitPrivate = unlit.getBoolean("private");
+        }
+        if (lit && compound.contains("instance")) {
+            bonfireInstance = new Bonfire(compound.getCompound("instance"));
         }
     }
 
@@ -70,17 +98,24 @@ public class BonfireTileEntity extends BlockEntity {
             unlit.putBoolean("private", unlitPrivate);
             compound.put("unlit", unlit);
         }
+        if (lit && bonfireInstance != null) {
+            compound.put("instance", bonfireInstance.serializeNBT());
+        }
         super.saveAdditional(compound);
     }
+
+
 
     public Bonfire createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
         Bonfire bonfire = new Bonfire(name, id, owner, this.getBlockPos(), this.level.dimension(), isPublic, Instant.now());
         BonfireHandler.getServerHandler(level.getServer()).addBonfire(bonfire);
+        bonfireInstance = bonfire;
         return bonfire;
     }
 
     public void destroyBonfire(UUID id) {
-        BonfireHandler.getHandler(level).removeBonfire(id);
+        BonfireHandler.getServerHandler(level.getServer()).removeBonfire(id);
+        bonfireInstance = null;
     }
 
     public boolean isBonfire() {
@@ -171,7 +206,7 @@ public class BonfireTileEntity extends BlockEntity {
     public Component getDisplayName() {
         if (!Minecraft.getInstance().player.isCrouching()) {
             if (getID() != null && BonfiresConfig.Client.renderTextAboveBonfire) {
-                Bonfire bonfire = BonfireHandler.getHandler(Minecraft.getInstance().level).getRegistry().getBonfire(getID());
+                Bonfire bonfire = bonfireInstance;
                 if (bonfire != null) {
                     if (bonfire.isPublic()) {
                         return Component.translatable(bonfire.getName());

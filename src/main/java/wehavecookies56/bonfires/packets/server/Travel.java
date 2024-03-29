@@ -7,7 +7,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
@@ -17,13 +18,15 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
  */
 public class Travel extends Packet<Travel> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "travel");
+
     private int x;
     private int y;
     private int z;
     private ResourceKey<Level> dim;
 
     public Travel(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     public Travel(Bonfire bonfire) {
@@ -42,7 +45,7 @@ public class Travel extends Packet<Travel> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(x);
         buffer.writeInt(y);
         buffer.writeInt(z);
@@ -50,9 +53,14 @@ public class Travel extends Packet<Travel> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        ServerPlayer player = context.getSender();
+    public void handle(PlayPayloadContext context) {
+        ServerPlayer player = (ServerPlayer) context.player().get();
         BlockPos pos = new BlockPos(x, y, z);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

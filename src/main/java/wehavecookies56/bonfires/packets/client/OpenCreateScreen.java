@@ -3,17 +3,20 @@ package wehavecookies56.bonfires.packets.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 public class OpenCreateScreen extends Packet<OpenCreateScreen> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "open_create_screen");
+
     public OpenCreateScreen(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     BlockPos tePos;
@@ -28,13 +31,20 @@ public class OpenCreateScreen extends Packet<OpenCreateScreen> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(tePos);
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        BonfireTileEntity te = (BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(tePos);
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.openCreateScreen(te));
+    public void handle(PlayPayloadContext context) {
+        if (FMLEnvironment.dist.isClient()) {
+            BonfireTileEntity te = (BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(tePos);
+            ClientPacketHandler.openCreateScreen(te);
+        }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

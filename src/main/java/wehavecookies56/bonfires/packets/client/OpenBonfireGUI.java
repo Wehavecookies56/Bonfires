@@ -5,11 +5,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -20,6 +21,8 @@ import java.util.List;
 
 public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "open_bonfire_gui");
+
     public BlockPos tileEntity;
     public String ownerName;
     public BonfireRegistry registry;
@@ -27,7 +30,7 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     public boolean canReinforce;
 
     public OpenBonfireGUI(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     public OpenBonfireGUI(BonfireTileEntity bonfire, String ownerName, BonfireRegistry registry, boolean canReinforce) {
@@ -53,7 +56,7 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeBoolean(canReinforce);
         buffer.writeUtf(ownerName);
         buffer.writeBlockPos(tileEntity);
@@ -65,7 +68,14 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.openBonfire(this));
+    public void handle(PlayPayloadContext context) {
+        if (FMLEnvironment.dist.isClient()) {
+            ClientPacketHandler.openBonfire(this);
+        }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

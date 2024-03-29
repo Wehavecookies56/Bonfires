@@ -4,11 +4,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.BonfireHandler;
@@ -19,8 +20,10 @@ import java.util.List;
 
 public class SendBonfiresToClient extends Packet<SendBonfiresToClient> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "send_bonfires_to_client");
+
     public SendBonfiresToClient(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     public List<ResourceKey<Level>> dimensions;
@@ -43,7 +46,7 @@ public class SendBonfiresToClient extends Packet<SendBonfiresToClient> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeNbt(registry.writeToNBT(new CompoundTag(), registry.getBonfires()));
         buffer.writeVarInt(dimensions.size());
         for (int i = 0; i < dimensions.size(); ++i) {
@@ -52,7 +55,14 @@ public class SendBonfiresToClient extends Packet<SendBonfiresToClient> {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.setBonfiresFromServer(this));
+    public void handle(PlayPayloadContext context) {
+        if (FMLEnvironment.dist.isClient()) {
+            ClientPacketHandler.setBonfiresFromServer(this);
+        }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

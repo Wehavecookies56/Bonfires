@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.5'
+    id 'net.neoforged.gradle.userdev' version '7.0.97'
     id 'org.ajoberstar.grgit' version '1.7.2'
 }
 
@@ -37,11 +37,6 @@ runs {
     }
     client {
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-    }
-
-    client2 {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-        programArgument '--username Dev2'
     }
 
     server {

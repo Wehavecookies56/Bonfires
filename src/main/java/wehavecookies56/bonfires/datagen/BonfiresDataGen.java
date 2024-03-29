@@ -16,12 +16,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -32,7 +32,7 @@ public class BonfiresDataGen {
         DataGenerator generator = event.getGenerator();
         final ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(true, new Recipes(generator, event.getLookupProvider()));
+        generator.addProvider(true, new Recipes(generator));
         generator.addProvider(true, new LootTableProvider(generator.getPackOutput(), Collections.emptySet(), List.of(new LootTableProvider.SubProviderEntry(BonfiresBlockLoot::new, LootContextParamSets.BLOCK))));
     }
 
@@ -60,7 +60,7 @@ public class BonfiresDataGen {
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return BlockSetup.BLOCKS.getEntries().stream().map(RegistryObject::get).collect(Collectors.toList());
+            return BlockSetup.BLOCKS.getEntries().stream().map(Supplier::get).collect(Collectors.toList());
         }
     }
 }

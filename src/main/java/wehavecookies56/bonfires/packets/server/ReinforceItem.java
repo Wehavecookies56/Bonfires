@@ -1,8 +1,10 @@
 package wehavecookies56.bonfires.packets.server;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -12,10 +14,11 @@ import wehavecookies56.bonfires.packets.Packet;
  */
 public class ReinforceItem extends Packet<ReinforceItem> {
 
+    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "reinforce_item");
     private int slot;
 
     public ReinforceItem(FriendlyByteBuf buffer) {
-        super(buffer);
+        decode(buffer);
     }
 
     public ReinforceItem(int slot) {
@@ -28,21 +31,26 @@ public class ReinforceItem extends Packet<ReinforceItem> {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(slot);
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(PlayPayloadContext context) {
         if (BonfiresConfig.Common.enableReinforcing) {
-            ItemStack toReinforce = context.getSender().getInventory().getItem(slot);
+            ItemStack toReinforce = context.player().get().getInventory().getItem(slot);
             ItemStack required = ReinforceHandler.getRequiredResources(toReinforce);
             if (ReinforceHandler.canReinforce(toReinforce)) {
-                ReinforceHandler.removeRequiredItems(context.getSender(), required);
+                ReinforceHandler.removeRequiredItems(context.player().get(), required);
                 ReinforceHandler.levelUp(toReinforce);
                 toReinforce.getTag().putInt("Damage", 0);
-                context.getSender().getInventory().setItem(slot, toReinforce);
+                context.player().get().getInventory().setItem(slot, toReinforce);
             }
         }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

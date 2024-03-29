@@ -1,0 +1,10 @@
+{
+  "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
+  "promos": {
+    "1.20.4-latest": "1.2.16"
+  },
+
+  "1.20.4": {
+    "1.2.16": "Ported to NeoForge and Minecraft 1.20.4, fixed Advancement menu background texture",
+  }
+}
