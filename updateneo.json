@@ -5,6 +5,6 @@
   },
 
   "1.20.4": {
-    "1.2.16": "Ported to NeoForge and Minecraft 1.20.4, fixed Advancement menu background texture",
+    "1.2.16": "Ported to NeoForge and Minecraft 1.20.4, fixed advancements background"
   }
 }
