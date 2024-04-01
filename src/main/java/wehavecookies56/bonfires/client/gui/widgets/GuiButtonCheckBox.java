@@ -29,7 +29,7 @@ public class GuiButtonCheckBox extends AbstractButton {
     private final ResourceLocation TEXTURE = new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png");
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             guiGraphics.blit(TEXTURE, getX(), getY(), 0, 0, 10, 10);
             if (checked) {

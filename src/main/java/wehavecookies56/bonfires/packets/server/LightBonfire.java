@@ -8,11 +8,13 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
-import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
-import wehavecookies56.bonfires.packets.client.*;
+import wehavecookies56.bonfires.packets.client.DisplayTitle;
+import wehavecookies56.bonfires.packets.client.QueueBonfireScreenshot;
+import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
+import wehavecookies56.bonfires.packets.client.SyncBonfire;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
@@ -75,7 +77,6 @@ public class LightBonfire extends Packet<LightBonfire> {
                 EstusHandler.getHandler(player).setLastRested(te.getID());
                 BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger(player);
                 PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
-                PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level()).getRegistry().getBonfires()));
                 PacketHandler.sendToAll(new SendBonfiresToClient());
                 if (createScreenshot) {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), player);

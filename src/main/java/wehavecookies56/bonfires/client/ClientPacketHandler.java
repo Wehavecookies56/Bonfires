@@ -14,9 +14,11 @@ import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 import wehavecookies56.bonfires.client.gui.CreateBonfireScreen;
-import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
-import wehavecookies56.bonfires.packets.client.*;
+import wehavecookies56.bonfires.packets.client.DisplayTitle;
+import wehavecookies56.bonfires.packets.client.OpenBonfireGUI;
+import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
+import wehavecookies56.bonfires.packets.client.SyncBonfire;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.io.File;
@@ -92,22 +94,12 @@ public class ClientPacketHandler {
         };
     }
 
-    public static DistExecutor.SafeRunnable syncSaveData(SyncSaveData packet) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                BonfireHandler.getHandler(Minecraft.getInstance().level).getRegistry().setBonfires(packet.bonfires);
-            }
-        };
-    }
-
-    public static DistExecutor.SafeRunnable syncEstusData(UUID lastRested, int uses) {
+    public static DistExecutor.SafeRunnable syncEstusData(UUID lastRested) {
         return new DistExecutor.SafeRunnable() {
             @Override
             public void run() {
                 EstusHandler.IEstusHandler handler = EstusHandler.getHandler(Minecraft.getInstance().player);
                 handler.setLastRested(lastRested);
-                handler.setUses(uses);
             }
         };
     }

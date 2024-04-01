@@ -17,7 +17,7 @@ public class ItemSetup {
         ash_pile = create("ash_pile", AshPileItem::new),
         coiled_sword = create("coiled_sword", CoiledSwordItem::new),
         estus_flask = create("estus_flask", EstusFlaskItem::new),
-        homeward_bone = create("homeward_bone", HomewardBoneItem::new),
+        homeward_bone = create("homeward_bone", () -> new HomewardBoneItem(new Item.Properties())),
         coiled_sword_fragment = create("coiled_sword_fragment", CoiledSwordFragmentItem::new),
         estus_shard = create("estus_shard", EstusShardItem::new),
         titanite_shard = create("titanite_shard", TitaniteShardItem::new),

@@ -17,11 +17,9 @@ public class SyncEstusData extends Packet<SyncEstusData> {
     }
 
     UUID lastRested;
-    int uses;
 
     public SyncEstusData(EstusHandler.IEstusHandler handler) {
         this.lastRested = handler.lastRested();
-        this.uses = handler.uses();
     }
 
     @Override
@@ -29,7 +27,6 @@ public class SyncEstusData extends Packet<SyncEstusData> {
         if (buffer.readBoolean()) {
             this.lastRested = buffer.readUUID();
         }
-        this.uses = buffer.readInt();
     }
 
     @Override
@@ -38,12 +35,11 @@ public class SyncEstusData extends Packet<SyncEstusData> {
         if (this.lastRested != null) {
             buffer.writeUUID(this.lastRested);
         }
-        buffer.writeInt(this.uses);
     }
 
     @Override
     public void handle(CustomPayloadEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.syncEstusData(this.lastRested, this.uses));
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.syncEstusData(this.lastRested));
 
     }
 }

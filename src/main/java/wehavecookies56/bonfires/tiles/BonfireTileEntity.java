@@ -29,6 +29,8 @@ public class BonfireTileEntity extends BlockEntity {
     private boolean lit = false;
     private UUID id = UUID.randomUUID();
 
+    private Bonfire bonfireInstance;
+
     private boolean unlitPrivate = false;
     private String unlitName;
 
@@ -42,7 +44,16 @@ public class BonfireTileEntity extends BlockEntity {
         super(EntitySetup.BONFIRE.get(), pos, state);
     }
 
-
+    @Override
+    public void onLoad() {
+        if (bonfireInstance == null) {
+            if (level != null) {
+                if (!level.isClientSide) {
+                    bonfireInstance = BonfireHandler.getServerHandler(level.getServer()).getRegistry().getBonfire(id);
+                }
+            }
+        }
+    }
 
     @Override
     public void load(CompoundTag compound) {
@@ -55,6 +66,9 @@ public class BonfireTileEntity extends BlockEntity {
             CompoundTag unlit = compound.getCompound("unlit");
             setNameInternal(unlit.getString("name"));
             unlitPrivate = unlit.getBoolean("private");
+        }
+        if (lit && compound.contains("instance")) {
+            bonfireInstance = new Bonfire(compound.getCompound("instance"));
         }
     }
 
@@ -70,17 +84,22 @@ public class BonfireTileEntity extends BlockEntity {
             unlit.putBoolean("private", unlitPrivate);
             compound.put("unlit", unlit);
         }
+        if (lit && bonfireInstance != null) {
+            compound.put("instance", bonfireInstance.serializeNBT());
+        }
         super.saveAdditional(compound);
     }
 
     public Bonfire createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
         Bonfire bonfire = new Bonfire(name, id, owner, this.getBlockPos(), this.level.dimension(), isPublic, Instant.now());
         BonfireHandler.getServerHandler(level.getServer()).addBonfire(bonfire);
+        bonfireInstance = bonfire;
         return bonfire;
     }
 
     public void destroyBonfire(UUID id) {
-        BonfireHandler.getHandler(level).removeBonfire(id);
+        BonfireHandler.getServerHandler(level.getServer()).removeBonfire(id);
+        bonfireInstance = null;
     }
 
     public boolean isBonfire() {
@@ -171,7 +190,7 @@ public class BonfireTileEntity extends BlockEntity {
     public Component getDisplayName() {
         if (!Minecraft.getInstance().player.isCrouching()) {
             if (getID() != null && BonfiresConfig.Client.renderTextAboveBonfire) {
-                Bonfire bonfire = BonfireHandler.getHandler(Minecraft.getInstance().level).getRegistry().getBonfire(getID());
+                Bonfire bonfire = bonfireInstance;
                 if (bonfire != null) {
                     if (bonfire.isPublic()) {
                         return Component.translatable(bonfire.getName());

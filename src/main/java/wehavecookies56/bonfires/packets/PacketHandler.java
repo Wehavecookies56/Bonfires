@@ -36,11 +36,6 @@ public class PacketHandler {
 								.decoder(SyncBonfire::new)
 								.consumerMainThread(SyncBonfire::handle)
 								.add()
-							.messageBuilder(SyncSaveData.class, NetworkDirection.PLAY_TO_CLIENT)
-								.encoder(SyncSaveData::encode)
-								.decoder(SyncSaveData::new)
-								.consumerMainThread(SyncSaveData::handle)
-								.add()
 							.messageBuilder(SendBonfiresToClient.class, NetworkDirection.PLAY_TO_CLIENT)
 								.encoder(SendBonfiresToClient::encode)
 								.decoder(SendBonfiresToClient::new)
@@ -70,6 +65,11 @@ public class PacketHandler {
 								.encoder(DeleteScreenshot::encode)
 								.decoder(DeleteScreenshot::new)
 								.consumerMainThread(DeleteScreenshot::handle)
+								.add()
+							.messageBuilder(DisplayBonfireTitle.class, NetworkDirection.PLAY_TO_CLIENT)
+								.encoder(DisplayBonfireTitle::encode)
+								.decoder(DisplayBonfireTitle::new)
+								.consumerMainThread(DisplayBonfireTitle::handle)
 								.add()
 
 							//From Client to Server

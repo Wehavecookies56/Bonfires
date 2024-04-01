@@ -9,7 +9,7 @@
         "description": {
             "translate": "advancements.bonfires.root.desc"
         },
-        "background": "bonfires:textures/blocks/ash.png",
+        "background": "bonfires:textures/block/ash.png",
         "show_toast": true,
         "announce_to_chat": true,
         "frame": "challenge"

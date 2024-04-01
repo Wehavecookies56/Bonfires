@@ -1,108 +1,89 @@
 package wehavecookies56.bonfires.data;
 
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.storage.LevelResource;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.io.*;
 import java.util.UUID;
 
-public class BonfireHandler {
+public class BonfireHandler extends SavedData {
 
-    public static void init() {
-        MinecraftForge.EVENT_BUS.register(new BonfireHandler());
+    BonfireRegistry registry = new BonfireRegistry();
+    private boolean loadedOldData = false;
+
+    public BonfireRegistry getRegistry() {
+        return registry;
     }
 
-    @SubscribeEvent
-    public static void register(RegisterCapabilitiesEvent event) {
-        event.register(IBonfireHandler.class);
+    public boolean addBonfire(Bonfire bonfire) {
+        boolean result = registry.addBonfire(bonfire);
+        setDirty();
+        return result;
     }
 
-    @SubscribeEvent
-    public void attachCapabilities(AttachCapabilitiesEvent<Level> event) {
-        event.addCapability(new ResourceLocation(Bonfires.modid, "bonfire"), new Provider());
+    public boolean removeBonfire(UUID id) {
+        boolean result = registry.removeBonfire(id);
+        setDirty();
+        return result;
     }
 
-    public static IBonfireHandler getHandler(Level world) {
-        LazyOptional<IBonfireHandler> bonfireHandler = world.getCapability(CAPABILITY_BONFIRE, null);
-        return bonfireHandler.orElse(null);
+    public void loadOldBonfireData(MinecraftServer server) {
+        if (!loadedOldData) {
+            File worldDataFolder = server.getWorldPath(new LevelResource("data")).toFile();
+            File capabilitiesDat = new File(worldDataFolder, "capabilities.dat");
+            if (capabilitiesDat.exists()) {
+                try {
+                    Bonfires.LOGGER.info("Attempting to convert existing Bonfire data");
+                    FileInputStream fileinputstream = new FileInputStream(capabilitiesDat);
+                    PushbackInputStream pushbackinputstream = new PushbackInputStream(fileinputstream, 2);
+                    DataInputStream inputStream = new DataInputStream(pushbackinputstream);
+                    CompoundTag main = NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap());
+                    CompoundTag data = main.getCompound("data").getCompound("bonfires:bonfire");
+                    BonfireRegistry reg = new BonfireRegistry();
+                    reg.readFromNBT(data, reg.getBonfires());
+                    reg.getBonfires().entrySet().forEach(entry -> {
+                        this.addBonfire(entry.getValue());
+                    });
+                    loadedOldData = true;
+                    this.setDirty();
+                    Bonfires.LOGGER.info("Existing data successfully loaded");
+                } catch (IOException e) {
+                    Bonfires.LOGGER.info("Existing data either doesn't exist or failed to load, ignoring.");
+                    loadedOldData = true;
+                    this.setDirty();
+                }
+            }
+        }
     }
 
-    public static IBonfireHandler getServerHandler(MinecraftServer server) {
-        return getHandler(server.overworld());
+    private static BonfireHandler create() {
+        return new BonfireHandler();
     }
 
-    public static final Capability<IBonfireHandler> CAPABILITY_BONFIRE = CapabilityManager.get(new CapabilityToken<>() {});
-
-    public interface IBonfireHandler extends INBTSerializable<CompoundTag> {
-        BonfireRegistry getRegistry();
-        boolean addBonfire(Bonfire bonfire);
-        boolean removeBonfire(UUID id);
+    private static BonfireHandler load(CompoundTag tag) {
+        BonfireHandler data = BonfireHandler.create();
+        data.getRegistry().readFromNBT(tag, data.getRegistry().getBonfires());
+        data.loadedOldData = tag.getBoolean("loaded_old_data");
+        return data;
     }
 
-    public static class Default implements IBonfireHandler {
-
-        BonfireRegistry registry = new BonfireRegistry();
-
-        @Override
-        public CompoundTag serializeNBT() {
-            final CompoundTag tag = new CompoundTag();
-            getRegistry().writeToNBT(tag, getRegistry().getBonfires());
-            return tag;
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag tag) {
-            getRegistry().readFromNBT(tag, getRegistry().getBonfires());
-        }
-
-        @Override
-        public BonfireRegistry getRegistry() {
-            return registry;
-        }
-
-        @Override
-        public boolean addBonfire(Bonfire bonfire) {
-            return registry.addBonfire(bonfire);
-        }
-
-        @Override
-        public boolean removeBonfire(UUID id) {
-            return registry.removeBonfire(id);
-        }
-
+    @Override
+    public CompoundTag save(CompoundTag tag) {
+        getRegistry().writeToNBT(tag, getRegistry().getBonfires());
+        tag.putBoolean("loaded_old_data", loadedOldData);
+        return tag;
     }
 
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
-        IBonfireHandler instance = new Default();
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            return CAPABILITY_BONFIRE.orEmpty(cap, LazyOptional.of(() -> instance));
-        }
-
-        @Override
-        public CompoundTag serializeNBT() {
-            return instance.serializeNBT();
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            instance.deserializeNBT(nbt);
-        }
+    public static BonfireHandler getServerHandler(MinecraftServer server) {
+        return server.overworld().getDataStorage().computeIfAbsent(new Factory<>(BonfireHandler::create, BonfireHandler::load, DataFixTypes.LEVEL), "bonfires_data");
     }
 
 }

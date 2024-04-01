@@ -133,7 +133,9 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
-                            GameProfile profile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner()).get();
+                            GameProfile profile;
+                            Optional<GameProfile> cachedProfile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner());
+                            profile = cachedProfile.orElseGet(() -> new GameProfile(registry.getBonfire(te.getID()).getOwner(), "Unknown"));
                             for (int i = 0; i < player.getInventory().items.size(); i++) {
                                 if (!ItemStack.isSameItem(player.getInventory().getItem(i), ItemStack.EMPTY)) {
                                     if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
@@ -233,7 +235,6 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         Bonfire destroyed = BonfireHandler.getServerHandler(server).getRegistry().getBonfire(te.getID());
                         te.destroyBonfire(te.getID());
                         BonfireHandler.getServerHandler(server).removeBonfire(te.getID());
-                        PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getServerHandler(server).getRegistry().getBonfires()));
                         PacketHandler.sendToAll(new SendBonfiresToClient());
                         PacketHandler.sendToAll(new DeleteScreenshot(te.getID(), destroyed.getName()));
                     }

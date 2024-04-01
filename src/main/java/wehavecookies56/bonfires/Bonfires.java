@@ -12,7 +12,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -26,7 +26,6 @@ import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.SyncEstusData;
-import wehavecookies56.bonfires.packets.client.SyncSaveData;
 import wehavecookies56.bonfires.setup.*;
 
 import java.util.Random;
@@ -71,16 +70,8 @@ public class Bonfires {
     public void entityJoinWorld(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide) {
             if (event.getEntity() instanceof ServerPlayer player) {
-                PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry().getBonfires()), player);
                 PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void changeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.getEntity().level().isClientSide) {
-            PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getEntity().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
         }
     }
 
@@ -94,6 +85,12 @@ public class Bonfires {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public void serverStart(ServerStartingEvent event) {
+        BonfireHandler handler = BonfireHandler.getServerHandler(event.getServer());
+        handler.loadOldBonfireData(event.getServer());
     }
 
     @SubscribeEvent

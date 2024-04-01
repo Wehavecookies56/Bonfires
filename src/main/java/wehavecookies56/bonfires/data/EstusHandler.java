@@ -43,7 +43,6 @@ public class EstusHandler {
         event.getOriginal().reviveCaps();
         final IEstusHandler original = getHandler(event.getOriginal());
         final IEstusHandler clone = getHandler(event.getEntity());
-        clone.setUses(original.uses());
         clone.setLastRested(original.lastRested());
         event.getOriginal().invalidateCaps();
     }
@@ -58,19 +57,14 @@ public class EstusHandler {
     public interface IEstusHandler extends INBTSerializable<CompoundTag> {
         UUID lastRested();
         void setLastRested(UUID id);
-        int uses();
-        void setUses(int uses);
     }
 
     public static class Default implements IEstusHandler {
-        private int uses = 3;
         private UUID bonfire;
-
 
         @Override
         public CompoundTag serializeNBT() {
             final CompoundTag tag = new CompoundTag();
-            tag.putInt("uses", uses());
             if (lastRested() != null) {
                 tag.putUUID("lastRested", lastRested());
             }
@@ -79,7 +73,6 @@ public class EstusHandler {
 
         @Override
         public void deserializeNBT(CompoundTag tag) {
-            setUses(tag.getInt("uses"));
             if (tag.contains("lastRested")) {
                 setLastRested(tag.getUUID("lastRested"));
             }
@@ -93,16 +86,6 @@ public class EstusHandler {
         @Override
         public void setLastRested(UUID id) {
             bonfire = id;
-        }
-
-        @Override
-        public int uses() {
-            return this.uses;
-        }
-
-        @Override
-        public void setUses(int uses) {
-            this.uses = uses;
         }
     }
 
