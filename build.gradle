@@ -1,10 +1,20 @@
 plugins {
 	id 'fabric-loom' version '1.5-SNAPSHOT'
 	id 'maven-publish'
+	id 'org.ajoberstar.grgit' version '1.7.2'
 }
 
-version = project.mod_version
+final commitId
+
+if (hasProperty("grgit")) {
+	commitId = "${grgit.head().abbreviatedId}"
+} else {
+	commitId = "NOGIT"
+}
+
+version = "${minecraft_version}-${mod_version}-fabric-${commitId}"
 group = project.maven_group
+final baseVersion = "${mod_version}"
 
 base {
 	archivesName = project.archives_base_name
@@ -51,10 +61,10 @@ dependencies {
 }
 
 processResources {
-	inputs.property "version", project.version
+	inputs.property "version", baseVersion
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand "version": baseVersion
 	}
 }
 
@@ -74,7 +84,6 @@ java {
 
 
 jar {
-	base.archivesName.set(archivesBaseName  + "-fabric-" + project.minecraft_version)
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}"}
 	}
