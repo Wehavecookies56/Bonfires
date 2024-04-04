@@ -73,9 +73,9 @@ public class ReinforceScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-        scrollBar.mouseScrolled(mouseX, mouseY, scrollDelta);
-        return super.mouseScrolled(mouseX, mouseY, scrollDelta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        scrollBar.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     public void updateButtons() {
@@ -134,7 +134,7 @@ public class ReinforceScreen extends Screen {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         Window window = mc.getWindow();
         int centerX = (window.getScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getScaledHeight() / 2) - (texHeight / 2);

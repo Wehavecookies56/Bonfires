@@ -5,10 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "PlayerMixin",
-    "ExplosionMixin",
     "WorldSavePathMixin"
   ],
-  "client": [],
+  "client": [
+    "ScreenMixin"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

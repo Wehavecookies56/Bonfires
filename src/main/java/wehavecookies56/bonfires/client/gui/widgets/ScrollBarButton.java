@@ -28,7 +28,7 @@ public class ScrollBarButton extends ButtonWidget {
     }
 
     @Override
-    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             guiGraphics.setShaderColor(1, 1, 1, 0.5F);
             guiGraphics.fill(getX(), top, getX() + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
@@ -78,17 +78,17 @@ public class ScrollBarButton extends ButtonWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
         if (visible) {
             int scrollFactor = 5;
-            if (scrollDelta > 0) {
-                setY((int) Math.max(getY() - (scrollDelta * scrollFactor), top));
+            if (scrollDeltaY > 0) {
+                setY((int) Math.max(getY() - (scrollDeltaY * scrollFactor), top));
             }
-            if (scrollDelta < 0) {
-                setY((int) Math.min(getY() - (scrollDelta * scrollFactor), bottom));
+            if (scrollDeltaY < 0) {
+                setY((int) Math.min(getY() - (scrollDeltaY * scrollFactor), bottom));
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollDelta);
+        return super.mouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
     }
 
 }

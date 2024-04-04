@@ -57,7 +57,7 @@ public class Bonfires implements ModInitializer {
         Registry.register(Registries.CUSTOM_STAT, TIMES_TRAVELLED.getPath(), TIMES_TRAVELLED);
         Stats.CUSTOM.getOrCreateStat(BONFIRES_LIT, StatFormatter.DEFAULT);
         Stats.CUSTOM.getOrCreateStat(TIMES_TRAVELLED, StatFormatter.DEFAULT);
-        BonfireLitTrigger.INSTANCE = Criteria.register(new BonfireLitTrigger());
+        BonfireLitTrigger.INSTANCE = Criteria.register(BonfireLitTrigger.ID.toString(), new BonfireLitTrigger());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             BonfiresCommand.register(dispatcher);
             TravelCommand.register(dispatcher);

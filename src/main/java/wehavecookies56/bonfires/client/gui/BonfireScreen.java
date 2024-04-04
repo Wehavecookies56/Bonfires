@@ -187,7 +187,7 @@ public class BonfireScreen extends Screen {
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!ScreenshotUtils.isTimerStarted()) {
-            renderBackground(guiGraphics);
+            renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
             guiGraphics.setShaderColor(1, 1, 1, 1);
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
             if (travelOpen) {

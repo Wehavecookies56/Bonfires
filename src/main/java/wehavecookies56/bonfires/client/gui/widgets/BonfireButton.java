@@ -34,7 +34,7 @@ public class BonfireButton extends ButtonWidget {
     }
 
     @Override
-    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (bonfire != null) {
             if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
                 setMessage(Text.translatable(bonfire.getName()));

@@ -76,7 +76,7 @@ public class DimensionTabButton extends ButtonWidget {
     }
 
     @Override
-    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             int tab_width = 28;
             int tab_height = 30;

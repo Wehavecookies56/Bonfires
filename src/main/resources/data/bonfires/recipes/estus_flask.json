@@ -16,8 +16,6 @@
     }
   ],
   "result": {
-  	"type": "forge:nbt",
-    "item": "bonfires:estus_flask",
-    "nbt": "{estus:0,uses:3}"
+    "item": "bonfires:estus_flask"
   }
 }

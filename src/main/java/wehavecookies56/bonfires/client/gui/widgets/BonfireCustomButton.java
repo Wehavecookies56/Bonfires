@@ -36,7 +36,7 @@ public class BonfireCustomButton extends ButtonWidget {
     }
 
     @Override
-    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             guiGraphics.setShaderColor(1, 1, 1, 1);
             if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {

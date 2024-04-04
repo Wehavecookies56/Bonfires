@@ -93,7 +93,7 @@ public class CreateBonfireScreen extends Screen {
             close();
         }
         if (nameBox != null) {
-            nameBox.tick();
+            //nameBox.tick();
         }
         if (te.isRemoved()) {
             close();

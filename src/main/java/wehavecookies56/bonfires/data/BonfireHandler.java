@@ -7,6 +7,7 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -78,7 +79,7 @@ public class BonfireHandler implements WorldComponentInitializer {
                         FileInputStream fileinputstream = new FileInputStream(capabilitiesDat);
                         PushbackInputStream pushbackinputstream = new PushbackInputStream(fileinputstream, 2);
                         DataInputStream inputStream = new DataInputStream(pushbackinputstream);
-                        NbtCompound main = NbtIo.readCompressed(inputStream);
+                        NbtCompound main = NbtIo.readCompressed(inputStream, NbtSizeTracker.ofUnlimitedBytes());
                         NbtCompound data = main.getCompound("data");
                         if (data.contains("bonfires:bonfire")) {
                             NbtCompound bonfires = data.getCompound("bonfires:bonfire");
@@ -89,7 +90,7 @@ public class BonfireHandler implements WorldComponentInitializer {
                             });
                             loadedOldData = true;
                             main.getCompound("data").remove("bonfires:bonfire");
-                            NbtIo.writeCompressed(main, capabilitiesDat);
+                            NbtIo.writeCompressed(main, capabilitiesDat.toPath());
                             BONFIRES.sync(provider);
                             Bonfires.LOGGER.info("Existing old data successfully loaded");
                         }
@@ -107,7 +108,7 @@ public class BonfireHandler implements WorldComponentInitializer {
                             FileInputStream fileinputstream = new FileInputStream(bonfireDataDat);
                             PushbackInputStream pushbackinputstream = new PushbackInputStream(fileinputstream, 2);
                             DataInputStream inputStream = new DataInputStream(pushbackinputstream);
-                            NbtCompound main = NbtIo.readCompressed(inputStream);
+                            NbtCompound main = NbtIo.readCompressed(inputStream, NbtSizeTracker.ofUnlimitedBytes());
                             NbtCompound data = main.getCompound("data");
                             if (!data.isEmpty()) {
                                 BonfireRegistry reg = new BonfireRegistry();
@@ -118,7 +119,7 @@ public class BonfireHandler implements WorldComponentInitializer {
                                 loadedOldData = true;
                                 main.remove("data");
                                 main.put("data", new NbtCompound());
-                                NbtIo.writeCompressed(main, bonfireDataDat);
+                                NbtIo.writeCompressed(main, bonfireDataDat.toPath());
                                 BONFIRES.sync(provider);
                                 Bonfires.LOGGER.info("Existing old data successfully loaded");
                             }

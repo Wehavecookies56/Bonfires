@@ -36,6 +36,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
@@ -55,6 +56,7 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -162,6 +164,14 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
             }
         }
         return super.onUse(state, world, pos, player, hand, hit);
+    }
+
+    @Override
+    public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+        if (state.getBlock() instanceof AshBonePileBlock block) {
+            block.wasDestroyedByExplosion(world, pos);
+        }
+        super.onExploded(state, world, pos, explosion, stackMerger);
     }
 
     @Override

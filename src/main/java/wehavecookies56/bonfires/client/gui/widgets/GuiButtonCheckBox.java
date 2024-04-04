@@ -29,7 +29,7 @@ public class GuiButtonCheckBox extends PressableWidget {
     private final Identifier TEXTURE = new Identifier(Bonfires.modid, "textures/gui/checkbox.png");
 
     @Override
-    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             guiGraphics.drawTexture(TEXTURE, getX(), getY(), 0, 0, 10, 10);
             if (checked) {

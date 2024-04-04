@@ -104,7 +104,7 @@ public class ReinforceItemButton extends ButtonWidget {
     }
 
     @Override
-    public void render(DrawContext guiGraphics, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
+    public void renderWidget(DrawContext guiGraphics, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
 
     }
 

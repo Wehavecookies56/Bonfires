@@ -1,10 +1,12 @@
 package wehavecookies56.bonfires.items;
 
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
@@ -28,6 +30,20 @@ public class EstusFlaskItem extends Item {
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.DRINK;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        if (stack.getNbt() == null) {
+            stack.setNbt(new NbtCompound());
+        }
+        if (!stack.getNbt().contains("estus")) {
+            stack.getNbt().putInt("estus", 3);
+        }
+        if (!stack.getNbt().contains("uses")) {
+            stack.getNbt().putInt("uses", 3);
+        }
+        super.inventoryTick(stack, world, entity, slot, selected);
     }
 
     @Override

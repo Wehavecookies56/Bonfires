@@ -22,7 +22,7 @@ public class BonfirePageButton extends ButtonWidget {
     }
 
     @Override
-    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             int texWidth = 8;
             int texHeight = 14;
