@@ -1,0 +1,51 @@
+{
+	"schemaVersion": 1,
+	"id": "bonfires",
+	"version": "${version}",
+	"name": "Bonfires",
+	"description": "Bonfires from Dark Souls.",
+	"authors": [
+		"Wehavecookies56"
+	],
+	"contact": {
+		"homepage": "https://legacy.curseforge.com/minecraft/mc-mods/bonfires",
+		"sources": "https://github.com/Wehavecookies56/Bonfires",
+		"issues": "https://github.com/Wehavecookies56/Bonfires/issues"
+	},
+	"license": "LGPL-3.0",
+	"icon": "bonfires.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"wehavecookies56.bonfires.Bonfires"
+		],
+		"cardinal-components": [
+			"wehavecookies56.bonfires.data.BonfireHandler",
+			"wehavecookies56.bonfires.data.EstusHandler"
+		],
+		"client": [
+			{
+				"value": "wehavecookies56.bonfires.setup.ClientSetup"
+			}
+		]
+	},
+	"mixins": [
+		"bonfires.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.7",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+		"owo-lib": ">=0.11.2+.20"
+	},
+	"suggests": {
+		"another-mod": "*"
+	},
+	"custom": {
+		"cardinal-components": [
+			"bonfires:bonfires",
+			"bonfires:estus"
+		]
+	}
+}
