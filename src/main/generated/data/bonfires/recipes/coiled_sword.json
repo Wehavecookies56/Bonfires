@@ -13,7 +13,7 @@
       "item": "minecraft:lava_bucket"
     },
     "O": {
-      "tag": "forge:obsidian"
+      "item": "minecraft:obsidian"
     },
     "S": {
       "item": "minecraft:diamond_sword"
