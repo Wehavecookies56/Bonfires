@@ -1,41 +1,51 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
-import wehavecookies56.bonfires.packets.Packet;
 
 import java.util.UUID;
 
-public class QueueBonfireScreenshot extends Packet<QueueBonfireScreenshot> {
+public class QueueBonfireScreenshot implements FabricPacket {
 
-    public QueueBonfireScreenshot(FriendlyByteBuf buffer) {
-        super(buffer);
-    }
+    public static final PacketType<QueueBonfireScreenshot> TYPE = PacketType.create(new Identifier(Bonfires.modid, "queue_bonfire_screenshot"), QueueBonfireScreenshot::new);
 
     UUID uuid;
     String name;
+
     public QueueBonfireScreenshot(String name, UUID uuid) {
         this.uuid = uuid;
         this.name = name;
     }
 
-    @Override
-    public void decode(FriendlyByteBuf buffer) {
-        name = buffer.readUtf();
-        uuid = buffer.readUUID();
+    public QueueBonfireScreenshot(PacketByteBuf buffer) {
+        decode(buffer);
+    }
+
+    public void decode(PacketByteBuf buffer) {
+        name = buffer.readString();
+        uuid = buffer.readUuid();
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeUtf(name);
-        buffer.writeUUID(uuid);
+    public void write(PacketByteBuf buffer) {
+        buffer.writeString(name);
+        buffer.writeUuid(uuid);
+    }
+
+    public void handle() {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientPacketHandler.queueBonfireScreenshot(name, uuid);
+        }
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.queueBonfireScreenshot(name, uuid));
+    public PacketType<?> getType() {
+        return TYPE;
     }
 }

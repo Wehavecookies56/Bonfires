@@ -1,29 +1,29 @@
 package wehavecookies56.bonfires.packets.server;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
-import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
-/**
- * Created by Toby on 06/11/2016.
- */
-public class Travel extends Packet<Travel> {
+public class Travel implements FabricPacket {
+
+    public static final PacketType<Travel> TYPE = PacketType.create(new Identifier(Bonfires.modid, "travel"), Travel::new);
 
     private int x;
     private int y;
     private int z;
-    private ResourceKey<Level> dim;
+    private RegistryKey<World> dim;
 
-    public Travel(FriendlyByteBuf buffer) {
-        super(buffer);
+    public Travel(PacketByteBuf buffer) {
+        decode(buffer);
     }
 
     public Travel(Bonfire bonfire) {
@@ -33,26 +33,29 @@ public class Travel extends Packet<Travel> {
         this.dim = bonfire.getDimension();
     }
 
-    @Override
-    public void decode(FriendlyByteBuf buffer) {
+    public void decode(PacketByteBuf buffer) {
         this.x = buffer.readInt();
         this.y = buffer.readInt();
         this.z = buffer.readInt();
-        this.dim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(buffer.readUtf()));
+        this.dim = RegistryKey.of(RegistryKeys.WORLD, buffer.readIdentifier());
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public void write(PacketByteBuf buffer) {
         buffer.writeInt(x);
         buffer.writeInt(y);
         buffer.writeInt(z);
-        buffer.writeUtf(dim.location().toString());
+        buffer.writeIdentifier(dim.getValue());
+    }
+
+    public void handle(ServerPlayerEntity player) {
+        BlockPos pos = new BlockPos(x, y, z);
+        player.incrementStat(Bonfires.TIMES_TRAVELLED);
+        BonfireTeleporter.travelToBonfire(player, pos, dim);
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        ServerPlayer player = context.getSender();
-        BlockPos pos = new BlockPos(x, y, z);
-        BonfireTeleporter.travelToBonfire(player, pos, dim);
+    public PacketType<?> getType() {
+        return TYPE;
     }
 }

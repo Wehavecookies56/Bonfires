@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.datagen;
-
+//TODO port datagen to fabric
+/*
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
@@ -109,3 +110,4 @@ public class Recipes extends RecipeProvider {
                 .save(recipeConsumer);
     }
 }
+ */

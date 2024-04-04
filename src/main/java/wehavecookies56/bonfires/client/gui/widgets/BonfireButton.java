@@ -1,10 +1,10 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.Text;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
@@ -13,15 +13,15 @@ import java.awt.*;
 /**
  * Created by Toby on 10/11/2016.
  */
-public class BonfireButton extends ExtendedButton {
+public class BonfireButton extends ButtonWidget {
 
     private BonfireScreen parent;
     private Bonfire bonfire;
 
     public BonfireButton(BonfireScreen parent, int id, int x, int y) {
-        super(x, y, 93, Minecraft.getInstance().font.lineHeight+4, Component.empty(), button -> {
+        super(x, y, 93, MinecraftClient.getInstance().textRenderer.fontHeight+4, Text.empty(), button -> {
             parent.action(id);
-        });
+        }, ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
         this.parent = parent;
     }
 
@@ -34,12 +34,12 @@ public class BonfireButton extends ExtendedButton {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (bonfire != null) {
             if (bonfire.getDimension() == parent.tabs[parent.dimTabSelected-5].getDimension()) {
-                setMessage(Component.translatable(bonfire.getName()));
+                setMessage(Text.translatable(bonfire.getName()));
                 if (visible) {
-                    Font fontrenderer = Minecraft.getInstance().font;
+                    TextRenderer fontrenderer = MinecraftClient.getInstance().textRenderer;
                     int colour = new Color(255, 255, 255).hashCode();
                     if (parent.bonfireSelected >= parent.BONFIRE1) {
                         if (parent.bonfires != null) {
@@ -64,7 +64,7 @@ public class BonfireButton extends ExtendedButton {
             }
         } else {
             visible = false;
-            setMessage(Component.empty());
+            setMessage(Text.empty());
         }
     }
 

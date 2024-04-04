@@ -1,58 +1,68 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.BonfireHandler;
-import wehavecookies56.bonfires.packets.Packet;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SendBonfiresToClient extends Packet<SendBonfiresToClient> {
+public class SendBonfiresToClient implements FabricPacket {
 
-    public SendBonfiresToClient(FriendlyByteBuf buffer) {
-        super(buffer);
+    public static final PacketType<SendBonfiresToClient> TYPE = PacketType.create(new Identifier(Bonfires.modid, "send_bonfires_to_client"), SendBonfiresToClient::new);
+
+    public SendBonfiresToClient(PacketByteBuf buffer) {
+        decode(buffer);
     }
 
-    public List<ResourceKey<Level>> dimensions;
+    public List<RegistryKey<World>> dimensions;
     public BonfireRegistry registry;
 
-    public SendBonfiresToClient() {
-        dimensions = new ArrayList<>(ServerLifecycleHooks.getCurrentServer().levelKeys());
-        registry = BonfireHandler.getServerHandler(ServerLifecycleHooks.getCurrentServer()).getRegistry();
+    public SendBonfiresToClient(MinecraftServer server) {
+        dimensions = new ArrayList<>(server.getWorldRegistryKeys());
+        registry = BonfireHandler.getServerHandler(server).getRegistry();
     }
 
-    @Override
-    public void decode(FriendlyByteBuf buffer) {
+    public void decode(PacketByteBuf buffer) {
         registry = new BonfireRegistry();
         registry.readFromNBT(buffer.readNbt(), registry.getBonfires());
         dimensions = new ArrayList<>();
         int size = buffer.readVarInt();
         for (int i = 0; i < size; i++) {
-            dimensions.add(ResourceKey.create(Registries.DIMENSION, buffer.readResourceLocation()));
+            dimensions.add(RegistryKey.of(RegistryKeys.WORLD, buffer.readIdentifier()));
         }
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeNbt(registry.writeToNBT(new CompoundTag(), registry.getBonfires()));
+    public void write(PacketByteBuf buffer) {
+        buffer.writeNbt(registry.writeToNBT(new NbtCompound(), registry.getBonfires()));
         buffer.writeVarInt(dimensions.size());
         for (int i = 0; i < dimensions.size(); ++i) {
-            buffer.writeResourceLocation(dimensions.get(i).location());
+            buffer.writeIdentifier(dimensions.get(i).getValue());
         }
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.setBonfiresFromServer(this));
+    public PacketType<?> getType() {
+        return TYPE;
+    }
+
+    public void handle() {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientPacketHandler.setBonfiresFromServer(this);
+        }
     }
 }
+

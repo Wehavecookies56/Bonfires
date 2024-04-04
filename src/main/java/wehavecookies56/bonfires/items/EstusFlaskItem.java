@@ -1,19 +1,19 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
-import wehavecookies56.bonfires.BonfiresConfig;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.FoodComponent;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.UseAction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -22,28 +22,28 @@ import java.util.List;
 public class EstusFlaskItem extends Item {
 
     public EstusFlaskItem() {
-        super(new Properties().stacksTo(1).food(new FoodProperties.Builder().alwaysEat().nutrition(0).saturationMod(0).build()));
+        super(new Settings().maxCount(1).food(new FoodComponent.Builder().alwaysEdible().hunger(0).saturationModifier(0).build()));
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack p_77661_1_) {
-        return UseAnim.DRINK;
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.DRINK;
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity entity) {
-        if (!world.isClientSide) {
-            if (stack.getTag() != null) {
-                if (stack.getTag().getInt("estus") > 0) {
-                    stack.getTag().putInt("estus", stack.getTag().getInt("estus") - 1);
-                    float heal = (float) BonfiresConfig.Server.estusFlaskBaseHeal;
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        if (!world.isClient) {
+            if (stack.getNbt() != null) {
+                if (stack.getNbt().getInt("estus") > 0) {
+                    stack.getNbt().putInt("estus", stack.getNbt().getInt("estus") - 1);
+                    float heal = (float) Bonfires.CONFIG.common.estusFlaskBaseHeal();
                     if (ReinforceHandler.canReinforce(stack)) {
                         ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(stack);
                         if (rlevel != null) {
-                            heal += (BonfiresConfig.Server.estusFlaskHealPerLevel * rlevel.level());
+                            heal += (Bonfires.CONFIG.common.estusFlaskHealPerLevel() * rlevel.level());
                         }
                     }
-                    entity.heal(heal);
+                    user.heal(heal);
                 }
             }
         }
@@ -51,40 +51,40 @@ public class EstusFlaskItem extends Item {
     }
 
     @Override
-    public int getBarColor(ItemStack stack) {
-        if (stack.getTag() != null) {
-            float f = Math.max(0.0F, (float)stack.getTag().getInt("estus")) / stack.getTag().getInt("uses");
-            return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    public int getItemBarColor(ItemStack stack) {
+        if (stack.getNbt() != null) {
+            float f = Math.max(0.0F, (float)stack.getNbt().getInt("estus")) / stack.getNbt().getInt("uses");
+            return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
         } else {
             return 0x00000000;
         }
     }
 
     @Override
-    public boolean isBarVisible(ItemStack stack) {
-        if (stack.getTag() != null) {
-            return stack.getTag().getInt("estus") < stack.getTag().getInt("uses");
+    public boolean isItemBarVisible(ItemStack stack) {
+        if (stack.getNbt() != null) {
+            return stack.getNbt().getInt("estus") < stack.getNbt().getInt("uses");
         }
         return false;
     }
 
     @Override
-    public int getBarWidth(ItemStack stack) {
-        if (stack.getTag() != null) {
-            return Math.round((float)13 * ((float)stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses")));
+    public int getItemBarStep(ItemStack stack) {
+        if (stack.getNbt() != null) {
+            return Math.round((float)13 * ((float)stack.getNbt().getInt("estus") / (float) stack.getNbt().getInt("uses")));
         } else {
             return 0;
         }
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag advanced) {
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         int level = ReinforceHandler.getReinforceLevel(stack).level();
-        tooltip.add(Component.translatable(LocalStrings.TOOLTIP_ESTUS_HEAL, (BonfiresConfig.Server.estusFlaskBaseHeal + (BonfiresConfig.Server.estusFlaskHealPerLevel * level)) * 0.5F));
-        if (stack.getTag() != null) {
-            if (stack.getTag().contains("uses")) {
-                if (stack.getTag().contains("estus")) {
-                    tooltip.add(Component.translatable("Uses: " + stack.getTag().getInt("estus") + "/" + stack.getTag().getInt("uses")));
+        tooltip.add(Text.translatable(LocalStrings.TOOLTIP_ESTUS_HEAL, (Bonfires.CONFIG.common.estusFlaskBaseHeal() + (Bonfires.CONFIG.common.estusFlaskHealPerLevel() * level)) * 0.5F));
+        if (stack.getNbt() != null) {
+            if (stack.getNbt().contains("uses")) {
+                if (stack.getNbt().contains("estus")) {
+                    tooltip.add(Text.translatable("Uses: " + stack.getNbt().getInt("estus") + "/" + stack.getNbt().getInt("uses")));
                 }
             }
         }

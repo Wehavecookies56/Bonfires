@@ -12,14 +12,6 @@
     },
     "parent": "bonfires:bonfires/root",
     "criteria": {
-        "killed_something_with_fire": {
-            "trigger": "minecraft:player_killed_entity",
-            "conditions": {
-                "killing_blow": {
-                    "is_fire": true
-                }
-            }
-        },
         "has_ash": {
             "trigger": "minecraft:inventory_changed",
             "conditions": {
@@ -35,7 +27,7 @@
     },
     "requirements": [
         [
-            "killed_something_with_fire", "has_ash"
+            "has_ash"
         ]
     ],
     "rewards": {

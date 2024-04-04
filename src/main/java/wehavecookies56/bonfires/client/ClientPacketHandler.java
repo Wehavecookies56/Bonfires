@@ -1,20 +1,16 @@
 package wehavecookies56.bonfires.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.DistExecutor;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.Text;
 import org.apache.commons.lang3.text.WordUtils;
 import wehavecookies56.bonfires.Bonfires;
-import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 import wehavecookies56.bonfires.client.gui.CreateBonfireScreen;
-import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
@@ -22,6 +18,7 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -29,135 +26,97 @@ import java.util.UUID;
  */
 public class ClientPacketHandler {
 
-    public static DistExecutor.SafeRunnable openBonfire(OpenBonfireGUI packet) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.registry, packet.canReinforce));
-            }
-        };
+
+    public static void openBonfire(OpenBonfireGUI packet) {
+        MinecraftClient.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) MinecraftClient.getInstance().world.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions.stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList(), packet.registry, packet.canReinforce));
     }
 
-    public static DistExecutor.SafeRunnable setBonfiresFromServer(SendBonfiresToClient packet) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                if (Minecraft.getInstance().screen != null) {
-                    if (Minecraft.getInstance().screen instanceof BonfireScreen gui) {
-                        gui.updateDimensionsFromServer(packet.registry, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList());
-                    }
-                }
+    public static void setBonfiresFromServer(SendBonfiresToClient packet) {
+        if (MinecraftClient.getInstance().currentScreen != null) {
+            if (MinecraftClient.getInstance().currentScreen instanceof BonfireScreen gui) {
+                gui.updateDimensionsFromServer(packet.registry, packet.dimensions.stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList());
             }
-        };
+        }
     }
 
-    public static DistExecutor.SafeRunnable openCreateScreen(BonfireTileEntity te) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                Minecraft.getInstance().setScreen(new CreateBonfireScreen(te));
-            }
-        };
+    public static void init() {
+        ClientPlayNetworking.registerGlobalReceiver(DeleteScreenshot.TYPE, (packet, player, responseSender) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(DisplayBonfireTitle.TYPE, (packet, player, responseSender) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(DisplayTitle.TYPE, (packet, player, responseSender) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(OpenCreateScreen.TYPE, (packet, player, responseSender) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(OpenBonfireGUI.TYPE, (packet, player, responseSender) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(QueueBonfireScreenshot.TYPE, (packet, player, responseSender) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(SendBonfiresToClient.TYPE, (packet, player, responseSender) -> packet.handle());
     }
 
-    public static DistExecutor.SafeRunnable displayTitle(DisplayTitle packet) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                Gui gui = Minecraft.getInstance().gui;
-                gui.setTitle(Component.translatable(packet.title));
-                gui.setSubtitle(Component.translatable(packet.subtitle));
-                gui.setTimes(packet.fadein, packet.stay, packet.fadeout);
-            }
-        };
+    public static void openCreateScreen(BonfireTileEntity te) {
+        MinecraftClient.getInstance().setScreen(new CreateBonfireScreen(te));
     }
 
-    public static DistExecutor.SafeRunnable syncBonfire(SyncBonfire packet) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
-                Level level = Minecraft.getInstance().level;
-                if (level.getBlockEntity(pos) != null && level.getBlockEntity(pos) instanceof BonfireTileEntity) {
-                    BonfireTileEntity te = (BonfireTileEntity) level.getBlockEntity(pos);
-                    if (te != null) {
-                        te.setBonfire(packet.bonfire);
-                        te.setBonfireType(packet.type);
-                        te.setLit(packet.lit);
-                        if (packet.lit)
-                            te.setID(packet.id);
-                    }
-                }
-            }
-        };
+    public static void displayTitle(DisplayTitle packet) {
+        InGameHud gui = MinecraftClient.getInstance().inGameHud;
+        gui.setTitle(Text.translatable(packet.title));
+        gui.setSubtitle(Text.translatable(packet.subtitle));
+        gui.setTitleTicks(packet.fadein, packet.stay, packet.fadeout);
     }
 
-    public static DistExecutor.SafeRunnable syncSaveData(SyncSaveData packet) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                BonfireHandler.getHandler(Minecraft.getInstance().level).getRegistry().setBonfires(packet.bonfires);
+    /*
+    public static void syncBonfire(SyncBonfire packet) {
+        BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
+        World level = MinecraftClient.getInstance().world;
+        if (level.getBlockEntity(pos) != null && level.getBlockEntity(pos) instanceof BonfireTileEntity) {
+            BonfireTileEntity te = (BonfireTileEntity) level.getBlockEntity(pos);
+            if (te != null) {
+                te.setBonfire(packet.bonfire);
+                te.setBonfireType(packet.type);
+                te.setLit(packet.lit);
+                if (packet.lit)
+                    te.setID(packet.id);
             }
-        };
+        }
+    }
+     */
+
+    public static void syncSaveData(Map<UUID, Bonfire> bonfires) {
+        //BonfireHandler.getHandler(MinecraftClient.getInstance().world).getRegistry().setBonfires(bonfires);
     }
 
-    public static DistExecutor.SafeRunnable syncEstusData(UUID lastRested, int uses) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                EstusHandler.IEstusHandler handler = EstusHandler.getHandler(Minecraft.getInstance().player);
-                handler.setLastRested(lastRested);
-                handler.setUses(uses);
-            }
-        };
+    public static void syncEstusData(UUID lastRested) {
+        EstusHandler.IEstusHandler handler = EstusHandler.getHandler(MinecraftClient.getInstance().player);
+        handler.setLastRested(lastRested);
     }
 
-    public static DistExecutor.SafeRunnable displayBonfireTravelled(Bonfire bonfire) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                String formattedDimName;
-                if (I18n.exists(LocalStrings.getDimensionKey(bonfire.getDimension()))) {
-                    String dimName = (bonfire.getDimension().location().getPath().replaceAll("_", " "));
-                    formattedDimName = WordUtils.capitalizeFully(dimName);
+    public static void displayBonfireTravelled(Bonfire bonfire) {
+        String formattedDimName;
+        if (I18n.hasTranslation(LocalStrings.getDimensionKey(bonfire.getDimension()))) {
+            String dimName = (bonfire.getDimension().getValue().getPath().replaceAll("_", " "));
+            formattedDimName = WordUtils.capitalizeFully(dimName);
+        } else {
+            formattedDimName = I18n.translate(LocalStrings.getDimensionKey(bonfire.getDimension()));
+        }
+        InGameHud gui = MinecraftClient.getInstance().inGameHud;
+        gui.setTitle(Text.translatable(bonfire.getName()));
+        gui.setSubtitle(Text.translatable(formattedDimName));
+        gui.setTitleTicks(10, 20, 10);
+    }
+
+    public static void queueBonfireScreenshot(String name, UUID uuid) {
+        ScreenshotUtils.startScreenshotTimer(name, uuid);
+    }
+
+    public static void deleteScreenshot(UUID uuid, String name) {
+        if (Bonfires.CONFIG.client.deleteScreenshotsOnDestroyed()) {
+            Path screenshotsDir = Paths.get(MinecraftClient.getInstance().runDirectory.getPath(), "bonfires/");
+            String fileName = ScreenshotUtils.getFileNameString(name, uuid);
+            File screenshotFile = new File(screenshotsDir.toFile(), fileName);
+            if (screenshotFile.exists() && screenshotFile.isFile()) {
+                String path = screenshotFile.getPath();
+                if (!screenshotFile.delete()) {
+                    Bonfires.LOGGER.warn("Failed to delete screenshot file " + path);
                 } else {
-                    formattedDimName = I18n.get(LocalStrings.getDimensionKey(bonfire.getDimension()));
-                }
-                Gui gui = Minecraft.getInstance().gui;
-                gui.setTitle(Component.translatable(bonfire.getName()));
-                gui.setSubtitle(Component.translatable(formattedDimName));
-                gui.setTimes(10, 20, 10);
-            }
-        };
-    }
-
-    public static DistExecutor.SafeRunnable queueBonfireScreenshot(String name, UUID uuid) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                ScreenshotUtils.startScreenshotTimer(name, uuid);
-            }
-        };
-    }
-
-    public static DistExecutor.SafeRunnable deleteScreenshot(UUID uuid, String name) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                if (BonfiresConfig.Client.deleteScreenshotsOnDestroyed) {
-                    Path screenshotsDir = Paths.get(Minecraft.getInstance().gameDirectory.getPath(), "bonfires/");
-                    String fileName = ScreenshotUtils.getFileNameString(name, uuid);
-                    File screenshotFile = new File(screenshotsDir.toFile(), fileName);
-                    if (screenshotFile.exists() && screenshotFile.isFile()) {
-                        String path = screenshotFile.getPath();
-                        if (!screenshotFile.delete()) {
-                            Bonfires.LOGGER.warn("Failed to delete screenshot file " + path);
-                        } else {
-                            Bonfires.LOGGER.info("Deleted screenshot for destroyed bonfire " + fileName);
-                        }
-                    }
+                    Bonfires.LOGGER.info("Deleted screenshot for destroyed bonfire " + fileName);
                 }
             }
-        };
+        }
     }
 }

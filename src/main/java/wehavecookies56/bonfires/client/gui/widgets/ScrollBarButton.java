@@ -1,13 +1,13 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.Text;
 
 import java.awt.*;
 
-public class ScrollBarButton extends Button {
+public class ScrollBarButton extends ButtonWidget {
 
     double clickX, clickY;
     public int startX, startY, top, bottom;
@@ -15,7 +15,7 @@ public class ScrollBarButton extends Button {
     int minHeight, maxHeight;
 
     public ScrollBarButton(int buttonId, int x, int y, int widthIn, int minHeight, int top, int bottom) {
-        super(new Builder(Component.empty(), button -> {}).pos(x, y).size(widthIn, minHeight));
+        super(x, y, widthIn, minHeight, Text.empty(), button -> {}, ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
         this.top = top;
         this.minHeight = minHeight;
         this.scrollBarHeight = minHeight;
@@ -28,11 +28,11 @@ public class ScrollBarButton extends Button {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            guiGraphics.setColor(1, 1, 1, 0.5F);
+            guiGraphics.setShaderColor(1, 1, 1, 0.5F);
             guiGraphics.fill(getX(), top, getX() + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
-            guiGraphics.setColor(1, 1, 1, 1);
+            guiGraphics.setShaderColor(1, 1, 1, 1);
             guiGraphics.fill(getX(), getY(), getX()+8, getY()+scrollBarHeight, new Color(81, 86, 71).hashCode());
             guiGraphics.fill(getX()+1, getY()+1, getX()+1+6, getY()+1+(scrollBarHeight-2), new Color(114, 118, 95).hashCode());
         }
@@ -72,7 +72,7 @@ public class ScrollBarButton extends Button {
         startX = getX();
         startY = getY();
         if (clickX >= getX() && clickX <= getX() + width && visible) {
-            playDownSound(Minecraft.getInstance().getSoundManager());
+            playDownSound(MinecraftClient.getInstance().getSoundManager());
         }
         return false;
     }

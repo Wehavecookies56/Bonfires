@@ -1,30 +1,36 @@
 package wehavecookies56.bonfires.packets.server;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-import wehavecookies56.bonfires.data.BonfireHandler;
-import wehavecookies56.bonfires.packets.Packet;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
-import wehavecookies56.bonfires.packets.client.SyncSaveData;
 
-public class RequestDimensionsFromServer extends Packet<RequestDimensionsFromServer> {
+public class RequestDimensionsFromServer implements FabricPacket {
 
-    public RequestDimensionsFromServer(FriendlyByteBuf buffer) {
-        super(buffer);
+    public static final PacketType<RequestDimensionsFromServer> TYPE = PacketType.create(new Identifier(Bonfires.modid, "request_dimensions_from_server"), RequestDimensionsFromServer::new);
+
+    public RequestDimensionsFromServer(PacketByteBuf buffer) {
+        decode(buffer);
     }
 
     public RequestDimensionsFromServer() {}
 
-    @Override
-    public void decode(FriendlyByteBuf buffer) {}
+    public void decode(PacketByteBuf buffer) {}
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {}
+    public void write(PacketByteBuf buffer) {}
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(context.getSender().server).getRegistry().getBonfires()), context.getSender());
-        PacketHandler.sendTo(new SendBonfiresToClient(), context.getSender());
+    public PacketType<?> getType() {
+        return TYPE;
+    }
+
+    public void handle(ServerPlayerEntity player) {
+        //PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(context.getSender().server).getRegistry().getBonfires()), context.getSender());
+        PacketHandler.sendTo(new SendBonfiresToClient(player.server), player);
     }
 }

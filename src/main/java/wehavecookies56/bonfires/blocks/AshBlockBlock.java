@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires.blocks;
 
-import net.minecraft.world.level.block.FallingBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.sound.BlockSoundGroup;
 
 /**
  * Created by Toby on 16/11/2016.
@@ -9,6 +9,6 @@ import net.minecraft.world.level.block.SoundType;
 public class AshBlockBlock extends FallingBlock {
 
     public AshBlockBlock() {
-        super(Properties.of().sound(SoundType.SAND).strength(0.25F));
+        super(Settings.create().sounds(BlockSoundGroup.SAND).strength(0.25F));
     }
 }

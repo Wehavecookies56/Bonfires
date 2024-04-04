@@ -1,23 +1,23 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 
 import java.awt.*;
 
-public class GuiButtonCheckBox extends AbstractButton {
+public class GuiButtonCheckBox extends PressableWidget {
 
     private boolean checked;
 
     public GuiButtonCheckBox(int x, int y, String buttonText, boolean checked) {
-        super(x, y, 10, 10, Component.translatable(buttonText));
+        super(x, y, 10, 10, Text.translatable(buttonText));
         this.checked = checked;
     }
 
@@ -26,22 +26,22 @@ public class GuiButtonCheckBox extends AbstractButton {
         this.checked = !checked;
     }
 
-    private final ResourceLocation TEXTURE = new ResourceLocation(Bonfires.modid, "textures/gui/checkbox.png");
+    private final Identifier TEXTURE = new Identifier(Bonfires.modid, "textures/gui/checkbox.png");
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            guiGraphics.blit(TEXTURE, getX(), getY(), 0, 0, 10, 10);
+            guiGraphics.drawTexture(TEXTURE, getX(), getY(), 0, 0, 10, 10);
             if (checked) {
-                guiGraphics.blit(TEXTURE, getX(), getY(), 10, 0, 10, 10);
+                guiGraphics.drawTexture(TEXTURE, getX(), getY(), 10, 0, 10, 10);
             }
-            guiGraphics.drawString(Minecraft.getInstance().font, getMessage().getString(), getX() + width + 3, getY() + 2, new Color(255, 255, 255).hashCode());
+            guiGraphics.drawText(MinecraftClient.getInstance().textRenderer, getMessage().getString(), getX() + width + 3, getY() + 2, new Color(255, 255, 255).hashCode(), true);
         }
     }
 
     @Override
     public int getWidth() {
-        return super.getWidth() + 3 + Minecraft.getInstance().font.width(getMessage());
+        return super.getWidth() + 3 + MinecraftClient.getInstance().textRenderer.getWidth(getMessage());
     }
 
     public boolean isChecked() {
@@ -53,8 +53,8 @@ public class GuiButtonCheckBox extends AbstractButton {
     }
 
     @Override
-    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
-        this.defaultButtonNarrationText(pNarrationElementOutput);
-        pNarrationElementOutput.add(NarratedElementType.HINT, isChecked() ? Component.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_CHECKED) : Component.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_UNCHECKED));
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+        this.appendDefaultNarrations(builder);
+        builder.put(NarrationPart.HINT, isChecked() ? Text.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_CHECKED) : Text.translatable(LocalStrings.NARRATION_BUTTON_CHECKBOX_UNCHECKED));
     }
 }

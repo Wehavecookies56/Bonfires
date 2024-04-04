@@ -1,30 +1,28 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.Text;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
 /**
  * Created by Toby on 17/12/2016.
  */
-public class BonfirePageButton extends Button {
+public class BonfirePageButton extends ButtonWidget {
 
     private BonfireScreen parent;
     private boolean isNext;
     private int id;
 
     public BonfirePageButton(BonfireScreen parent, int id, int x, int y, boolean isNext) {
-        super(new Builder(Component.empty(), press -> {
-            parent.action(id);
-        }).pos(x, y).size(8, 14));
+        super(x, y, 8, 14, Text.empty(), press -> parent.action(id), ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
         this.id = id;
         this.parent = parent;
         this.isNext = isNext;
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             int texWidth = 8;
             int texHeight = 14;
@@ -39,8 +37,8 @@ public class BonfirePageButton extends Button {
             if (!active) {
                 v = texHeight * 2;
             }
-            guiGraphics.setColor(1, 1, 1, 1);
-            guiGraphics.blit(parent.TRAVEL_TEX, getX(), getY(), u, v, width, height);
+            guiGraphics.setShaderColor(1, 1, 1, 1);
+            guiGraphics.drawTexture(parent.TRAVEL_TEX, getX(), getY(), u, v, width, height);
         }
     }
 }

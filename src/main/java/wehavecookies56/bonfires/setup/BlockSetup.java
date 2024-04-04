@@ -1,29 +1,29 @@
 package wehavecookies56.bonfires.setup;
 
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.blocks.AshBlockBlock;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 
-import java.util.function.Supplier;
-
 public class BlockSetup {
-
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Bonfires.modid);
-
-    public static final RegistryObject<Block>
-            ash_bone_pile = create("ash_bone_pile", AshBonePileBlock::new),
-            ash_block = create("ash_block", AshBlockBlock::new)
+    public static final Block
+            ash_bone_pile = new AshBonePileBlock(),
+            ash_block = new AshBlockBlock()
     ;
 
-    public static RegistryObject<Block> create(String name, Supplier<? extends Block> block) {
-        RegistryObject<Block> newBlock = BLOCKS.register(name, block);
-        ItemSetup.ITEMS.register(name, () -> new BlockItem(newBlock.get(), new Item.Properties()));
+    public static Block create(String name, Block block) {
+        Block newBlock = Registry.register(Registries.BLOCK, new Identifier(Bonfires.modid, name), block);
+        Registry.register(Registries.ITEM, new Identifier(Bonfires.modid, name), new BlockItem(newBlock, new Item.Settings()));
         return newBlock;
+    }
+
+    public static void init() {
+        create("ash_bone_pile", ash_bone_pile);
+        create("ash_block", ash_block);
     }
 }

@@ -1,12 +1,11 @@
 package wehavecookies56.bonfires.bonfire;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -14,22 +13,22 @@ import java.util.UUID;
 /**
  * Created by Toby on 07/11/2016.
  */
-public class Bonfire implements INBTSerializable<CompoundTag> {
+public class Bonfire {
 
     private String name;
     private UUID id;
     private UUID owner;
     private BlockPos pos;
-    ResourceKey<Level> dimension;
+    RegistryKey<World> dimension;
     boolean isPublic;
 
     Instant timeCreated;
 
-    public Bonfire(CompoundTag tag) {
+    public Bonfire(NbtCompound tag) {
         deserializeNBT(tag);
     }
 
-    public Bonfire(String name, UUID id, UUID owner, BlockPos pos, ResourceKey<Level> dimension, boolean isPublic, Instant timeCreated) {
+    public Bonfire(String name, UUID id, UUID owner, BlockPos pos, RegistryKey<World> dimension, boolean isPublic, Instant timeCreated) {
         this.name = name;
         this.id = id;
         this.owner = owner;
@@ -71,11 +70,11 @@ public class Bonfire implements INBTSerializable<CompoundTag> {
         this.pos = pos;
     }
 
-    public ResourceKey<Level> getDimension() {
+    public RegistryKey<World> getDimension() {
         return dimension;
     }
 
-    public void setDimension(ResourceKey<Level> dimension) {
+    public void setDimension(RegistryKey<World> dimension) {
         this.dimension = dimension;
     }
 
@@ -95,33 +94,31 @@ public class Bonfire implements INBTSerializable<CompoundTag> {
         this.timeCreated = timeCreated;
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag bonfireCompound = new CompoundTag();
-        bonfireCompound.putUUID("ID", getId());
+    public NbtCompound serializeNBT() {
+        NbtCompound bonfireCompound = new NbtCompound();
+        bonfireCompound.putUuid("ID", getId());
         bonfireCompound.putString("NAME", getName());
-        bonfireCompound.putUUID("OWNER", getOwner());
+        bonfireCompound.putUuid("OWNER", getOwner());
         bonfireCompound.putBoolean("PUBLIC", isPublic());
-        bonfireCompound.putString("DIM", getDimension().location().toString());
+        bonfireCompound.putString("DIM", getDimension().getValue().toString());
         bonfireCompound.putDouble("POSX", getPos().getX());
         bonfireCompound.putDouble("POSY", getPos().getY());
         bonfireCompound.putDouble("POSZ", getPos().getZ());
-        CompoundTag timeCompound = new CompoundTag();
+        NbtCompound timeCompound = new NbtCompound();
         timeCompound.putLong("SECOND", getTimeCreated().getEpochSecond());
         timeCompound.putInt("NANO", getTimeCreated().getNano());
         bonfireCompound.put("TIME", timeCompound);
         return bonfireCompound;
     }
 
-    @Override
-    public void deserializeNBT(CompoundTag tag) {
-        this.id = tag.getUUID("ID");
+    public void deserializeNBT(NbtCompound tag) {
+        this.id = tag.getUuid("ID");
         this.name = tag.getString("NAME");
-        this.owner = tag.getUUID("OWNER");
+        this.owner = tag.getUuid("OWNER");
         this.isPublic = tag.getBoolean("PUBLIC");
-        this.dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("DIM")));
+        this.dimension = RegistryKey.of(RegistryKeys.WORLD, new Identifier(tag.getString("DIM")));
         this.pos = new BlockPos((int) tag.getDouble("POSX"), (int) tag.getDouble("POSY"), (int) tag.getDouble("POSZ"));
-        CompoundTag timeTag = tag.getCompound("TIME");
+        NbtCompound timeTag = tag.getCompound("TIME");
         this.timeCreated = Instant.ofEpochSecond(timeTag.getLong("SECOND"), timeTag.getInt("NANO"));
     }
 }

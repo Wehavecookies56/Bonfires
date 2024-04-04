@@ -1,79 +1,70 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.CrashReport;
-import net.minecraft.CrashReportCategory;
-import net.minecraft.ReportedException;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import org.joml.Matrix4f;
 import wehavecookies56.bonfires.client.gui.ReinforceScreen;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
 import java.awt.*;
 
-public class ReinforceItemButton extends Button {
+public class ReinforceItemButton extends ButtonWidget {
 
     ReinforceScreen parent;
 
     public ReinforceItemButton(ReinforceScreen parent, int buttonId, int x, int y, int widthIn, int heightIn) {
-        super(new Builder(Component.empty(), button -> parent.action(buttonId)).pos(x, y).size(widthIn, heightIn));
+        super(x, y, widthIn, heightIn, Text.empty(), button -> parent.action(buttonId), ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
         this.parent = parent;
     }
 
-    public void drawItem(ItemStack istack, GuiGraphics guiGraphics, int x, int y, int scale) {
+    public void drawItem(ItemStack istack, DrawContext guiGraphics, int x, int y, int scale) {
         if (!istack.isEmpty()) {
-            BakedModel bakedmodel = Minecraft.getInstance().getItemRenderer().getModel(istack, Minecraft.getInstance().level, Minecraft.getInstance().player, 0);
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate((float)(x + 16), (float)(y + 16), (float)(150));
+            BakedModel bakedmodel = MinecraftClient.getInstance().getItemRenderer().getModel(istack, MinecraftClient.getInstance().world, MinecraftClient.getInstance().player, 0);
+            guiGraphics.getMatrices().push();
+            guiGraphics.getMatrices().translate((float)(x + 16), (float)(y + 16), (float)(150));
 
             try {
-                guiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
-                guiGraphics.pose().scale(16.0F * scale, 16.0F * scale, 16.0F * scale);
-                boolean flag = !bakedmodel.usesBlockLight();
+                guiGraphics.getMatrices().multiplyPositionMatrix((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
+                guiGraphics.getMatrices().scale(16.0F * scale, 16.0F * scale, 16.0F * scale);
+                boolean flag = !bakedmodel.isSideLit();
                 if (flag) {
-                    Lighting.setupForFlatItems();
+                    DiffuseLighting.disableGuiDepthLighting();
                 }
 
-                Minecraft.getInstance().getItemRenderer().render(istack, ItemDisplayContext.GUI, false, guiGraphics.pose(), guiGraphics.bufferSource(), 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
-                guiGraphics.flush();
+                MinecraftClient.getInstance().getItemRenderer().renderItem(istack, ModelTransformationMode.GUI, false, guiGraphics.getMatrices(), guiGraphics.getVertexConsumers(), 0xF000F0, OverlayTexture.DEFAULT_UV, bakedmodel);
+                guiGraphics.draw();
                 if (flag) {
-                    Lighting.setupFor3DItems();
+                    DiffuseLighting.enableGuiDepthLighting();
                 }
             } catch (Throwable throwable) {
-                CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
-                CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
-                crashreportcategory.setDetail("Item Type", () -> {
-                    return String.valueOf((Object)istack.getItem());
-                });
-                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(istack.getItem())));
-                crashreportcategory.setDetail("Item Damage", () -> {
-                    return String.valueOf(istack.getDamageValue());
-                });
-                crashreportcategory.setDetail("Item NBT", () -> {
-                    return String.valueOf((Object)istack.getTag());
-                });
-                crashreportcategory.setDetail("Item Foil", () -> {
-                    return String.valueOf(istack.hasFoil());
-                });
-                throw new ReportedException(crashreport);
+                CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
+                CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
+                crashReportSection.add("Item Type", () -> String.valueOf(istack.getItem()));
+                crashReportSection.add("Item Damage", () -> String.valueOf(istack.getDamage()));
+                crashReportSection.add("Item NBT", () -> String.valueOf(istack.getNbt()));
+                crashReportSection.add("Item Foil", () -> String.valueOf(istack.hasGlint()));
+                throw new CrashException(crashReport);
             }
 
-            guiGraphics.pose().popPose();
+            guiGraphics.getMatrices().pop();
         }
     }
 
-    public void drawButtons(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, float scrollOffset) {
+    public void drawButtons(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, float scrollOffset) {
         if (visible) {
-            Minecraft mc = Minecraft.getInstance();
-            double scale = mc.getWindow().getGuiScale();
+            MinecraftClient mc = MinecraftClient.getInstance();
+            double scale = mc.getWindow().getScaleFactor();
             int scissorX = getX(), scissorY = getY(), scissorWidth = 239, scissorHeight = 171;
             //RenderSystem.enableScissor(0, mc.getWindow().getGuiScaledHeight() - (scissorY + scissorHeight) * scale, (scissorWidth + scissorX) * scale, scissorHeight * scale);
             RenderSystem.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
@@ -98,11 +89,11 @@ public class ReinforceItemButton extends Button {
                 } else if (nextLevel > ReinforceHandler.getReinforceLevel(item).maxLevel()) {
 
                 }
-                String itemName = parent.reinforceableItems.get(i).getHoverName().getString();
+                String itemName = parent.reinforceableItems.get(i).getName().getString();
                 if (ReinforceHandler.getReinforceLevel(item).level() > 0) {
                     itemName += " +" + ReinforceHandler.getReinforceLevel(item).level();
                 }
-                guiGraphics.drawString(mc.font, itemName, getX()+2 + 32, ((int)yPos + 16) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
+                guiGraphics.drawText(mc.textRenderer, itemName, getX()+2 + 32, ((int)yPos + 16) - (mc.textRenderer.fontHeight / 2), new Color(255, 255, 255).hashCode(), true);
                 //ItemStack required = ReinforceHandler.getRequiredResources(parent.reinforceableItems.get(i));
                 //int textWidth = mc.font.width(required.getDisplayName());
                 //drawString(stack, mc.font, required.getDisplayName(), (x+2 + 220) - textWidth, ((int)yPos + 10) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
@@ -113,11 +104,11 @@ public class ReinforceItemButton extends Button {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
+    public void render(DrawContext guiGraphics, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
 
     }
 
-    public boolean mousePressed(Minecraft mc, double mouseX, double mouseY, float scrollOffset) {
+    public boolean mousePressed(MinecraftClient mc, double mouseX, double mouseY, float scrollOffset) {
         int minusWidth = 0;
         if (parent.scrollBar.visible) {
             minusWidth -= 8;

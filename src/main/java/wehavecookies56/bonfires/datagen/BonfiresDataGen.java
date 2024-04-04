@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.datagen;
-
+//TODO port datagen to fabric
+/*
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -64,3 +65,4 @@ public class BonfiresDataGen {
         }
     }
 }
+*/

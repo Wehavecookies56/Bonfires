@@ -1,60 +1,53 @@
 package wehavecookies56.bonfires.setup;
 
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
-import wehavecookies56.bonfires.BonfiresConfig;
-import wehavecookies56.bonfires.LocalStrings;
+import wehavecookies56.bonfires.client.ClientPacketHandler;
+import wehavecookies56.bonfires.client.ScreenshotUtils;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientSetup {
+import java.util.List;
 
-    @SubscribeEvent
-    public static void setupClient(final FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(new ClientSetup());
-        event.enqueueWork(() -> {
-            ItemProperties.register(ItemSetup.estus_flask.get(), new ResourceLocation(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
-                return entity != null && stack.getTag() != null ? (float) stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses") : 0.0F;
-            });
-        });
-    }
+public class ClientSetup implements ClientModInitializer {
 
-    @SubscribeEvent
-    public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(EntitySetup.BONFIRE.get(), BonfireRenderer::new);
-    }
-
-    @SubscribeEvent
-    public void tooltipEvent(ItemTooltipEvent event) {
-        ItemStack stack = event.getItemStack();
-        if (event.getItemStack().hasTag()) {
-            CompoundTag tag = event.getItemStack().getTag();
+    public static void tooltipEvent(ItemStack stack, TooltipContext context, List<Text> tooltip) {
+        if (stack.hasNbt()) {
+            NbtCompound tag = stack.getNbt();
             if (tag.contains("reinforce_level")) {
                 int level = tag.getInt("reinforce_level");
                 if (level > 0) {
-                    Component component = event.getToolTip().get(0);
-                    MutableComponent name = (MutableComponent) component;
+                    Text component = tooltip.get(0);
+                    MutableText name = (MutableText) component;
                     name.append(" +" + level);
-                    event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
-                    if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                        event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * level));
+                    tooltip.set(0, name.fillStyle(Style.EMPTY.withItalic(false)));
+                    if (!(stack.getItem() instanceof EstusFlaskItem)) {
+                        //tooltip.add(1, Text.translatable(LocalStrings.TOOLTIP_REINFORCE, Bonfires.CONFIG.common.reinforceDamagePerLevel() * level));
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public void onInitializeClient() {
+        ClientTickEvents.START_CLIENT_TICK.register(ScreenshotUtils::clientTick);
+        ItemTooltipCallback.EVENT.register(ClientSetup::tooltipEvent);
+        ModelPredicateProviderRegistry.register(ItemSetup.estus_flask, new Identifier(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
+            return entity != null && stack.getNbt() != null ? (float) stack.getNbt().getInt("estus") / (float) stack.getNbt().getInt("uses") : 0.0F;
+        });
+        BlockEntityRendererFactories.register(EntitySetup.BONFIRE, BonfireRenderer::new);
+        ClientPacketHandler.init();
     }
 }

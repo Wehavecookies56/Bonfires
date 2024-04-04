@@ -1,20 +1,24 @@
 package wehavecookies56.bonfires.packets.client;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
-import wehavecookies56.bonfires.packets.Packet;
 
-public class DisplayTitle extends Packet<DisplayTitle> {
+public class DisplayTitle implements FabricPacket {
 
-    public DisplayTitle(FriendlyByteBuf buffer) {
-        super(buffer);
-    }
+    public static final PacketType<DisplayTitle> TYPE = PacketType.create(new Identifier(Bonfires.modid, "display_title"), DisplayTitle::new);
 
     public String title, subtitle;
     public int fadein, stay, fadeout;
+
+    public DisplayTitle(PacketByteBuf buffer) {
+        decode(buffer);
+    }
 
     public DisplayTitle(String title, String subtitle, int fadein, int stay, int fadeout) {
         this.title = title;
@@ -24,26 +28,31 @@ public class DisplayTitle extends Packet<DisplayTitle> {
         this.fadeout = fadeout;
     }
 
-    @Override
-    public void decode(FriendlyByteBuf buffer) {
-        title = buffer.readUtf();
-        subtitle = buffer.readUtf();
+    public void decode(PacketByteBuf buffer) {
+        title = buffer.readString();
+        subtitle = buffer.readString();
         fadein = buffer.readInt();
         stay = buffer.readInt();
         fadeout = buffer.readInt();
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeUtf(title);
-        buffer.writeUtf(subtitle);
+    public void write(PacketByteBuf buffer) {
+        buffer.writeString(title);
+        buffer.writeString(subtitle);
         buffer.writeInt(fadein);
         buffer.writeInt(stay);
         buffer.writeInt(fadeout);
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientPacketHandler.displayTitle(this));
+    public PacketType<?> getType() {
+        return TYPE;
+    }
+
+    public void handle() {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientPacketHandler.displayTitle(this);
+        }
     }
 }

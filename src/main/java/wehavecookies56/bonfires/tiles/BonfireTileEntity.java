@@ -1,22 +1,24 @@
 package wehavecookies56.bonfires.tiles;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import wehavecookies56.bonfires.BonfiresConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.setup.EntitySetup;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -29,6 +31,8 @@ public class BonfireTileEntity extends BlockEntity {
     private boolean lit = false;
     private UUID id = UUID.randomUUID();
 
+    private Bonfire bonfireInstance;
+
     private boolean unlitPrivate = false;
     private String unlitName;
 
@@ -39,48 +43,64 @@ public class BonfireTileEntity extends BlockEntity {
     private BonfireType type = BonfireType.NONE;
 
     public BonfireTileEntity(BlockPos pos, BlockState state) {
-        super(EntitySetup.BONFIRE.get(), pos, state);
+        super(EntitySetup.BONFIRE, pos, state);
     }
 
-
-
-    @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
-        bonfire = compound.getBoolean("bonfire");
-        type = BonfireType.values()[compound.getInt("type")];
-        lit = compound.getBoolean("lit");
-        id = compound.getUUID("bonfire_id");
-        if (compound.contains("unlit")) {
-            CompoundTag unlit = compound.getCompound("unlit");
-            setNameInternal(unlit.getString("name"));
-            unlitPrivate = unlit.getBoolean("private");
+    public static void tick(World world, BlockPos pos, BlockState state, BonfireTileEntity be) {
+        if (be.bonfireInstance == null) {
+            if (world != null) {
+                if (!world.isClient) {
+                    be.bonfireInstance = BonfireHandler.getServerHandler(world.getServer()).getRegistry().getBonfire(be.id);
+                }
+            }
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag compound) {
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
+        bonfire = compound.getBoolean("bonfire");
+        type = BonfireType.values()[compound.getInt("type")];
+        lit = compound.getBoolean("lit");
+        id = compound.getUuid("bonfire_id");
+        if (compound.contains("unlit")) {
+            NbtCompound unlit = compound.getCompound("unlit");
+            setNameInternal(unlit.getString("name"));
+            unlitPrivate = unlit.getBoolean("private");
+        }
+        if (lit && compound.contains("instance")) {
+            bonfireInstance = new Bonfire(compound.getCompound("instance"));
+        }
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound compound) {
         compound.putBoolean("bonfire", bonfire);
         compound.putInt("type", type.ordinal());
         compound.putBoolean("lit", lit);
-        compound.putUUID("bonfire_id", id);
+        compound.putUuid("bonfire_id", id);
         if (unlitName != null && !unlitName.isEmpty()) {
-            CompoundTag unlit = new CompoundTag();
+            NbtCompound unlit = new NbtCompound();
             unlit.putString("name", unlitName);
             unlit.putBoolean("private", unlitPrivate);
             compound.put("unlit", unlit);
         }
-        super.saveAdditional(compound);
+        if (lit && bonfireInstance != null) {
+            compound.put("instance", bonfireInstance.serializeNBT());
+        }
+        super.writeNbt(compound);
     }
 
     public Bonfire createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
-        Bonfire bonfire = new Bonfire(name, id, owner, this.getBlockPos(), this.level.dimension(), isPublic, Instant.now());
-        BonfireHandler.getServerHandler(level.getServer()).addBonfire(bonfire);
+        Bonfire bonfire = new Bonfire(name, id, owner, this.pos, this.world.getRegistryKey(), isPublic, Instant.now());
+        BonfireHandler.getServerHandler(world.getServer()).addBonfire(bonfire);
+        bonfireInstance = bonfire;
         return bonfire;
     }
 
     public void destroyBonfire(UUID id) {
-        BonfireHandler.getHandler(level).removeBonfire(id);
+        BonfireHandler.getServerHandler(world.getServer()).removeBonfire(id);
+        bonfireInstance = null;
     }
 
     public boolean isBonfire() {
@@ -93,12 +113,12 @@ public class BonfireTileEntity extends BlockEntity {
 
     public void setBonfireType(BonfireType type) {
         this.type = type;
-        setChanged();
+        markDirty();
     }
 
     public void setBonfire(boolean bonfire) {
         this.bonfire = bonfire;
-        setChanged();
+        markDirty();
     }
 
     public boolean isLit() {
@@ -107,7 +127,7 @@ public class BonfireTileEntity extends BlockEntity {
 
     public void setLit(boolean lit) {
         this.lit = lit;
-        setChanged();
+        markDirty();
     }
 
     public UUID getID() {
@@ -116,7 +136,7 @@ public class BonfireTileEntity extends BlockEntity {
 
     public void setID(UUID id) {
         this.id = id;
-        setChanged();
+        markDirty();
     }
 
     private void setNameInternal(String name) {
@@ -125,7 +145,7 @@ public class BonfireTileEntity extends BlockEntity {
 
     public void setUnlitName(String name) {
         setNameInternal(name);
-        setChanged();
+        markDirty();
     }
 
     public String getUnlitName() {
@@ -134,7 +154,7 @@ public class BonfireTileEntity extends BlockEntity {
 
     public void setUnlitPrivate(boolean unlitPrivate) {
         this.unlitPrivate = unlitPrivate;
-        setChanged();
+        markDirty();
     }
 
     public boolean isUnlitPrivate() {
@@ -144,44 +164,32 @@ public class BonfireTileEntity extends BlockEntity {
     public boolean hasUnlitName() {
         return unlitName != null && !unlitName.isEmpty();
     }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return serializeNBT();
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        this.load(tag);
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.load(pkt.getTag());
-    }
-
     @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        return createNbt();
+    }
 
-    @OnlyIn(Dist.CLIENT)
-    public Component getDisplayName() {
-        if (!Minecraft.getInstance().player.isCrouching()) {
-            if (getID() != null && BonfiresConfig.Client.renderTextAboveBonfire) {
-                Bonfire bonfire = BonfireHandler.getHandler(Minecraft.getInstance().level).getRegistry().getBonfire(getID());
+    @Environment(EnvType.CLIENT)
+    public Text getDisplayName() {
+        if (!MinecraftClient.getInstance().player.isSneaking()) {
+            if (getID() != null && Bonfires.CONFIG.client.renderTextAboveBonfire()) {
+                Bonfire bonfire = bonfireInstance;
                 if (bonfire != null) {
                     if (bonfire.isPublic()) {
-                        return Component.translatable(bonfire.getName());
+                        return Text.translatable(bonfire.getName());
                     } else {
-                        return Component.translatable(LocalStrings.TILEENTITY_BONFIRE_LABEL, bonfire.getName());
+                        return Text.translatable(LocalStrings.TILEENTITY_BONFIRE_LABEL, bonfire.getName());
                     }
                 }
             }
         }
-        return Component.empty();
+        return Text.empty();
     }
 
 }

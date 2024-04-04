@@ -1,12 +1,12 @@
 package wehavecookies56.bonfires.bonfire;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.time.Instant;
 import java.util.*;
@@ -57,7 +57,7 @@ public class BonfireRegistry {
 
     }
 
-    public List<Bonfire> getBonfiresInRadius(BlockPos pos, int radius, ResourceLocation dimension) {
+    public List<Bonfire> getBonfiresInRadius(BlockPos pos, int radius, Identifier dimension) {
         return getBonfiresByDimension(dimension).stream().filter(bonfire -> {
             int cx = pos.getX();
             int cz = pos.getZ();
@@ -75,8 +75,8 @@ public class BonfireRegistry {
         }).collect(Collectors.toList());
     }
 
-    public Bonfire getBonfireAtPos(BlockPos pos, ResourceKey<Level> dim) {
-        List<Bonfire> result = getBonfiresByDimension(dim.location()).stream().filter(bonfire -> pos.equals(bonfire.getPos())).toList();
+    public Bonfire getBonfireAtPos(BlockPos pos, RegistryKey<World> dim) {
+        List<Bonfire> result = getBonfiresByDimension(dim.getValue()).stream().filter(bonfire -> pos.equals(bonfire.getPos())).toList();
         if (result.size() > 0) {
             return result.get(0);
         }
@@ -91,16 +91,16 @@ public class BonfireRegistry {
         return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic).collect(Collectors.toList());
     }
 
-    private List<Bonfire> getBonfiresByPublicPerDimension(boolean isPublic, ResourceLocation dim) {
-        return getBonfires().values().stream().filter(bonfire -> bonfire.getDimension().location().equals(dim) && bonfire.isPublic).collect(Collectors.toList());
+    private List<Bonfire> getBonfiresByPublicPerDimension(boolean isPublic, Identifier dim) {
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getDimension().getValue().equals(dim) && bonfire.isPublic).collect(Collectors.toList());
     }
 
-    private List<Bonfire> getPrivateBonfiresByOwnerPerDimension(UUID owner, ResourceLocation dim) {
-        return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic && bonfire.getDimension().location().equals(dim)).collect(Collectors.toList());
+    private List<Bonfire> getPrivateBonfiresByOwnerPerDimension(UUID owner, Identifier dim) {
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getOwner().compareTo(owner) == 0 && !bonfire.isPublic && bonfire.getDimension().getValue().equals(dim)).collect(Collectors.toList());
 
     }
 
-    public List<Bonfire> getPrivateBonfiresByOwnerAndPublicPerDimension(UUID owner, ResourceLocation dim) {
+    public List<Bonfire> getPrivateBonfiresByOwnerAndPublicPerDimension(UUID owner, Identifier dim) {
         List<Bonfire> list = new ArrayList<>();
         list.addAll(getBonfiresByPublicPerDimension(true, dim));
         list.addAll(getPrivateBonfiresByOwnerPerDimension(owner, dim));
@@ -120,8 +120,8 @@ public class BonfireRegistry {
         return list;
     }
 
-    public List<Bonfire> getBonfiresByDimension(ResourceLocation dimension) {
-        return getBonfires().values().stream().filter(bonfire -> bonfire.getDimension().location().equals(dimension)).collect(Collectors.toList());
+    public List<Bonfire> getBonfiresByDimension(Identifier dimension) {
+        return getBonfires().values().stream().filter(bonfire -> bonfire.getDimension().getValue().equals(dimension)).collect(Collectors.toList());
     }
 
     public boolean addBonfire(Bonfire bonfire) {
@@ -137,18 +137,18 @@ public class BonfireRegistry {
         return bonfires.getOrDefault(id, null);
     }
 
-    public CompoundTag writeToNBT(CompoundTag tagCompound, Map<UUID, Bonfire> bonfires) {
+    public NbtCompound writeToNBT(NbtCompound tagCompound, Map<UUID, Bonfire> bonfires) {
         for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
-            CompoundTag bonfireCompound = new CompoundTag();
-            bonfireCompound.putUUID("ID", pair.getValue().getId());
+            NbtCompound bonfireCompound = new NbtCompound();
+            bonfireCompound.putUuid("ID", pair.getValue().getId());
             bonfireCompound.putString("NAME", pair.getValue().getName());
-            bonfireCompound.putUUID("OWNER", pair.getValue().getOwner());
+            bonfireCompound.putUuid("OWNER", pair.getValue().getOwner());
             bonfireCompound.putBoolean("PUBLIC", pair.getValue().isPublic());
-            bonfireCompound.putString("DIM", pair.getValue().getDimension().location().toString());
+            bonfireCompound.putString("DIM", pair.getValue().getDimension().getValue().toString());
             bonfireCompound.putDouble("POSX", pair.getValue().getPos().getX());
             bonfireCompound.putDouble("POSY", pair.getValue().getPos().getY());
             bonfireCompound.putDouble("POSZ", pair.getValue().getPos().getZ());
-            CompoundTag timeCompound = new CompoundTag();
+            NbtCompound timeCompound = new NbtCompound();
             timeCompound.putLong("SECOND", pair.getValue().getTimeCreated().getEpochSecond());
             timeCompound.putInt("NANO", pair.getValue().getTimeCreated().getNano());
             bonfireCompound.put("TIME", timeCompound);
@@ -157,25 +157,27 @@ public class BonfireRegistry {
         return tagCompound;
     }
 
-    public void readFromNBT(CompoundTag tagCompound, Map<UUID, Bonfire> bonfires) {
-        for (String key : tagCompound.getAllKeys()) {
-            CompoundTag compound = tagCompound.getCompound(key);
-            String name = compound.getString("NAME");
-            UUID id = compound.getUUID("ID");
-            UUID owner = compound.getUUID("OWNER");
-            BlockPos pos = new BlockPos((int) compound.getDouble("POSX"), (int) compound.getDouble("POSY"), (int) compound.getDouble("POSZ"));
-            ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("DIM")));
-            boolean isPublic = compound.getBoolean("PUBLIC");
-            Instant time;
-            if (compound.contains("TIME", Tag.TAG_COMPOUND)) {
-                CompoundTag timeCompound = compound.getCompound("TIME");
-                time = Instant.ofEpochSecond(timeCompound.getLong("SECOND"), timeCompound.getInt("NANO"));
-            } else {
-                time = Instant.now();
-            }
-            Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic, time);
-            if (getBonfireAtPos(pos, dimension) == null) {
-                bonfires.put(id, bonfire);
+    public void readFromNBT(NbtCompound tagCompound, Map<UUID, Bonfire> bonfires) {
+        for (String key : tagCompound.getKeys()) {
+            if (!key.equals("loaded_old_data")) {
+                NbtCompound compound = tagCompound.getCompound(key);
+                String name = compound.getString("NAME");
+                UUID id = compound.getUuid("ID");
+                UUID owner = compound.getUuid("OWNER");
+                BlockPos pos = new BlockPos((int) compound.getDouble("POSX"), (int) compound.getDouble("POSY"), (int) compound.getDouble("POSZ"));
+                RegistryKey<World> dimension = RegistryKey.of(RegistryKeys.WORLD, new Identifier(compound.getString("DIM")));
+                boolean isPublic = compound.getBoolean("PUBLIC");
+                Instant time;
+                if (compound.contains("TIME", NbtElement.COMPOUND_TYPE)) {
+                    NbtCompound timeCompound = compound.getCompound("TIME");
+                    time = Instant.ofEpochSecond(timeCompound.getLong("SECOND"), timeCompound.getInt("NANO"));
+                } else {
+                    time = Instant.now();
+                }
+                Bonfire bonfire = new Bonfire(name, id, owner, pos, dimension, isPublic, time);
+                if (getBonfireAtPos(pos, dimension) == null) {
+                    bonfires.put(id, bonfire);
+                }
             }
         }
     }

@@ -1,12 +1,12 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
 /**
@@ -15,27 +15,27 @@ import wehavecookies56.bonfires.setup.ItemSetup;
 public class EstusShardItem extends Item {
 
     public EstusShardItem() {
-        super(new Properties());
+        super(new Settings());
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
-        if (!world.isClientSide) {
-            for (int i = 0; i < player.getInventory().items.size(); ++i) {
-                if (!ItemStack.isSameItem(player.getItemInHand(hand), ItemStack.EMPTY)) {
-                    if (!ItemStack.isSameItem(player.getInventory().getItem(i), ItemStack.EMPTY)) {
-                        if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
-                            CompoundTag compound = player.getInventory().getItem(i).getTag();
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (!world.isClient) {
+            for (int i = 0; i < player.getInventory().main.size(); ++i) {
+                if (!ItemStack.areItemsEqual(player.getStackInHand(hand), ItemStack.EMPTY)) {
+                    if (!ItemStack.areItemsEqual(player.getInventory().getStack(i), ItemStack.EMPTY)) {
+                        if (player.getInventory().getStack(i).getItem() == ItemSetup.estus_flask) {
+                            NbtCompound compound = player.getInventory().getStack(i).getNbt();
                             if (compound != null) {
-                                if (compound.getInt("uses") + player.getItemInHand(hand).getCount() <= 15) {
-                                    compound.putInt("uses", compound.getInt("uses") + player.getItemInHand(hand).getCount());
-                                    player.setItemInHand(hand, ItemStack.EMPTY);
-                                    return InteractionResultHolder.success(player.getItemInHand(hand));
+                                if (compound.getInt("uses") + player.getStackInHand(hand).getCount() <= 15) {
+                                    compound.putInt("uses", compound.getInt("uses") + player.getStackInHand(hand).getCount());
+                                    player.setStackInHand(hand, ItemStack.EMPTY);
+                                    return TypedActionResult.success(player.getStackInHand(hand));
                                 } else if (compound.getInt("uses") < 15) {
-                                    int remaining = player.getItemInHand(hand).getCount() - (15 - compound.getInt("uses"));
-                                    player.setItemInHand(hand, new ItemStack(this, remaining));
+                                    int remaining = player.getStackInHand(hand).getCount() - (15 - compound.getInt("uses"));
+                                    player.setStackInHand(hand, new ItemStack(this, remaining));
                                     compound.putInt("uses", 15);
-                                    return InteractionResultHolder.success(player.getItemInHand(hand));
+                                    return TypedActionResult.success(player.getStackInHand(hand));
                                 }
                             }
                         }

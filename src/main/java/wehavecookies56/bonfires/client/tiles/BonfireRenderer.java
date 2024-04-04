@@ -1,18 +1,17 @@
 package wehavecookies56.bonfires.client.tiles;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 import wehavecookies56.bonfires.client.ScreenshotUtils;
@@ -25,61 +24,61 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
  */
 public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
 
-    BlockEntityRendererProvider.Context context;
+    BlockEntityRendererFactory.Context context;
 
-    public BonfireRenderer(BlockEntityRendererProvider.Context context) {
+    public BonfireRenderer(BlockEntityRendererFactory.Context context) {
         this.context = context;
     }
 
     @Override
-    public void render(BonfireTileEntity te, float pPartialTicks, PoseStack stack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
+    public void render(BonfireTileEntity te, float pPartialTicks, MatrixStack stack, VertexConsumerProvider pBuffer, int pCombinedLight, int pCombinedOverlay) {
         if (te.isBonfire()) {
-            stack.pushPose();
+            stack.push();
             stack.translate(0.5, 0.65, 0.5);
-            if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getBlock() == BlockSetup.ash_bone_pile.get()) {
-                if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.NORTH) {
-                    stack.mulPose(Axis.YP.rotationDegrees(0));
+            if (MinecraftClient.getInstance().world.getBlockState(te.getPos()).getBlock() == BlockSetup.ash_bone_pile) {
+                if (MinecraftClient.getInstance().world.getBlockState(te.getPos()).get(AshBonePileBlock.FACING) == Direction.NORTH) {
+                    stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0));
                 }
-                else if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.EAST) {
-                    stack.mulPose(Axis.YP.rotationDegrees(90));
+                else if (MinecraftClient.getInstance().world.getBlockState(te.getPos()).get(AshBonePileBlock.FACING) == Direction.EAST) {
+                    stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
                 }
-                else if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.SOUTH) {
-                    stack.mulPose(Axis.YP.rotationDegrees(180));
+                else if (MinecraftClient.getInstance().world.getBlockState(te.getPos()).get(AshBonePileBlock.FACING) == Direction.SOUTH) {
+                    stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
                 }
-                else if (Minecraft.getInstance().level.getBlockState(te.getBlockPos()).getValue(AshBonePileBlock.FACING) == Direction.WEST) {
-                    stack.mulPose(Axis.YP.rotationDegrees(270));
+                else if (MinecraftClient.getInstance().world.getBlockState(te.getPos()).get(AshBonePileBlock.FACING) == Direction.WEST) {
+                    stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
                 }
             }
-            stack.mulPose(Axis.ZP.rotationDegrees(-130));
-            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemDisplayContext.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, Minecraft.getInstance().level, 0);
-            stack.popPose();
+            stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-130));
+            MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemSetup.coiled_sword), ModelTransformationMode.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, MinecraftClient.getInstance().world, 0);
+            stack.pop();
             if (te.isLit() && !ScreenshotUtils.isTimerStarted()) {
                 renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
             }
         }
     }
 
-    protected void renderNameTag(BonfireTileEntity te, Component pDisplayName, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, float partialTicks) {
+    protected void renderNameTag(BonfireTileEntity te, Text pDisplayName, MatrixStack pMatrixStack, VertexConsumerProvider pBuffer, int pPackedLight, float partialTicks) {
         if (!pDisplayName.getString().isEmpty() && lookingAt(partialTicks, te)) {
-            float f = (float) (te.getBlockState().getCollisionShape(Minecraft.getInstance().level, te.getBlockPos()).max(Direction.Axis.Y) + 0.5F);
-            pMatrixStack.pushPose();
+            float f = (float) (te.getCachedState().getCollisionShape(MinecraftClient.getInstance().world, te.getPos()).getMax(Direction.Axis.Y) + 0.5F);
+            pMatrixStack.push();
             pMatrixStack.translate(0.5D, (double)f, 0.5D);
-            pMatrixStack.mulPose(context.getBlockEntityRenderDispatcher().camera.rotation());
+            pMatrixStack.multiply(context.getEntityRenderDispatcher().camera.getRotation());
             pMatrixStack.scale(-0.025F, -0.025F, 0.025F);
-            Matrix4f matrix4f = pMatrixStack.last().pose();
-            float f1 = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
+            Matrix4f matrix4f = pMatrixStack.peek().getPositionMatrix();
+            float f1 = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
             int j = (int)(f1 * 255.0F) << 24;
-            Font fontrenderer = context.getFont();
-            float f2 = (float)(-fontrenderer.width(pDisplayName) / 2);
-            fontrenderer.drawInBatch(pDisplayName, f2, 0, 553648127, false, matrix4f, pBuffer, Font.DisplayMode.NORMAL, j, pPackedLight);
-            fontrenderer.drawInBatch(pDisplayName, f2, 0, -1, false, matrix4f, pBuffer, Font.DisplayMode.NORMAL, 0, pPackedLight);
-            pMatrixStack.popPose();
+            TextRenderer fontrenderer = context.getTextRenderer();
+            float f2 = (float)(-fontrenderer.getWidth(pDisplayName) / 2);
+            fontrenderer.draw(pDisplayName, f2, 0, 553648127, false, matrix4f, pBuffer, TextRenderer.TextLayerType.NORMAL, j, pPackedLight);
+            fontrenderer.draw(pDisplayName, f2, 0, -1, false, matrix4f, pBuffer, TextRenderer.TextLayerType.NORMAL, 0, pPackedLight);
+            pMatrixStack.pop();
         }
     }
 
     boolean lookingAt(float partialTicks, BonfireTileEntity te) {
-        HitResult rayTraceResult = Minecraft.getInstance().player.pick(20, partialTicks, false);
-        if (((BlockHitResult)rayTraceResult).getBlockPos().equals(te.getBlockPos())) {
+        HitResult rayTraceResult = MinecraftClient.getInstance().player.raycast(20, partialTicks, false);
+        if (rayTraceResult.getPos().distanceTo(te.getPos().toCenterPos()) < 0.8) {
             return true;
         } else {
             return false;

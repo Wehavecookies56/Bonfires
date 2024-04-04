@@ -1,14 +1,14 @@
 package wehavecookies56.bonfires.client.gui;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import wehavecookies56.bonfires.BonfiresConfig;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3i;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.ScreenshotUtils;
 import wehavecookies56.bonfires.client.gui.widgets.GuiButtonCheckBox;
@@ -25,20 +25,20 @@ import java.util.UUID;
 public class CreateBonfireScreen extends Screen {
 
     private NameTextField nameBox;
-    private Button accept;
+    private ButtonWidget accept;
     private final BonfireTileEntity te;
     private GuiButtonCheckBox isPrivate;
 
     public CreateBonfireScreen(BonfireTileEntity bonfireTE) {
-        super(Component.empty());
+        super(Text.empty());
         this.te = bonfireTE;
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!ScreenshotUtils.isTimerStarted()) {
             super.render(guiGraphics, mouseX, mouseY, partialTicks);
-            guiGraphics.drawString(minecraft.font, Component.translatable(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(Component.translatable(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
+            guiGraphics.drawText(client.textRenderer, Text.translatable(LocalStrings.TEXT_NAME), (width / 2) - client.textRenderer.getWidth(Text.translatable(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (client.textRenderer.fontHeight / 2) - 20, 0xFFFFFF, true);
             nameBox.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
@@ -65,11 +65,11 @@ public class CreateBonfireScreen extends Screen {
     protected void action(int id) {
         switch (id) {
             case 0:
-                if (!nameBox.getValue().isEmpty()) {
-                    Minecraft.getInstance().level.playSound(Minecraft.getInstance().player, te.getBlockPos(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.BLOCKS, 1, 1);
-                    PacketHandler.sendToServer(new LightBonfire(nameBox.getValue(), te, !isPrivate.isChecked(), BonfiresConfig.Client.enableAutomaticScreenshotOnCreation));
-                    if (!BonfiresConfig.Client.enableAutomaticScreenshotOnCreation) {
-                        onClose();
+                if (!nameBox.getText().isEmpty()) {
+                    MinecraftClient.getInstance().world.playSound(MinecraftClient.getInstance().player, te.getPos(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 1, 1);
+                    PacketHandler.sendToServer(new LightBonfire(nameBox.getText(), te, !isPrivate.isChecked(), Bonfires.CONFIG.client.enableAutomaticScreenshotOnCreation()));
+                    if (!Bonfires.CONFIG.client.enableAutomaticScreenshotOnCreation()) {
+                        close();
                     }
                 }
                 break;
@@ -78,8 +78,8 @@ public class CreateBonfireScreen extends Screen {
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void close() {
+        super.close();
     }
 
     @Override
@@ -89,37 +89,36 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void tick() {
-        if (te.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getBlockReach()+3) {
-            onClose();
+        if (te.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > MinecraftClient.getInstance().interactionManager.getReachDistance()+3) {
+            close();
         }
         if (nameBox != null) {
             nameBox.tick();
         }
         if (te.isRemoved()) {
-            onClose();
+            close();
         }
         super.tick();
     }
 
     public void updateButtons() {
-        accept.active = !nameBox.getValue().isEmpty();
+        accept.active = !nameBox.getText().isEmpty();
     }
 
     @Override
     public void init() {
         super.init();
-        addRenderableWidget(nameBox = new NameTextField(minecraft.font, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15));
-        addRenderableWidget(accept = Button.builder(Component.translatable(LocalStrings.BUTTON_ACCEPT), press -> action(0)).pos((width / 2) - (80 / 2), (height / 2) - (20 / 2) + 40).size(80, 20).build());
+        addDrawableChild(nameBox = new NameTextField(client.textRenderer, (width / 2) - (100 / 2), (height / 2) - (15 / 2), 100, 15));
+        addDrawableChild(accept = ButtonWidget.builder(Text.translatable(LocalStrings.BUTTON_ACCEPT), press -> action(0)).position((width / 2) - (80 / 2), (height / 2) - (20 / 2) + 40).size(80, 20).build());
         isPrivate = new GuiButtonCheckBox(0, 0, LocalStrings.BUTTON_SET_PRIVATE, false);
         isPrivate.setX((width / 2) - (isPrivate.getWidth() / 2));
         isPrivate.setY((height / 2) - (10 / 2) + 20);
-        addRenderableWidget(isPrivate);
+        addDrawableChild(isPrivate);
         nameBox.setMaxLength(14);
         updateButtons();
     }
-
     @Override
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         return false;
     }
 }

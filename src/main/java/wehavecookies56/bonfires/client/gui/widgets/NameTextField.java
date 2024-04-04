@@ -1,17 +1,17 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.text.Text;
 
 /**
  * Created by Toby on 10/11/2016.
  */
-public class NameTextField extends EditBox {
+public class NameTextField extends TextFieldWidget {
 
     private int max = 0;
 
-    public NameTextField(Font fontrendererObj, int x, int y, int width, int height) {
-        super(fontrendererObj, x, y, width, height, Component.empty());
+    public NameTextField(TextRenderer fontrendererObj, int x, int y, int width, int height) {
+        super(fontrendererObj, x, y, width, height, Text.empty());
     }
 }

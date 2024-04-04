@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires;
 
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.world.World;
 
 /**
  * Created by Toby on 15/11/2016.
@@ -35,6 +35,8 @@ public class LocalStrings {
             COMMAND_OWNER_DESC = "command.bonfires.owner.desc",
             COMMAND_RADIUS_DESC = "command.bonfires.radius.desc",
 
+            COMMAND_CLICK_TRAVEL = "command.bonfires.click.travel",
+
             BUTTON_TRAVEL = "button.bonfires.travel",
             BUTTON_LEAVE = "button.bonfires.leave",
             BUTTON_ACCEPT = "button.bonfires.accept",
@@ -59,7 +61,7 @@ public class LocalStrings {
             ITEMGROUP_BONFIRES = "itemGroup." + Bonfires.modid
     ;
 
-    public static String getDimensionKey(ResourceKey<Level> dimension) {
-        return "dimensions." + dimension.location().getNamespace() + "." + dimension.location().getPath();
+    public static String getDimensionKey(RegistryKey<World> dimension) {
+        return "dimensions." + dimension.getValue().getNamespace() + "." + dimension.getValue().getPath();
     }
 }

@@ -1,10 +1,9 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.world.item.Item;
-
+import net.minecraft.item.Item;
 public class UndeadBoneShardItem extends Item {
 
     public UndeadBoneShardItem() {
-        super(new Properties());
+        super(new Settings());
     }
 }
