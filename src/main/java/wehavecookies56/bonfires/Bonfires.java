@@ -4,14 +4,17 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,6 +32,7 @@ import wehavecookies56.bonfires.packets.client.SyncEstusData;
 import wehavecookies56.bonfires.setup.*;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -37,6 +41,8 @@ import java.util.Random;
 public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
+
+    public static final UUID reinforceDamageModifier = UUID.fromString("117e876c-c9bd-4898-985a-2ecb24198350");
 
     public Bonfires() {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -76,12 +82,12 @@ public class Bonfires {
     }
 
     @SubscribeEvent
-    public void livingHurt(LivingHurtEvent event) {
-        if (event.getSource().getDirectEntity() instanceof Player player) {
-            if (ReinforceHandler.canReinforce(player.getMainHandItem())) {
-                ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(player.getMainHandItem());
-                if (rlevel != null) {
-                    event.setAmount((float) ((event.getAmount() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())) * player.getAttackStrengthScale(0)));
+    public void modifyAttributes(ItemAttributeModifierEvent event) {
+        if (event.getSlotType() == EquipmentSlot.MAINHAND && event.getItemStack().getItem() != ItemSetup.estus_flask.get()) {
+            if (ReinforceHandler.canReinforce(event.getItemStack())) {
+                ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(event.getItemStack());
+                if (rlevel != null && rlevel.level() != 0) {
+                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(reinforceDamageModifier, "reinforce_damagebonus", BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level(), AttributeModifier.Operation.ADDITION));
                 }
             }
         }
