@@ -28,7 +28,7 @@ if (hasProperty("grgit")) {
 }
 
 def mcver = "1.19.4"
-version = mcver + '-1.2.16' + "-${commitId}"
+version = mcver + '-1.2.17' + "-${commitId}"
 group = 'wehavecookies56.bonfires'
 archivesBaseName = 'Bonfires'
 
