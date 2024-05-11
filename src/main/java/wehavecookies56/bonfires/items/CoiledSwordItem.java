@@ -2,12 +2,14 @@ package wehavecookies56.bonfires.items;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -32,8 +34,8 @@ public class CoiledSwordItem extends SwordItem {
             }
 
             @Override
-            public int getLevel() {
-                return 3;
+            public TagKey<Block> getIncorrectBlocksForDrops() {
+                return null;
             }
 
             @Override
@@ -45,14 +47,14 @@ public class CoiledSwordItem extends SwordItem {
             public Ingredient getRepairIngredient() {
                 return null;
             }
-        }, 3, -2.4F, new Properties().stacksTo(1));
+        }, new Properties().stacksTo(1));
     }
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if ((attacker instanceof Player player && player.getAttackStrengthScale(0) == 1.0F) || !(attacker instanceof Player)) {
             attacker.level().playSound(null, attacker, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
-            target.setSecondsOnFire(3);
+            target.igniteForTicks(60);
         }
         return super.hurtEnemy(stack, target, attacker);
     }

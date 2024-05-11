@@ -1,9 +1,11 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
@@ -11,43 +13,29 @@ import wehavecookies56.bonfires.packets.Packet;
 
 import java.util.UUID;
 
-public class SyncEstusData extends Packet<SyncEstusData> {
+public record SyncEstusData(UUID lastRested) implements Packet {
 
-    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "sync_estus_data");
+    public static final Type<SyncEstusData> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "sync_estus_data"));
 
-    public SyncEstusData(FriendlyByteBuf buffer) {
-        decode(buffer);
-    }
+    public static final StreamCodec<FriendlyByteBuf, SyncEstusData> STREAM_CODEC = StreamCodec.composite(
+            Bonfires.NULLABLE_UUID,
+            SyncEstusData::lastRested,
+            SyncEstusData::new
+    );
 
-    UUID lastRested;
     public SyncEstusData(EstusHandler.IEstusHandler handler) {
-        this.lastRested = handler.lastRested();
+        this(handler.lastRested());
     }
 
     @Override
-    public void decode(FriendlyByteBuf buffer) {
-        if (buffer.readBoolean()) {
-            this.lastRested = buffer.readUUID();
-        }
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBoolean(this.lastRested != null);
-        if (this.lastRested != null) {
-            buffer.writeUUID(this.lastRested);
-        }
-    }
-
-    @Override
-    public void handle(PlayPayloadContext context) {
+    public void handle(IPayloadContext context) {
         if (FMLEnvironment.dist.isClient()) {
             ClientPacketHandler.syncEstusData(this.lastRested);
         }
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

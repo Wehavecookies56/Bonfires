@@ -1,7 +1,11 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.nbt.CompoundTag;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,8 +18,8 @@ import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
+import wehavecookies56.bonfires.setup.ComponentSetup;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -23,20 +27,33 @@ import java.util.List;
  */
 public class EstusFlaskItem extends Item {
 
+    public record Estus(int uses, int maxUses){
+        public static final Codec<Estus> CODEC = RecordCodecBuilder.create(
+                estusInstance -> estusInstance.group(
+                        Codec.INT.fieldOf("uses").forGetter(Estus::uses),
+                        Codec.INT.fieldOf("max_uses").forGetter(Estus::maxUses)
+                ).apply(estusInstance, Estus::new)
+        );
+        public static final StreamCodec<FriendlyByteBuf, Estus> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.INT,
+                Estus::uses,
+                ByteBufCodecs.INT,
+                Estus::maxUses,
+                Estus::new
+        );
+        public Estus subtract(int amount) {
+            return new Estus(Math.max(this.uses - amount, 0), this.maxUses);
+        }
+    }
+
     public EstusFlaskItem() {
-        super(new Properties().stacksTo(1).food(new FoodProperties.Builder().alwaysEat().nutrition(0).saturationMod(0).build()));
+        super(new Properties().stacksTo(1).food(new FoodProperties.Builder().alwaysEdible().nutrition(0).saturationModifier(0).build()));
     }
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int p_41407_, boolean p_41408_) {
-        if (stack.getTag() == null) {
-            stack.setTag(new CompoundTag());
-        }
-        if (!stack.getTag().contains("estus")) {
-            stack.getTag().putInt("estus", 3);
-        }
-        if (!stack.getTag().contains("uses")) {
-            stack.getTag().putInt("uses", 3);
+        if (!stack.has(ComponentSetup.ESTUS)) {
+            stack.set(ComponentSetup.ESTUS, new Estus(3, 3));
         }
         super.inventoryTick(stack, level, entity, p_41407_, p_41408_);
     }
@@ -49,9 +66,10 @@ public class EstusFlaskItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity entity) {
         if (!world.isClientSide) {
-            if (stack.getTag() != null) {
-                if (stack.getTag().getInt("estus") > 0) {
-                    stack.getTag().putInt("estus", stack.getTag().getInt("estus") - 1);
+            if (stack.has(ComponentSetup.ESTUS)) {
+                Estus estus = stack.get(ComponentSetup.ESTUS);
+                if (estus.uses > 0) {
+                    stack.set(ComponentSetup.ESTUS, estus.subtract(1));
                     float heal = (float) BonfiresConfig.Server.estusFlaskBaseHeal;
                     if (ReinforceHandler.canReinforce(stack)) {
                         ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(stack);
@@ -68,8 +86,9 @@ public class EstusFlaskItem extends Item {
 
     @Override
     public int getBarColor(ItemStack stack) {
-        if (stack.getTag() != null) {
-            float f = Math.max(0.0F, (float)stack.getTag().getInt("estus")) / stack.getTag().getInt("uses");
+        if (stack.has(ComponentSetup.ESTUS)) {
+            Estus estus = stack.get(ComponentSetup.ESTUS);
+            float f = Math.max(0.0F, (float) estus.uses / (float) estus.maxUses);
             return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
         } else {
             return 0x00000000;
@@ -78,31 +97,30 @@ public class EstusFlaskItem extends Item {
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        if (stack.getTag() != null) {
-            return stack.getTag().getInt("estus") < stack.getTag().getInt("uses");
+        if (stack.has(ComponentSetup.ESTUS)) {
+            Estus estus = stack.get(ComponentSetup.ESTUS);
+            return estus.uses < estus.maxUses;
         }
         return false;
     }
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        if (stack.getTag() != null) {
-            return Math.round((float)13 * ((float)stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses")));
+        if (stack.has(ComponentSetup.ESTUS)) {
+            Estus estus = stack.get(ComponentSetup.ESTUS);
+            return Math.round((float)13 * ((float)estus.uses / (float) estus.maxUses));
         } else {
             return 0;
         }
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag advanced) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
         int level = ReinforceHandler.getReinforceLevel(stack).level();
         tooltip.add(Component.translatable(LocalStrings.TOOLTIP_ESTUS_HEAL, (BonfiresConfig.Server.estusFlaskBaseHeal + (BonfiresConfig.Server.estusFlaskHealPerLevel * level)) * 0.5F));
-        if (stack.getTag() != null) {
-            if (stack.getTag().contains("uses")) {
-                if (stack.getTag().contains("estus")) {
-                    tooltip.add(Component.translatable("Uses: " + stack.getTag().getInt("estus") + "/" + stack.getTag().getInt("uses")));
-                }
-            }
+        if (stack.has(ComponentSetup.ESTUS)) {
+            Estus estus = stack.get(ComponentSetup.ESTUS);
+            tooltip.add(Component.translatable("Uses: " + estus.uses + "/" + estus.maxUses));
         }
     }
 }

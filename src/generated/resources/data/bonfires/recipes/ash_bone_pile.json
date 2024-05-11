@@ -15,7 +15,7 @@
     "AAA"
   ],
   "result": {
-    "item": "bonfires:ash_bone_pile"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "bonfires:ash_bone_pile"
+  }
 }

@@ -13,7 +13,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import wehavecookies56.bonfires.setup.BlockSetup;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class BonfiresDataGen {
 
     @SubscribeEvent
@@ -32,8 +32,8 @@ public class BonfiresDataGen {
         DataGenerator generator = event.getGenerator();
         final ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(true, new Recipes(generator));
-        generator.addProvider(true, new LootTableProvider(generator.getPackOutput(), Collections.emptySet(), List.of(new LootTableProvider.SubProviderEntry(BonfiresBlockLoot::new, LootContextParamSets.BLOCK))));
+        generator.addProvider(true, new Recipes(generator, event.getLookupProvider()));
+        generator.addProvider(true, new LootTableProvider(generator.getPackOutput(), Collections.emptySet(), List.of(new LootTableProvider.SubProviderEntry(BonfiresBlockLoot::new, LootContextParamSets.BLOCK)), event.getLookupProvider()));
     }
 
     public static class BonfiresBlockLoot extends BlockLootSubProvider {

@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
 import wehavecookies56.bonfires.Bonfires;
@@ -34,7 +35,6 @@ import wehavecookies56.bonfires.packets.server.RequestDimensionsFromServer;
 import wehavecookies56.bonfires.packets.server.Travel;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +45,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -175,7 +176,7 @@ public class BonfireScreen extends Screen {
         if (bonfire.isRemoved()) {
             onClose();
         }
-        if (bonfire.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getBlockReach()+3) {
+        if (bonfire.getBlockPos().distManhattan(new Vec3i((int) minecraft.player.position().x, (int) minecraft.player.position().y, (int) minecraft.player.position().z)) > minecraft.player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE)+3) {
             onClose();
         }
     }

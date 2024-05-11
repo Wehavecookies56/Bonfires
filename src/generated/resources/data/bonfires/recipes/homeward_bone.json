@@ -4,16 +4,17 @@
   "group": "bonfires",
   "ingredients": [
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/blaze"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "bonfires:homeward_bone"
+    "count": 1,
+    "id": "bonfires:homeward_bone"
   }
 }

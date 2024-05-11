@@ -2,6 +2,7 @@ package wehavecookies56.bonfires.datagen;
 
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -12,12 +13,14 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
+import java.util.concurrent.CompletableFuture;
+
 public class Recipes extends RecipeProvider {
 
     DataGenerator generator;
 
-    public Recipes(DataGenerator generator) {
-        super(generator.getPackOutput());
+    public Recipes(DataGenerator generator, CompletableFuture<HolderLookup.Provider> providerCompletableFuture) {
+        super(generator.getPackOutput(), providerCompletableFuture);
         this.generator = generator;
     }
 
@@ -49,7 +52,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("OLO")
                 .pattern("FSF")
                 .pattern("OAO")
-                .define('O', Tags.Items.OBSIDIAN)
+                .define('O', Tags.Items.OBSIDIANS)
                 .define('L', Items.LAVA_BUCKET)
                 .define('F', Items.FIRE_CHARGE)
                 .define('S', Items.DIAMOND_SWORD)
@@ -79,8 +82,8 @@ public class Recipes extends RecipeProvider {
                 .unlockedBy("has_ender_pearl", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(Tags.Items.ENDER_PEARLS).build()))
                 .save(recipeConsumer);
 
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(Tags.Items.OBSIDIAN), RecipeCategory.MISC, ItemSetup.titanite_shard.get(), 0.25F, 1000)
-                .unlockedBy("has_obsidian", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(Tags.Items.OBSIDIAN).build()))
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(Tags.Items.OBSIDIANS), RecipeCategory.MISC, ItemSetup.titanite_shard.get(), 0.25F, 1000)
+                .unlockedBy("has_obsidian", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(Tags.Items.OBSIDIANS).build()))
                 .save(recipeConsumer);
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemSetup.large_titanite_shard.get())
@@ -104,6 +107,12 @@ public class Recipes extends RecipeProvider {
                 .define('E', Items.END_CRYSTAL)
                 .group(Bonfires.modid)
                 .unlockedBy("has_titanite_chunk", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.titanite_chunk.get()))
+                .save(recipeConsumer);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ItemSetup.estus_flask.get())
+                .requires(ItemSetup.estus_shard.get(), 3)
+                .requires(Items.GLASS_BOTTLE)
+                .group(Bonfires.modid)
+                .unlockedBy("has_estus_shard", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.estus_shard.get()))
                 .save(recipeConsumer);
     }
 }

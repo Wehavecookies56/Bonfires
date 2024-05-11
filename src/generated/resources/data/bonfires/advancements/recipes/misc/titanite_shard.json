@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:obsidian"
+            "items": "#c:obsidians"
           }
         ]
       },
@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_obsidian",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_obsidian"
     ]
   ],
   "rewards": {
     "recipes": [
       "bonfires:titanite_shard"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.data;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -41,7 +42,7 @@ public class EstusHandler {
         }
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider provider) {
             final CompoundTag tag = new CompoundTag();
             if (lastRested() != null) {
                 tag.putUUID("lastRested", lastRested());
@@ -50,7 +51,7 @@ public class EstusHandler {
         }
 
         @Override
-        public void deserializeNBT(CompoundTag tag) {
+        public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
             if (tag.contains("lastRested")) {
                 setLastRested(tag.getUUID("lastRested"));
             }

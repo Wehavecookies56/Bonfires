@@ -1,7 +1,7 @@
 package wehavecookies56.bonfires;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by Toby on 17/12/2016.
  */
-@Mod.EventBusSubscriber(modid = Bonfires.modid, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Bonfires.modid, bus = EventBusSubscriber.Bus.MOD)
 public class BonfiresConfig {
 
     public static class Client {

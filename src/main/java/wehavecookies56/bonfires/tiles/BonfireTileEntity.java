@@ -2,9 +2,12 @@ package wehavecookies56.bonfires.tiles;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,9 +19,9 @@ import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.setup.EntitySetup;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 /**
  * Created by Toby on 06/11/2016.
@@ -34,7 +37,9 @@ public class BonfireTileEntity extends BlockEntity {
     private boolean unlitPrivate = false;
     private String unlitName;
     public enum BonfireType {
-        BONFIRE, PRIMAL, NONE
+        BONFIRE, PRIMAL, NONE;
+
+        public static final StreamCodec<FriendlyByteBuf, BonfireType> STREAM_CODEC = StreamCodec.of((byteBuf, type) -> byteBuf.writeInt(type.ordinal()), byteBuf -> BonfireType.values()[byteBuf.readInt()]);
     }
 
     private BonfireType type = BonfireType.NONE;
@@ -55,8 +60,8 @@ public class BonfireTileEntity extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        super.loadAdditional(compound, provider);
         bonfire = compound.getBoolean("bonfire");
         type = BonfireType.values()[compound.getInt("type")];
         lit = compound.getBoolean("lit");
@@ -72,7 +77,7 @@ public class BonfireTileEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag compound) {
+    protected void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         compound.putBoolean("bonfire", bonfire);
         compound.putInt("type", type.ordinal());
         compound.putBoolean("lit", lit);
@@ -86,7 +91,7 @@ public class BonfireTileEntity extends BlockEntity {
         if (lit && bonfireInstance != null) {
             compound.put("instance", bonfireInstance.serializeNBT());
         }
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, provider);
     }
 
 
@@ -166,18 +171,20 @@ public class BonfireTileEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return serializeNBT();
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, provider);
+        return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        this.load(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
+        this.loadAdditional(tag, provider);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.load(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider provider) {
+        this.loadAdditional(pkt.getTag(), provider);
     }
 
     @Nullable

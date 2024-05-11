@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.data;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -47,7 +48,7 @@ public class BonfireHandler extends SavedData {
                     CompoundTag main = NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap());
                     CompoundTag data = main.getCompound("data").getCompound("bonfires:bonfire");
                     BonfireRegistry reg = new BonfireRegistry();
-                    reg.readFromNBT(data, reg.getBonfires());
+                    reg.readFromNBT(data);
                     reg.getBonfires().entrySet().forEach(entry -> {
                         this.addBonfire(entry.getValue());
                     });
@@ -67,16 +68,16 @@ public class BonfireHandler extends SavedData {
         return new BonfireHandler();
     }
 
-    private static BonfireHandler load(CompoundTag tag) {
+    private static BonfireHandler load(CompoundTag tag, HolderLookup.Provider provider) {
         BonfireHandler data = BonfireHandler.create();
-        data.getRegistry().readFromNBT(tag, data.getRegistry().getBonfires());
+        data.getRegistry().readFromNBT(tag);
         data.loadedOldData = tag.getBoolean("loaded_old_data");
         return data;
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
-        getRegistry().writeToNBT(tag, getRegistry().getBonfires());
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+        getRegistry().writeToNBT(tag);
         tag.putBoolean("loaded_old_data", loadedOldData);
         return tag;
     }

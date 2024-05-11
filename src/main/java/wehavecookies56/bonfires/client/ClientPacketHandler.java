@@ -3,7 +3,6 @@ package wehavecookies56.bonfires.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -34,14 +33,14 @@ import java.util.UUID;
 public class ClientPacketHandler {
 
     public static void openBonfire(OpenBonfireGUI packet) {
-        Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.registry, packet.canReinforce));
+        Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.pos()), packet.ownerName(), packet.dimensions().stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.registry(), packet.canReinforce()));
 
     }
 
     public static void setBonfiresFromServer(SendBonfiresToClient packet) {
         if (Minecraft.getInstance().screen != null) {
             if (Minecraft.getInstance().screen instanceof BonfireScreen gui) {
-                gui.updateDimensionsFromServer(packet.registry, packet.dimensions.stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList());
+                gui.updateDimensionsFromServer(packet.registry(), packet.dimensions().stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList());
             }
         }
     }
@@ -52,22 +51,21 @@ public class ClientPacketHandler {
 
     public static void displayTitle(DisplayTitle packet) {
         Gui gui = Minecraft.getInstance().gui;
-        gui.setTitle(Component.translatable(packet.title));
-        gui.setSubtitle(Component.translatable(packet.subtitle));
-        gui.setTimes(packet.fadein, packet.stay, packet.fadeout);
+        gui.setTitle(Component.translatable(packet.title()));
+        gui.setSubtitle(Component.translatable(packet.subtitle()));
+        gui.setTimes(packet.fadein(), packet.stay(), packet.fadeout());
     }
 
     public static void syncBonfire(SyncBonfire packet) {
-        BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
         Level level = Minecraft.getInstance().level;
-        if (level.getBlockEntity(pos) != null && level.getBlockEntity(pos) instanceof BonfireTileEntity) {
-            BonfireTileEntity te = (BonfireTileEntity) level.getBlockEntity(pos);
+        if (level.getBlockEntity(packet.pos()) != null && level.getBlockEntity(packet.pos()) instanceof BonfireTileEntity) {
+            BonfireTileEntity te = (BonfireTileEntity) level.getBlockEntity(packet.pos());
             if (te != null) {
-                te.setBonfire(packet.bonfire);
-                te.setBonfireType(packet.type);
-                te.setLit(packet.lit);
-                if (packet.lit)
-                    te.setID(packet.id);
+                te.setBonfire(packet.bonfire());
+                te.setBonfireType(packet.bonfireType());
+                te.setLit(packet.lit());
+                if (packet.lit())
+                    te.setID(packet.id());
             }
         }
     }

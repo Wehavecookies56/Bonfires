@@ -11,9 +11,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "bonfires:titanite_chunk"
-            ]
+            "items": "bonfires:titanite_chunk"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_titanite_chunk",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_titanite_chunk"
     ]
   ],
   "rewards": {
     "recipes": [
       "bonfires:titanite_slab"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -32,6 +32,7 @@
     }
   ],
   "result": {
-    "item": "bonfires:ash_block"
+    "count": 1,
+    "id": "bonfires:ash_block"
   }
 }

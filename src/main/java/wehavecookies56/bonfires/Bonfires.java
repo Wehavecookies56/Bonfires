@@ -2,8 +2,14 @@ package wehavecookies56.bonfires;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +19,7 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
@@ -26,12 +33,10 @@ import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.SyncEstusData;
-import wehavecookies56.bonfires.setup.BlockSetup;
-import wehavecookies56.bonfires.setup.CreativeTabSetup;
-import wehavecookies56.bonfires.setup.EntitySetup;
-import wehavecookies56.bonfires.setup.ItemSetup;
+import wehavecookies56.bonfires.setup.*;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -40,6 +45,8 @@ import java.util.Random;
 public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
+
+    public static final UUID reinforceDamageModifier = UUID.fromString("117e876c-c9bd-4898-985a-2ecb24198350");
 
     public Bonfires(IEventBus modEventBus) {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -50,6 +57,7 @@ public class Bonfires {
         CreativeTabSetup.TABS.register(modEventBus);
         EstusHandler.ATTACHMENT_TYPES.register(modEventBus);
         BonfireLitTrigger.CRITERION_TRIGGERS.register(modEventBus);
+        ComponentSetup.COMPONENTS.register(modEventBus);
 
         modEventBus.addListener(PacketHandler::register);
 
@@ -104,4 +112,34 @@ public class Bonfires {
         BonfiresCommand.register(dispatcher);
         TravelCommand.register(dispatcher);
     }
+
+    @SubscribeEvent
+    public void modifyAttributes(ItemAttributeModifierEvent event) {
+        if (event.getSlotType() == EquipmentSlot.MAINHAND && event.getItemStack().getItem() != ItemSetup.estus_flask) {
+            if (ReinforceHandler.canReinforce(event.getItemStack())) {
+                ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(event.getItemStack());
+                if (rlevel != null && rlevel.level() != 0) {
+                    event.getModifiers().put(Attributes.ATTACK_DAMAGE, new AttributeModifier(reinforceDamageModifier, "reinforce_damagebonus", BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level(), AttributeModifier.Operation.ADD_VALUE));
+                }
+            }
+        }
+    }
+
+    public static final StreamCodec<FriendlyByteBuf, UUID> NULLABLE_UUID = new StreamCodec<>() {
+        @Override
+        public UUID decode(FriendlyByteBuf byteBuf) {
+            if (byteBuf.readBoolean()) {
+                return UUIDUtil.STREAM_CODEC.decode(byteBuf);
+            }
+            return null;
+        }
+
+        @Override
+        public void encode(FriendlyByteBuf byteBuf, UUID uuid) {
+            byteBuf.writeBoolean(uuid != null);
+            if (uuid != null) {
+                UUIDUtil.STREAM_CODEC.encode(byteBuf, uuid);
+            }
+        }
+    };
 }

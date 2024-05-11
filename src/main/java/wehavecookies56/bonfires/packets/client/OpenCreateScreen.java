@@ -3,40 +3,32 @@ package wehavecookies56.bonfires.packets.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-public class OpenCreateScreen extends Packet<OpenCreateScreen> {
+public record OpenCreateScreen(BlockPos tePos) implements Packet {
 
-    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "open_create_screen");
+    public static final Type<OpenCreateScreen> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "open_create_screen"));
 
-    public OpenCreateScreen(FriendlyByteBuf buffer) {
-        decode(buffer);
-    }
-
-    BlockPos tePos;
+    public static final StreamCodec<FriendlyByteBuf, OpenCreateScreen> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC,
+            OpenCreateScreen::tePos,
+            OpenCreateScreen::new
+    );
 
     public OpenCreateScreen(BonfireTileEntity te) {
-        this.tePos = te.getBlockPos();
+        this(te.getBlockPos());
     }
 
     @Override
-    public void decode(FriendlyByteBuf buffer) {
-        tePos = buffer.readBlockPos();
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(tePos);
-    }
-
-    @Override
-    public void handle(PlayPayloadContext context) {
+    public void handle(IPayloadContext context) {
         if (FMLEnvironment.dist.isClient()) {
             BonfireTileEntity te = (BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(tePos);
             ClientPacketHandler.openCreateScreen(te);
@@ -44,7 +36,7 @@ public class OpenCreateScreen extends Packet<OpenCreateScreen> {
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

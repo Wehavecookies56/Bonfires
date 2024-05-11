@@ -5,9 +5,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
@@ -20,7 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class ScreenshotUtils {
 
     private static int timerTicks = 0;
@@ -68,25 +68,23 @@ public class ScreenshotUtils {
     }
 
     @SubscribeEvent
-    public static void clientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            if (Minecraft.getInstance().level != null) {
-                if (Minecraft.getInstance().player != null) {
-                    if (timerStarted) {
-                        timerTicks++;
-                    }
-                    if (timerTicks >= BonfiresConfig.Client.screenshotWaitTicks) {
-                        timerTicks = 0;
-                        timerStarted = false;
-                        Minecraft.getInstance().options.hideGui = false;
-                        takeScreenshot(name, uuid);
-                        if (Minecraft.getInstance().screen != null) {
-                            if (Minecraft.getInstance().screen instanceof CreateBonfireScreen create) {
-                                create.onClose();
-                            }
-                            if (Minecraft.getInstance().screen instanceof BonfireScreen bonfire) {
-                                bonfire.loadBonfireScreenshot();
-                            }
+    public static void clientTick(ClientTickEvent.Pre event) {
+        if (Minecraft.getInstance().level != null) {
+            if (Minecraft.getInstance().player != null) {
+                if (timerStarted) {
+                    timerTicks++;
+                }
+                if (timerTicks >= BonfiresConfig.Client.screenshotWaitTicks) {
+                    timerTicks = 0;
+                    timerStarted = false;
+                    Minecraft.getInstance().options.hideGui = false;
+                    takeScreenshot(name, uuid);
+                    if (Minecraft.getInstance().screen != null) {
+                        if (Minecraft.getInstance().screen instanceof CreateBonfireScreen create) {
+                            create.onClose();
+                        }
+                        if (Minecraft.getInstance().screen instanceof BonfireScreen bonfire) {
+                            bonfire.loadBonfireScreenshot();
                         }
                     }
                 }
@@ -95,7 +93,7 @@ public class ScreenshotUtils {
     }
 
     @SubscribeEvent
-    public static void renderOverlays(RenderGuiOverlayEvent.Pre event) {
+    public static void renderOverlays(RenderGuiLayerEvent.Pre event) {
         event.setCanceled(timerStarted);
     }
 }

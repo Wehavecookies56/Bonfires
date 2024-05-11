@@ -3,10 +3,11 @@ package wehavecookies56.bonfires.bonfire;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import java.util.UUID;
 /**
  * Created by Toby on 07/11/2016.
  */
-public class Bonfire implements INBTSerializable<CompoundTag> {
+public class Bonfire {
 
     private String name;
     private UUID id;
@@ -95,7 +96,6 @@ public class Bonfire implements INBTSerializable<CompoundTag> {
         this.timeCreated = timeCreated;
     }
 
-    @Override
     public CompoundTag serializeNBT() {
         CompoundTag bonfireCompound = new CompoundTag();
         bonfireCompound.putUUID("ID", getId());
@@ -113,7 +113,6 @@ public class Bonfire implements INBTSerializable<CompoundTag> {
         return bonfireCompound;
     }
 
-    @Override
     public void deserializeNBT(CompoundTag tag) {
         this.id = tag.getUUID("ID");
         this.name = tag.getString("NAME");
@@ -124,4 +123,6 @@ public class Bonfire implements INBTSerializable<CompoundTag> {
         CompoundTag timeTag = tag.getCompound("TIME");
         this.timeCreated = Instant.ofEpochSecond(timeTag.getLong("SECOND"), timeTag.getInt("NANO"));
     }
+
+    public static final StreamCodec<FriendlyByteBuf, Bonfire> STREAM_CODEC = StreamCodec.of((byteBuf, bonfire) -> byteBuf.writeNbt(bonfire.serializeNBT()), byteBuf -> new Bonfire(byteBuf.readNbt()));
 }

@@ -4,6 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -137,7 +139,7 @@ public class BonfireRegistry {
         return bonfires.getOrDefault(id, null);
     }
 
-    public CompoundTag writeToNBT(CompoundTag tagCompound, Map<UUID, Bonfire> bonfires) {
+    public CompoundTag writeToNBT(CompoundTag tagCompound) {
         for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             CompoundTag bonfireCompound = new CompoundTag();
             bonfireCompound.putUUID("ID", pair.getValue().getId());
@@ -157,7 +159,7 @@ public class BonfireRegistry {
         return tagCompound;
     }
 
-    public void readFromNBT(CompoundTag tagCompound, Map<UUID, Bonfire> bonfires) {
+    public void readFromNBT(CompoundTag tagCompound) {
         for (String key : tagCompound.getAllKeys()) {
             if (!key.equals("loaded_old_data")) {
                 CompoundTag compound = tagCompound.getCompound(key);
@@ -181,5 +183,19 @@ public class BonfireRegistry {
             }
         }
     }
+
+    public static final StreamCodec<FriendlyByteBuf, BonfireRegistry> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, BonfireRegistry>() {
+        @Override
+        public BonfireRegistry decode(FriendlyByteBuf byteBuf) {
+            BonfireRegistry registry = new BonfireRegistry();
+            registry.readFromNBT(byteBuf.readNbt());
+            return registry;
+        }
+
+        @Override
+        public void encode(FriendlyByteBuf byteBuf, BonfireRegistry registry) {
+            byteBuf.writeNbt(registry.writeToNBT(new CompoundTag()));
+        }
+    };
 
 }

@@ -1,7 +1,6 @@
 package wehavecookies56.bonfires.setup;
 
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -9,26 +8,24 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import wehavecookies56.bonfires.Bonfires;
-import wehavecookies56.bonfires.BonfiresConfig;
-import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
-import wehavecookies56.bonfires.items.EstusFlaskItem;
+import wehavecookies56.bonfires.data.ReinforceHandler;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
 
     @SubscribeEvent
     public static void setupClient(final FMLClientSetupEvent event) {
-        NeoForge.EVENT_BUS.register(new ClientSetup.ForgeBusEvents());
+        NeoForge.EVENT_BUS.register(new ClientSetup.GameBusEvents());
         event.enqueueWork(() -> {
             ItemProperties.register(ItemSetup.estus_flask.get(), new ResourceLocation(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
-                return entity != null && stack.getTag() != null ? (float) stack.getTag().getInt("estus") / (float) stack.getTag().getInt("uses") : 0.0F;
+                return entity != null && stack.has(ComponentSetup.ESTUS) ? (float) stack.get(ComponentSetup.ESTUS).uses() / (float) stack.get(ComponentSetup.ESTUS).maxUses() : 0.0F;
             });
         });
     }
@@ -38,23 +35,18 @@ public class ClientSetup {
         event.registerBlockEntityRenderer(EntitySetup.BONFIRE.get(), BonfireRenderer::new);
     }
 
-    public static class ForgeBusEvents {
+    public static class GameBusEvents {
         @SubscribeEvent
         public void tooltipEvent(ItemTooltipEvent event) {
             ItemStack stack = event.getItemStack();
-            if (event.getItemStack().hasTag()) {
-                CompoundTag tag = event.getItemStack().getTag();
-                if (tag.contains("reinforce_level")) {
-                    int level = tag.getInt("reinforce_level");
-                    if (level > 0) {
-                        Component component = event.getToolTip().get(0);
-                        MutableComponent name = (MutableComponent) component;
-                        name.append(" +" + level);
-                        event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
-                        if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                            event.getToolTip().add(1, Component.translatable(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * level));
-                        }
-                    }
+            if (event.getItemStack().has(ComponentSetup.REINFORCE_LEVEL)) {
+                ReinforceHandler.ReinforceLevel reinforceLevel = event.getItemStack().get(ComponentSetup.REINFORCE_LEVEL);
+                int level = reinforceLevel.level();
+                if (level > 0) {
+                    Component component = event.getToolTip().get(0);
+                    MutableComponent name = (MutableComponent) component;
+                    name.append(" +" + level);
+                    event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
                 }
             }
         }

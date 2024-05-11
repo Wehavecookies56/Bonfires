@@ -1,23 +1,28 @@
 package wehavecookies56.bonfires.blocks;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -49,17 +54,19 @@ import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
+import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
+import wehavecookies56.bonfires.setup.ComponentSetup;
 import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -107,7 +114,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
             if (te.isBonfire()) {
                 if (!te.isLit()) {
@@ -117,19 +124,19 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                                 PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayer) player);
                                 world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
                             }
-                            return InteractionResult.SUCCESS;
+                            return ItemInteractionResult.SUCCESS;
                         }
                     } else {
                         if (te.hasUnlitName()) {
                             PacketHandler.sendToServer(new LightBonfire(te.getUnlitName(), te, !te.isUnlitPrivate(), BonfiresConfig.Client.enableAutomaticScreenshotOnCreation));
                         }
-                        return InteractionResult.SUCCESS;
+                        return ItemInteractionResult.SUCCESS;
                     }
                 } else {
                     if (!world.isClientSide) {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
-                            return InteractionResult.SUCCESS;
+                            return ItemInteractionResult.SUCCESS;
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
@@ -141,10 +148,11 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                                 profile = new GameProfile(registry.getBonfire(te.getID()).getOwner(), "Unknown");
                             }
                             for (int i = 0; i < player.getInventory().items.size(); i++) {
-                                if (!ItemStack.isSameItem(player.getInventory().getItem(i), ItemStack.EMPTY)) {
-                                    if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
-                                        if (player.getInventory().getItem(i).hasTag()) {
-                                            player.getInventory().getItem(i).getTag().putInt("estus", player.getInventory().getItem(i).getTag().getInt("uses"));
+                                if (!stack.isEmpty()) {
+                                    if (stack.getItem() == ItemSetup.estus_flask.get()) {
+                                        if (stack.has(ComponentSetup.ESTUS)) {
+                                            EstusFlaskItem.Estus estus = stack.get(ComponentSetup.ESTUS);
+                                            player.getInventory().getItem(i).set(ComponentSetup.ESTUS, new EstusFlaskItem.Estus(estus.maxUses(), estus.maxUses()));
                                         }
                                     }
                                 }
@@ -160,35 +168,51 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         }
                         world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
                     }
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
             } else {
-                if (player.getItemInHand(hand) != ItemStack.EMPTY) {
-                    if (player.getItemInHand(hand).getItem() == ItemSetup.coiled_sword.get()) {
+                if (stack != ItemStack.EMPTY) {
+                    if (stack.getItem() == ItemSetup.coiled_sword.get()) {
                         placeItem(world, te, pos, player, hand, BonfireTileEntity.BonfireType.BONFIRE);
                     }/*else if (player.getHeldItemMainhand().getItem() == Bonfires.coiledSwordFragment) {
                         placeItem(world, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
                     }*/
                     world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
-                    return InteractionResult.PASS;
+                    return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                 }
             }
         }
-        return super.use(state, world, pos, player, hand, hit);
+        return super.useItemOn(stack, state, world, pos, player, hand, hit);
+    }
+
+    public record BonfireData(String name, boolean privateBonfire) {
+        public static final Codec<BonfireData> CODEC = RecordCodecBuilder.create(
+               bonfireDataInstance -> bonfireDataInstance.group(
+                    Codec.STRING.fieldOf("bonfire_name").forGetter(BonfireData::name),
+                    Codec.BOOL.fieldOf("bonfire_private").forGetter(BonfireData::privateBonfire)
+               ).apply(bonfireDataInstance, BonfireData::new)
+        );
+        public static final StreamCodec<FriendlyByteBuf, BonfireData> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8,
+                BonfireData::name,
+                ByteBufCodecs.BOOL,
+                BonfireData::privateBonfire,
+                BonfireData::new
+        );
     }
 
     @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @org.jetbrains.annotations.Nullable LivingEntity pPlacer, ItemStack pStack) {
-        CompoundTag compoundtag = pStack.getTag();
-        if (compoundtag != null && compoundtag.contains("bonfire_private")) {
+    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
+        if (pStack.has(ComponentSetup.BONFIRE_DATA)) {
+            BonfireData bonfireData = pStack.get(ComponentSetup.BONFIRE_DATA);
             pLevel.setBlock(pPos, pState, 2);
             BonfireTileEntity te = new BonfireTileEntity(pPos, pState);
             te.setBonfire(true);
             te.setLit(false);
             te.setBonfireType(BonfireTileEntity.BonfireType.BONFIRE);
-            if (compoundtag.contains("bonfire_name")) {
-                te.setUnlitName(compoundtag.getString("bonfire_name"));
-                te.setUnlitPrivate(compoundtag.getBoolean("bonfire_private"));
+            if (bonfireData.name != null) {
+                te.setUnlitName(bonfireData.name);
+                te.setUnlitPrivate(bonfireData.privateBonfire);
             }
             pLevel.setBlockEntity(te);
         }
@@ -318,22 +342,20 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @org.jetbrains.annotations.Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
-        super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
-        if(pStack.getTag() != null) {
-            CompoundTag tag = pStack.getTag();
-            if (tag.contains("bonfire_private")) {
-                MutableComponent text = Component.translatable(LocalStrings.TOOLTIP_UNLIT);
-                if (tag.contains("bonfire_name")) {
-                    text.append(" ");
-                    text.append(Component.translatable(tag.getString("bonfire_name")));
-                }
-                if (tag.getBoolean("bonfire_private")) {
-                    text.append(" ");
-                    text.append(Component.translatable(LocalStrings.TEXT_PRIVATE));
-                }
-                pTooltip.add(text);
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext context, List<Component> pTooltip, TooltipFlag pFlag) {
+        super.appendHoverText(pStack, context, pTooltip, pFlag);
+        if(pStack.has(ComponentSetup.BONFIRE_DATA)) {
+            BonfireData bonfireData = pStack.get(ComponentSetup.BONFIRE_DATA);
+            MutableComponent text = Component.translatable(LocalStrings.TOOLTIP_UNLIT);
+            if (bonfireData.name != null) {
+                text.append(" ");
+                text.append(Component.translatable(bonfireData.name));
             }
+            if (bonfireData.privateBonfire) {
+                text.append(" ");
+                text.append(Component.translatable(LocalStrings.TEXT_PRIVATE));
+            }
+            pTooltip.add(text);
         }
     }
 

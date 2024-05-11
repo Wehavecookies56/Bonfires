@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ender_pearls"
+            "items": "#c:ender_pearls"
           }
         ]
       },
@@ -20,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_ender_pearl",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_ender_pearl"
     ]
   ],
   "rewards": {
     "recipes": [
       "bonfires:homeward_bone"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

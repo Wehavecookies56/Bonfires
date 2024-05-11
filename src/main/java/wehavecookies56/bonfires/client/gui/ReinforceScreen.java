@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -122,7 +123,7 @@ public class ReinforceScreen extends Screen {
                     if (ReinforceHandler.hasRequiredItems(mc.player, ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected)))) {
                         ItemStack reinforcedStack = reinforceableItems.get(itemSelected).copy();
                         ReinforceHandler.levelUp(reinforcedStack);
-                        reinforcedStack.getTag().putInt("Damage", 0);
+                        reinforcedStack.set(DataComponents.DAMAGE, 0);
                         PacketHandler.sendToServer(new ReinforceItem(slots.get(itemSelected)));
                         mc.player.getInventory().setItem(slots.get(itemSelected), reinforcedStack);
                         getReinforceableItems();

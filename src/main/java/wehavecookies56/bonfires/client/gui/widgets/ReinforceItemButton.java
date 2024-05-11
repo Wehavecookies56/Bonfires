@@ -10,7 +10,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -36,7 +35,7 @@ public class ReinforceItemButton extends Button {
             guiGraphics.pose().translate((float)(x + 16), (float)(y + 16), (float)(150));
 
             try {
-                guiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
+                guiGraphics.pose().mulPose((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
                 guiGraphics.pose().scale(16.0F * scale, 16.0F * scale, 16.0F * scale);
                 boolean flag = !bakedmodel.usesBlockLight();
                 if (flag) {
@@ -51,19 +50,9 @@ public class ReinforceItemButton extends Button {
             } catch (Throwable throwable) {
                 CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
                 CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
-                crashreportcategory.setDetail("Item Type", () -> {
-                    return String.valueOf((Object)istack.getItem());
-                });
-                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(BuiltInRegistries.ITEM.getKey(istack.getItem())));
-                crashreportcategory.setDetail("Item Damage", () -> {
-                    return String.valueOf(istack.getDamageValue());
-                });
-                crashreportcategory.setDetail("Item NBT", () -> {
-                    return String.valueOf((Object)istack.getTag());
-                });
-                crashreportcategory.setDetail("Item Foil", () -> {
-                    return String.valueOf(istack.hasFoil());
-                });
+                crashreportcategory.setDetail("Item Type", () -> String.valueOf(istack.getItem()));
+                crashreportcategory.setDetail("Item Components", () -> String.valueOf(istack.getComponents()));
+                crashreportcategory.setDetail("Item Foil", () -> String.valueOf(istack.hasFoil()));
                 throw new ReportedException(crashreport);
             }
 

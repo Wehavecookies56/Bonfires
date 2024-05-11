@@ -2,9 +2,12 @@ package wehavecookies56.bonfires.packets.server;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
@@ -23,59 +26,37 @@ import java.util.UUID;
 /**
  * Created by Toby on 06/11/2016.
  */
-public class LightBonfire extends Packet<LightBonfire> {
+public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, boolean createScreenshot) implements Packet {
 
-    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "light_bonfire");
+    public static final Type<LightBonfire> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "light_bonfire"));
 
-    private String name;
-    private int x, y, z;
-    private boolean isPublic, createScreenshot;
-
-    public LightBonfire(FriendlyByteBuf buffer) {
-        decode(buffer);
-    }
+    public static final StreamCodec<FriendlyByteBuf, LightBonfire> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8,
+            LightBonfire::name,
+            BlockPos.STREAM_CODEC,
+            LightBonfire::bonfireTE,
+            ByteBufCodecs.BOOL,
+            LightBonfire::isPublic,
+            ByteBufCodecs.BOOL,
+            LightBonfire::createScreenshot,
+            LightBonfire::new
+    );
 
     public LightBonfire(String name, BonfireTileEntity bonfire, boolean isPublic, boolean createScreenshot) {
-        this.name = name;
-        this.x = bonfire.getBlockPos().getX();
-        this.y = bonfire.getBlockPos().getY();
-        this.z = bonfire.getBlockPos().getZ();
-        this.isPublic = isPublic;
-        this.createScreenshot = createScreenshot;
+        this(name, bonfire.getBlockPos(), isPublic, createScreenshot);
     }
 
     @Override
-    public void decode(FriendlyByteBuf buffer) {
-        this.name = buffer.readUtf();
-        this.x = buffer.readInt();
-        this.y = buffer.readInt();
-        this.z = buffer.readInt();
-        this.isPublic = buffer.readBoolean();
-        this.createScreenshot = buffer.readBoolean();
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeUtf(name);
-        buffer.writeInt(x);
-        buffer.writeInt(y);
-        buffer.writeInt(z);
-        buffer.writeBoolean(isPublic);
-        buffer.writeBoolean(createScreenshot);
-    }
-
-    @Override
-    public void handle(PlayPayloadContext context) {
-        BlockPos pos = new BlockPos(x, y, z);
-        ServerPlayer player = (ServerPlayer) context.player().get();
+    public void handle(IPayloadContext context) {
+        ServerPlayer player = (ServerPlayer) context.player();
         if (player != null) {
-            BonfireTileEntity te = (BonfireTileEntity) player.level().getBlockEntity(pos);
+            BonfireTileEntity te = (BonfireTileEntity) player.level().getBlockEntity(bonfireTE);
             if (te != null && !te.isLit()) {
                 te.setLit(true);
                 UUID id = UUID.randomUUID();
                 te.createBonfire(name, id, player.getUUID(), isPublic);
                 te.setID(id);
-                player.level().setBlock(pos, player.level().getBlockState(pos).setValue(AshBonePileBlock.LIT, true), 2);
+                player.level().setBlock(bonfireTE, player.level().getBlockState(bonfireTE).setValue(AshBonePileBlock.LIT, true), 2);
                 player.setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
                 ((BonfireLitTrigger)BonfireLitTrigger.TRIGGER_BONFIRE_LIT.get()).trigger(player);
@@ -85,13 +66,13 @@ public class LightBonfire extends Packet<LightBonfire> {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), player);
                 }
                 PacketHandler.sendTo(new DisplayTitle(LocalStrings.TEXT_LIT, name, 15, 20, 15), player);
-                Bonfires.LOGGER.info("Bonfire" + "'" + name + "'" + " lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayName().getString());
+                Bonfires.LOGGER.info("Bonfire" + "'" + name + "'" + " lit at: X" + bonfireTE.getX() + " Y" + bonfireTE.getY() + " Z" + bonfireTE.getZ() + " by " + player.getDisplayName().getString());
             }
         }
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

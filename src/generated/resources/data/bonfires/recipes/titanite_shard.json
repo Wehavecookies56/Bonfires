@@ -4,7 +4,10 @@
   "cookingtime": 1000,
   "experience": 0.25,
   "ingredient": {
-    "tag": "forge:obsidian"
+    "tag": "c:obsidians"
   },
-  "result": "bonfires:titanite_shard"
+  "result": {
+    "count": 1,
+    "id": "bonfires:titanite_shard"
+  }
 }

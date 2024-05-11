@@ -1,80 +1,54 @@
 package wehavecookies56.bonfires.packets.client;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
  * Created by Toby on 06/11/2016.
  */
-public class SyncBonfire extends Packet<SyncBonfire> {
+public record SyncBonfire(boolean bonfire, boolean lit, UUID id, BlockPos pos, BonfireTileEntity.BonfireType bonfireType) implements Packet {
 
-    public static final ResourceLocation ID = new ResourceLocation(Bonfires.modid, "sync_bonfire");
+    public static final Type<SyncBonfire> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "sync_bonfire"));
 
-    public boolean bonfire;
-    public boolean lit;
-    public UUID id;
-    public int x;
-    public int y;
-    public int z;
-    public BonfireTileEntity.BonfireType type;
-    public Instant time;
-
-    public SyncBonfire(FriendlyByteBuf buffer) {
-        decode(buffer);
-    }
+    public static final StreamCodec<FriendlyByteBuf, SyncBonfire> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.BOOL,
+            SyncBonfire::bonfire,
+            ByteBufCodecs.BOOL,
+            SyncBonfire::lit,
+            Bonfires.NULLABLE_UUID,
+            SyncBonfire::id,
+            BlockPos.STREAM_CODEC,
+            SyncBonfire::pos,
+            BonfireTileEntity.BonfireType.STREAM_CODEC,
+            SyncBonfire::bonfireType,
+            SyncBonfire::new
+    );
 
     public SyncBonfire(boolean bonfire, BonfireTileEntity.BonfireType type, boolean lit, UUID id, BonfireTileEntity entityBonfire) {
-        this.bonfire = bonfire;
-        this.type = type;
-        this.lit = lit;
-        this.id = id;
-        this.x = entityBonfire.getBlockPos().getX();
-        this.y = entityBonfire.getBlockPos().getY();
-        this.z = entityBonfire.getBlockPos().getZ();
+        this(bonfire, lit, id, entityBonfire.getBlockPos(), type);
     }
 
     @Override
-    public void decode(FriendlyByteBuf buffer) {
-        this.bonfire = buffer.readBoolean();
-        this.type = BonfireTileEntity.BonfireType.values()[buffer.readInt()];
-        this.lit = buffer.readBoolean();
-        if(this.lit)
-            this.id = buffer.readUUID();
-        this.x = buffer.readInt();
-        this.y = buffer.readInt();
-        this.z = buffer.readInt();
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBoolean(bonfire);
-        buffer.writeInt(type.ordinal());
-        buffer.writeBoolean(lit);
-        if(lit)
-            buffer.writeUUID(id);
-        buffer.writeInt(x);
-        buffer.writeInt(y);
-        buffer.writeInt(z);
-    }
-
-    @Override
-    public void handle(PlayPayloadContext context) {
+    public void handle(IPayloadContext context) {
         if (FMLEnvironment.dist.isClient()) {
             ClientPacketHandler.syncBonfire(this);
         }
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

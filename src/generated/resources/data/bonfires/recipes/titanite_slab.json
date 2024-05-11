@@ -16,7 +16,7 @@
     "CCC"
   ],
   "result": {
-    "item": "bonfires:titanite_slab"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "bonfires:titanite_slab"
+  }
 }
