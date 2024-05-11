@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,10 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import wehavecookies56.bonfires.Bonfires;
-import wehavecookies56.bonfires.BonfiresConfig;
-import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
-import wehavecookies56.bonfires.items.EstusFlaskItem;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
@@ -53,9 +49,6 @@ public class ClientSetup {
                     TextComponent name = (TextComponent) component;
                     name.append(" +" + level);
                     event.getToolTip().set(0, name);
-                    if (!(event.getItemStack().getItem() instanceof EstusFlaskItem)) {
-                        event.getToolTip().add(1, new TranslatableComponent(LocalStrings.TOOLTIP_REINFORCE, BonfiresConfig.Server.reinforceDamagePerLevel * level));
-                    }
                 }
             }
         }
