@@ -1,10 +1,16 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/bonfires/files",
   "promos": {
-    "1.20.4-latest": "1.2.16"
+    "1.20.6-latest": "1.2.17",
+    "1.20.4-latest": "1.2.17"
+  },
+
+  "1.20.6": {
+    "1.2.17": "Ported to 1.20.6, Fixes incompatibility with Mob Grinding Utils, Reinforcing now increases durability by 10% each time"
   },
 
   "1.20.4": {
+    "1.2.17": "Fixes incompatibility with Mob Grinding Utils",
     "1.2.16": "Ported to NeoForge and Minecraft 1.20.4, fixed advancements background"
   }
 }
