@@ -1,7 +1,7 @@
 {
 	"display": {
 		"icon": {
-			"item": "bonfires:estus_flask"
+			"id": "bonfires:estus_flask"
 		},
 		"title": {
 			"translate": "advancements.bonfires.estus_flask"

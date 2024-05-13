@@ -1,7 +1,7 @@
 {
 	"display": {
 		"icon": {
-			"item": "bonfires:estus_shard"
+			"id": "bonfires:estus_shard"
 		},
 		"title": {
 			"translate": "advancements.bonfires.estus_shard"

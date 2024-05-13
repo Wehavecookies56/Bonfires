@@ -16,38 +16,40 @@ import net.minecraft.world.level.block.Block;
  */
 public class CoiledSwordItem extends SwordItem {
 
+    static Tier material = new Tier() {
+        @Override
+        public int getUses() {
+            return 105;
+        }
+
+        @Override
+        public float getSpeed() {
+            return 8;
+        }
+
+        @Override
+        public float getAttackDamageBonus() {
+            return 4;
+        }
+
+        @Override
+        public TagKey<Block> getIncorrectBlocksForDrops() {
+            return null;
+        }
+
+        @Override
+        public int getEnchantmentValue() {
+            return 0;
+        }
+
+        @Override
+        public Ingredient getRepairIngredient() {
+            return null;
+        }
+    };
+
     public CoiledSwordItem() {
-        super(new Tier() {
-            @Override
-            public int getUses() {
-                return 105;
-            }
-
-            @Override
-            public float getSpeed() {
-                return 8;
-            }
-
-            @Override
-            public float getAttackDamageBonus() {
-                return 4;
-            }
-
-            @Override
-            public TagKey<Block> getIncorrectBlocksForDrops() {
-                return null;
-            }
-
-            @Override
-            public int getEnchantmentValue() {
-                return 0;
-            }
-
-            @Override
-            public Ingredient getRepairIngredient() {
-                return null;
-            }
-        }, new Properties().stacksTo(1));
+        super(material, new Properties().attributes(SwordItem.createAttributes(material, 3, -2.4F)).stacksTo(1));
     }
 
     @Override

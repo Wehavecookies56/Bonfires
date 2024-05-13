@@ -148,10 +148,10 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                                 profile = new GameProfile(registry.getBonfire(te.getID()).getOwner(), "Unknown");
                             }
                             for (int i = 0; i < player.getInventory().items.size(); i++) {
-                                if (!stack.isEmpty()) {
-                                    if (stack.getItem() == ItemSetup.estus_flask.get()) {
-                                        if (stack.has(ComponentSetup.ESTUS)) {
-                                            EstusFlaskItem.Estus estus = stack.get(ComponentSetup.ESTUS);
+                                if (!player.getInventory().getItem(i).isEmpty()) {
+                                    if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
+                                        if (player.getInventory().getItem(i).has(ComponentSetup.ESTUS)) {
+                                            EstusFlaskItem.Estus estus = player.getInventory().getItem(i).get(ComponentSetup.ESTUS);
                                             player.getInventory().getItem(i).set(ComponentSetup.ESTUS, new EstusFlaskItem.Estus(estus.maxUses(), estus.maxUses()));
                                         }
                                     }

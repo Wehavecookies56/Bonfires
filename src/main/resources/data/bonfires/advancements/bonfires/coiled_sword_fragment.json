@@ -1,7 +1,7 @@
 {
 	"display": {
 		"icon": {
-			"item": "bonfires:coiled_sword_fragment"
+			"id": "bonfires:coiled_sword_fragment"
 		},
 		"title": {
 			"translate": "advancements.bonfires.coiled_sword_fragment"
