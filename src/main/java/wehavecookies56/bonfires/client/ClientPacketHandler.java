@@ -28,25 +28,25 @@ public class ClientPacketHandler {
 
 
     public static void openBonfire(OpenBonfireGUI packet) {
-        MinecraftClient.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) MinecraftClient.getInstance().world.getBlockEntity(packet.tileEntity), packet.ownerName, packet.dimensions.stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList(), packet.registry, packet.canReinforce));
+        MinecraftClient.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) MinecraftClient.getInstance().world.getBlockEntity(packet.pos()), packet.ownerName(), packet.dimensions().stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList(), packet.registry(), packet.canReinforce()));
     }
 
     public static void setBonfiresFromServer(SendBonfiresToClient packet) {
         if (MinecraftClient.getInstance().currentScreen != null) {
             if (MinecraftClient.getInstance().currentScreen instanceof BonfireScreen gui) {
-                gui.updateDimensionsFromServer(packet.registry, packet.dimensions.stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList());
+                gui.updateDimensionsFromServer(packet.registry(), packet.dimensions().stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList());
             }
         }
     }
 
     public static void init() {
-        ClientPlayNetworking.registerGlobalReceiver(DeleteScreenshot.TYPE, (packet, player, responseSender) -> packet.handle());
-        ClientPlayNetworking.registerGlobalReceiver(DisplayBonfireTitle.TYPE, (packet, player, responseSender) -> packet.handle());
-        ClientPlayNetworking.registerGlobalReceiver(DisplayTitle.TYPE, (packet, player, responseSender) -> packet.handle());
-        ClientPlayNetworking.registerGlobalReceiver(OpenCreateScreen.TYPE, (packet, player, responseSender) -> packet.handle());
-        ClientPlayNetworking.registerGlobalReceiver(OpenBonfireGUI.TYPE, (packet, player, responseSender) -> packet.handle());
-        ClientPlayNetworking.registerGlobalReceiver(QueueBonfireScreenshot.TYPE, (packet, player, responseSender) -> packet.handle());
-        ClientPlayNetworking.registerGlobalReceiver(SendBonfiresToClient.TYPE, (packet, player, responseSender) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(DeleteScreenshot.TYPE, (packet, context) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(DisplayBonfireTitle.TYPE, (packet, context) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(DisplayTitle.TYPE, (packet, context) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(OpenCreateScreen.TYPE, (packet, context) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(OpenBonfireGUI.TYPE, (packet, context) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(QueueBonfireScreenshot.TYPE, (packet, context) -> packet.handle());
+        ClientPlayNetworking.registerGlobalReceiver(SendBonfiresToClient.TYPE, (packet, context) -> packet.handle());
     }
 
     public static void openCreateScreen(BonfireTileEntity te) {
@@ -55,9 +55,9 @@ public class ClientPacketHandler {
 
     public static void displayTitle(DisplayTitle packet) {
         InGameHud gui = MinecraftClient.getInstance().inGameHud;
-        gui.setTitle(Text.translatable(packet.title));
-        gui.setSubtitle(Text.translatable(packet.subtitle));
-        gui.setTitleTicks(packet.fadein, packet.stay, packet.fadeout);
+        gui.setTitle(Text.translatable(packet.title()));
+        gui.setSubtitle(Text.translatable(packet.subtitle()));
+        gui.setTitleTicks(packet.fadein(), packet.stay(), packet.fadeout());
     }
 
     /*

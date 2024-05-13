@@ -1,7 +1,7 @@
 {
 	"display": {
 		"icon": {
-			"item": "bonfires:coiled_sword"
+			"id": "bonfires:coiled_sword"
 		},
 		"title": {
 			"translate": "advancements.bonfires.bonfire_lit"

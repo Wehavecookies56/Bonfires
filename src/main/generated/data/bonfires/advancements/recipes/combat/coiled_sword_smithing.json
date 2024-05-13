@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "bonfires:coiled_sword_fragment"
-            ]
+            "items": "bonfires:coiled_sword_fragment"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_coiled_sword_fragment",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_coiled_sword_fragment"
     ]
   ],
   "rewards": {
     "recipes": [
       "bonfires:coiled_sword_smithing"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

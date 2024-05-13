@@ -1,8 +1,9 @@
 package wehavecookies56.bonfires.packets.server;
 
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -19,46 +20,35 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
 
-public class LightBonfire implements FabricPacket {
+public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, boolean createScreenshot) implements CustomPayload {
 
-    public static final PacketType<LightBonfire> TYPE = PacketType.create(new Identifier(Bonfires.modid, "light_bonfire"), LightBonfire::new);
+    public static final Id<LightBonfire> TYPE = new Id<>(new Identifier(Bonfires.modid, "light_bonfire"));
 
-    private String name;
-    private int x, y, z;
-    private boolean isPublic, createScreenshot;
-
-    public LightBonfire(PacketByteBuf buffer) {
-        decode(buffer);
-    }
+    public static final PacketCodec<PacketByteBuf, LightBonfire> STREAM_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING,
+            LightBonfire::name,
+            BlockPos.PACKET_CODEC,
+            LightBonfire::bonfireTE,
+            PacketCodecs.BOOL,
+            LightBonfire::isPublic,
+            PacketCodecs.BOOL,
+            LightBonfire::createScreenshot,
+            LightBonfire::new
+    );
 
     public LightBonfire(String name, BonfireTileEntity bonfire, boolean isPublic, boolean createScreenshot) {
-        this.name = name;
-        this.x = bonfire.getPos().getX();
-        this.y = bonfire.getPos().getY();
-        this.z = bonfire.getPos().getZ();
-        this.isPublic = isPublic;
-        this.createScreenshot = createScreenshot;
-    }
-
-    public void decode(PacketByteBuf buffer) {
-        this.name = buffer.readString();
-        this.x = buffer.readInt();
-        this.y = buffer.readInt();
-        this.z = buffer.readInt();
-        this.isPublic = buffer.readBoolean();
-        this.createScreenshot = buffer.readBoolean();
+        this(name, bonfire.getPos(), isPublic, createScreenshot);
     }
 
     public void handle(ServerPlayerEntity player) {
-        BlockPos pos = new BlockPos(x, y, z);
         if (player != null) {
-            BonfireTileEntity te = (BonfireTileEntity) player.getWorld().getBlockEntity(pos);
+            BonfireTileEntity te = (BonfireTileEntity) player.getWorld().getBlockEntity(bonfireTE);
             if (te != null && !te.isLit()) {
                 te.setLit(true);
                 UUID id = UUID.randomUUID();
                 te.createBonfire(name, id, player.getUuid(), isPublic);
                 te.setID(id);
-                player.getWorld().setBlockState(pos, player.getWorld().getBlockState(pos).with(AshBonePileBlock.LIT, true), 2);
+                player.getWorld().setBlockState(bonfireTE, player.getWorld().getBlockState(bonfireTE).with(AshBonePileBlock.LIT, true), 2);
                 player.setSpawnPoint(te.getWorld().getRegistryKey(), te.getPos(), player.getYaw(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
                 BonfireLitTrigger.INSTANCE.trigger(player);
@@ -70,23 +60,13 @@ public class LightBonfire implements FabricPacket {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), player);
                 }
                 PacketHandler.sendTo(new DisplayTitle(LocalStrings.TEXT_LIT, name, 15, 20, 15), player);
-                Bonfires.LOGGER.info("Bonfire" + "'" + name + "'" + " lit at: X" + x + " Y" + y + " Z" + z + " by " + player.getDisplayName().getString());
+                Bonfires.LOGGER.info("Bonfire" + "'" + name + "'" + " lit at: X" + bonfireTE.getX() + " Y" + bonfireTE.getY() + " Z" + bonfireTE.getZ() + " by " + player.getDisplayName().getString());
             }
         }
     }
 
     @Override
-    public void write(PacketByteBuf buffer) {
-        buffer.writeString(name);
-        buffer.writeInt(x);
-        buffer.writeInt(y);
-        buffer.writeInt(z);
-        buffer.writeBoolean(isPublic);
-        buffer.writeBoolean(createScreenshot);
-    }
-
-    @Override
-    public PacketType<?> getType() {
+    public Id<? extends CustomPayload> getId() {
         return TYPE;
     }
 }

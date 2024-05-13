@@ -4,7 +4,10 @@
   "cookingtime": 1000,
   "experience": 0.25,
   "ingredient": {
-    "item": "minecraft:obsidian"
+    "tag": "minecraft:obsidian"
   },
-  "result": "bonfires:titanite_shard"
+  "result": {
+    "count": 1,
+    "id": "bonfires:titanite_shard"
+  }
 }

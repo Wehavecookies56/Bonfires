@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -89,7 +90,7 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void tick() {
-        if (te.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > MinecraftClient.getInstance().interactionManager.getReachDistance()+3) {
+        if (te.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > client.player.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE)+3) {
             close();
         }
         if (nameBox != null) {

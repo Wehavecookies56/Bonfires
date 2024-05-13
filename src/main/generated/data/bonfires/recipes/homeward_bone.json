@@ -4,16 +4,17 @@
   "group": "bonfires",
   "ingredients": [
     {
-      "item": "minecraft:blaze_rod"
+      "tag": "c:rods/blaze"
     },
     {
       "item": "minecraft:ender_pearl"
     },
     {
-      "item": "minecraft:bone"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "bonfires:homeward_bone"
+    "count": 1,
+    "id": "bonfires:homeward_bone"
   }
 }

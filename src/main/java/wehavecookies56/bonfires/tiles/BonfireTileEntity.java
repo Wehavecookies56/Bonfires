@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -57,8 +58,8 @@ public class BonfireTileEntity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
+    public void readNbt(NbtCompound compound, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(compound, registryLookup);
         bonfire = compound.getBoolean("bonfire");
         type = BonfireType.values()[compound.getInt("type")];
         lit = compound.getBoolean("lit");
@@ -74,7 +75,7 @@ public class BonfireTileEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound compound) {
+    protected void writeNbt(NbtCompound compound, RegistryWrapper.WrapperLookup registryLookup) {
         compound.putBoolean("bonfire", bonfire);
         compound.putInt("type", type.ordinal());
         compound.putBoolean("lit", lit);
@@ -88,7 +89,7 @@ public class BonfireTileEntity extends BlockEntity {
         if (lit && bonfireInstance != null) {
             compound.put("instance", bonfireInstance.serializeNBT());
         }
-        super.writeNbt(compound);
+        super.writeNbt(compound, registryLookup);
     }
 
     public Bonfire createBonfire(String name, UUID id, UUID owner, boolean isPublic) {
@@ -171,8 +172,8 @@ public class BonfireTileEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
     }
 
     @Environment(EnvType.CLIENT)

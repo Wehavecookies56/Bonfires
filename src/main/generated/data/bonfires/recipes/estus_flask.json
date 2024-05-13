@@ -1,21 +1,23 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
   "group": "bonfires",
   "ingredients": [
     {
+      "item": "bonfires:estus_shard"
+    },
+    {
+      "item": "bonfires:estus_shard"
+    },
+    {
+      "item": "bonfires:estus_shard"
+    },
+    {
       "item": "minecraft:glass_bottle"
-    },
-    {
-      "item": "bonfires:estus_shard"
-    },
-    {
-      "item": "bonfires:estus_shard"
-    },
-    {
-      "item": "bonfires:estus_shard"
     }
   ],
   "result": {
-    "item": "bonfires:estus_flask"
+    "count": 1,
+    "id": "bonfires:estus_flask"
   }
 }

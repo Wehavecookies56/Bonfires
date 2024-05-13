@@ -2,6 +2,8 @@ package wehavecookies56.bonfires.bonfire;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
@@ -137,7 +139,7 @@ public class BonfireRegistry {
         return bonfires.getOrDefault(id, null);
     }
 
-    public NbtCompound writeToNBT(NbtCompound tagCompound, Map<UUID, Bonfire> bonfires) {
+    public NbtCompound writeToNBT(NbtCompound tagCompound) {
         for (Map.Entry<UUID, Bonfire> pair : bonfires.entrySet()) {
             NbtCompound bonfireCompound = new NbtCompound();
             bonfireCompound.putUuid("ID", pair.getValue().getId());
@@ -157,7 +159,7 @@ public class BonfireRegistry {
         return tagCompound;
     }
 
-    public void readFromNBT(NbtCompound tagCompound, Map<UUID, Bonfire> bonfires) {
+    public void readFromNBT(NbtCompound tagCompound) {
         for (String key : tagCompound.getKeys()) {
             if (!key.equals("loaded_old_data")) {
                 NbtCompound compound = tagCompound.getCompound(key);
@@ -181,5 +183,19 @@ public class BonfireRegistry {
             }
         }
     }
+
+    public static final PacketCodec<PacketByteBuf, BonfireRegistry> STREAM_CODEC = new PacketCodec<PacketByteBuf, BonfireRegistry>() {
+        @Override
+        public BonfireRegistry decode(PacketByteBuf byteBuf) {
+            BonfireRegistry registry = new BonfireRegistry();
+            registry.readFromNBT(byteBuf.readNbt());
+            return registry;
+        }
+
+        @Override
+        public void encode(PacketByteBuf byteBuf, BonfireRegistry registry) {
+            byteBuf.writeNbt(registry.writeToNBT(new NbtCompound()));
+        }
+    };
 
 }

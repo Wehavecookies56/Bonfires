@@ -1,37 +1,24 @@
 package wehavecookies56.bonfires.packets.client;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 
-public class DisplayBonfireTitle implements FabricPacket {
+public record DisplayBonfireTitle(Bonfire bonfire) implements CustomPayload {
 
-    public static PacketType<DisplayBonfireTitle> TYPE = PacketType.create(new Identifier(Bonfires.modid, "display_bonfire_title"), DisplayBonfireTitle::new);
+    public static Id<DisplayBonfireTitle> TYPE = new Id<>(new Identifier(Bonfires.modid, "display_bonfire_title"));
 
-    public DisplayBonfireTitle(PacketByteBuf buffer) {
-        decode(buffer);
-    }
-
-    Bonfire bonfire;
-
-    public DisplayBonfireTitle(Bonfire bonfire) {
-        this.bonfire = bonfire;
-    }
-
-    public void decode(PacketByteBuf buffer) {
-        bonfire = new Bonfire(buffer.readNbt());
-    }
-
-    @Override
-    public void write(PacketByteBuf buffer) {
-        buffer.writeNbt(bonfire.serializeNBT());
-    }
+    public static final PacketCodec<PacketByteBuf, DisplayBonfireTitle> STREAM_CODEC = PacketCodec.tuple(
+            Bonfire.STREAM_CODEC,
+            DisplayBonfireTitle::bonfire,
+            DisplayBonfireTitle::new
+    );
 
     public void handle() {
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
@@ -40,7 +27,7 @@ public class DisplayBonfireTitle implements FabricPacket {
     }
 
     @Override
-    public PacketType<?> getType() {
+    public Id<? extends CustomPayload> getId() {
         return TYPE;
     }
 }

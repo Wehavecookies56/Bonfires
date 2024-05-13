@@ -1,16 +1,17 @@
 package wehavecookies56.bonfires.data;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
@@ -68,6 +69,7 @@ public class BonfireHandler implements WorldComponentInitializer {
             return result;
         }
 
+        @SuppressWarnings("UnreachableCode")
         @Override
         public void loadOldBonfireData(MinecraftServer server) {
             if (!loadedOldData) {
@@ -84,7 +86,7 @@ public class BonfireHandler implements WorldComponentInitializer {
                         if (data.contains("bonfires:bonfire")) {
                             NbtCompound bonfires = data.getCompound("bonfires:bonfire");
                             BonfireRegistry reg = new BonfireRegistry();
-                            reg.readFromNBT(bonfires, reg.getBonfires());
+                            reg.readFromNBT(bonfires);
                             reg.getBonfires().entrySet().forEach(entry -> {
                                 this.addBonfire(entry.getValue());
                             });
@@ -112,7 +114,7 @@ public class BonfireHandler implements WorldComponentInitializer {
                             NbtCompound data = main.getCompound("data");
                             if (!data.isEmpty()) {
                                 BonfireRegistry reg = new BonfireRegistry();
-                                reg.readFromNBT(data, reg.getBonfires());
+                                reg.readFromNBT(data);
                                 reg.getBonfires().entrySet().forEach(entry -> {
                                     this.addBonfire(entry.getValue());
                                 });
@@ -139,14 +141,14 @@ public class BonfireHandler implements WorldComponentInitializer {
         }
 
         @Override
-        public void readFromNbt(NbtCompound tag) {
-            getRegistry().readFromNBT(tag, getRegistry().getBonfires());
+        public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
+            getRegistry().readFromNBT(tag);
             loadedOldData = tag.getBoolean("loaded_old_data");
         }
 
         @Override
-        public void writeToNbt(NbtCompound tag) {
-            getRegistry().writeToNBT(tag, getRegistry().getBonfires());
+        public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
+            getRegistry().writeToNBT(tag);
             tag.putBoolean("loaded_old_data", loadedOldData());
         }
     }

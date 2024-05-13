@@ -11,9 +11,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "bonfires:titanite_shard"
-            ]
+            "items": "bonfires:titanite_shard"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_titanite_shard",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_titanite_shard"
     ]
   ],
   "rewards": {
     "recipes": [
       "bonfires:large_titanite_shard"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

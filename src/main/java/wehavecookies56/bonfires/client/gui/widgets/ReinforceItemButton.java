@@ -51,8 +51,7 @@ public class ReinforceItemButton extends ButtonWidget {
                 CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
                 CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
                 crashReportSection.add("Item Type", () -> String.valueOf(istack.getItem()));
-                crashReportSection.add("Item Damage", () -> String.valueOf(istack.getDamage()));
-                crashReportSection.add("Item NBT", () -> String.valueOf(istack.getNbt()));
+                crashReportSection.add("Item Components", () -> String.valueOf(istack.getComponents()));
                 crashReportSection.add("Item Foil", () -> String.valueOf(istack.hasGlint()));
                 throw new CrashException(crashReport);
             }

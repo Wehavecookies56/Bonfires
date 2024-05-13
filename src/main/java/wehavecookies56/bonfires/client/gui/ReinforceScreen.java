@@ -5,6 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.Window;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -15,6 +16,7 @@ import wehavecookies56.bonfires.client.gui.widgets.ScrollBarButton;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.server.ReinforceItem;
+import wehavecookies56.bonfires.setup.ComponentSetup;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -121,7 +123,13 @@ public class ReinforceScreen extends Screen {
                     if (ReinforceHandler.hasRequiredItems(mc.player, ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected)))) {
                         ItemStack reinforcedStack = reinforceableItems.get(itemSelected).copy();
                         ReinforceHandler.levelUp(reinforcedStack);
-                        reinforcedStack.getNbt().putInt("Damage", 0);
+                        if (reinforcedStack.get(DataComponentTypes.DAMAGE) != null) {
+                            reinforcedStack.set(DataComponentTypes.DAMAGE, 0);
+                        }
+                        if (reinforcedStack.get(DataComponentTypes.MAX_DAMAGE) != null && reinforcedStack.get(ComponentSetup.REINFORCE_LEVEL) != null) {
+                            int maxDamage = reinforcedStack.get(DataComponentTypes.MAX_DAMAGE);
+                            reinforcedStack.set(DataComponentTypes.MAX_DAMAGE, maxDamage + (maxDamage * 10/100));
+                        }
                         PacketHandler.sendToServer(new ReinforceItem(slots.get(itemSelected)));
                         mc.player.getInventory().setStack(slots.get(itemSelected), reinforcedStack);
                         getReinforceableItems();

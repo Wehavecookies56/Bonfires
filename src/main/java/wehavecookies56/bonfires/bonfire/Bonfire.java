@@ -1,6 +1,8 @@
 package wehavecookies56.bonfires.bonfire;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
@@ -121,4 +123,6 @@ public class Bonfire {
         NbtCompound timeTag = tag.getCompound("TIME");
         this.timeCreated = Instant.ofEpochSecond(timeTag.getLong("SECOND"), timeTag.getInt("NANO"));
     }
+
+    public static final PacketCodec<PacketByteBuf, Bonfire> STREAM_CODEC = PacketCodec.of((bonfire, byteBuf) -> byteBuf.writeNbt(bonfire.serializeNBT()), byteBuf -> new Bonfire(byteBuf.readNbt()));
 }

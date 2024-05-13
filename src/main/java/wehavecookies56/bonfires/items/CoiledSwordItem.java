@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.items;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
@@ -7,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -17,38 +19,40 @@ import net.minecraft.util.ClickType;
  */
 public class CoiledSwordItem extends SwordItem {
 
+    static ToolMaterial material = new ToolMaterial() {
+        @Override
+        public int getDurability() {
+            return 105;
+        }
+
+        @Override
+        public float getMiningSpeedMultiplier() {
+            return 8;
+        }
+
+        @Override
+        public float getAttackDamage() {
+            return 4;
+        }
+
+        @Override
+        public int getEnchantability() {
+            return 0;
+        }
+
+        @Override
+        public Ingredient getRepairIngredient() {
+            return null;
+        }
+
+        @Override
+        public TagKey<Block> getInverseTag() {
+            return null;
+        }
+    };
+
     public CoiledSwordItem() {
-        super(new ToolMaterial() {
-            @Override
-            public int getDurability() {
-                return 105;
-            }
-
-            @Override
-            public float getMiningSpeedMultiplier() {
-                return 8;
-            }
-
-            @Override
-            public float getAttackDamage() {
-                return 4;
-            }
-
-            @Override
-            public int getMiningLevel() {
-                return 3;
-            }
-
-            @Override
-            public int getEnchantability() {
-                return 0;
-            }
-
-            @Override
-            public Ingredient getRepairIngredient() {
-                return null;
-            }
-        }, 3, -2.4F, new Settings().maxCount(1));
+        super(material, new Settings().attributeModifiers(SwordItem.createAttributeModifiers(material, 3, -2.4F)).maxCount(1));
     }
 
     @Override

@@ -25,7 +25,7 @@
     "OAO"
   ],
   "result": {
-    "item": "bonfires:coiled_sword"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "bonfires:coiled_sword"
+  }
 }

@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "bonfires:ash_pile"
-            ]
+            "items": "bonfires:ash_pile"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_ash_pile",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_ash_pile"
     ]
   ],
   "rewards": {
     "recipes": [
       "bonfires:ash_block"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

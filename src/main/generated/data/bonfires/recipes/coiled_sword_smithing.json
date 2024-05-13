@@ -7,7 +7,8 @@
     "item": "minecraft:iron_sword"
   },
   "result": {
-    "item": "bonfires:coiled_sword"
+    "count": 1,
+    "id": "bonfires:coiled_sword"
   },
   "template": {
     "item": "minecraft:fire_charge"

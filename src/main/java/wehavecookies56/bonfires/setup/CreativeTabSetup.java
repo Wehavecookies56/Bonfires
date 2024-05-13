@@ -1,15 +1,17 @@
 package wehavecookies56.bonfires.setup;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
+import wehavecookies56.bonfires.blocks.AshBonePileBlock;
+import wehavecookies56.bonfires.items.EstusFlaskItem;
 
 import java.util.Random;
 
@@ -26,28 +28,20 @@ public class CreativeTabSetup {
                     Registries.ITEM.getEntrySet().stream().filter(registryKeyItemEntry -> registryKeyItemEntry.getKey().getValue().getNamespace().equals(Bonfires.modid)).filter(registryKeyItemEntry -> registryKeyItemEntry.getValue() != ItemSetup.estus_flask).forEach(registryKeyItemEntry -> pOutput.add(registryKeyItemEntry.getValue()));
                     for (int i = 3; i < 16; ++i) {
                         ItemStack stack = new ItemStack(ItemSetup.estus_flask);
-                        stack.setNbt(new NbtCompound());
-                        if (stack.getNbt() != null) {
-                            stack.getNbt().putInt("uses", i);
-                            stack.getNbt().putInt("estus", i);
-                        }
+                        stack.set(ComponentSetup.ESTUS, new EstusFlaskItem.Estus(i, i));
                         pOutput.add(stack);
                     }
                     ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile);
-                    stack.setNbt(new NbtCompound());
-                    if (stack.getNbt() != null) {
-                        stack.getNbt().putBoolean("bonfire_private", false);
-                    }
-                    stack.setCustomName(Text.translatable(LocalStrings.TOOLTIP_UNLIT));
+                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData(null, false));
+                    stack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(LocalStrings.TOOLTIP_UNLIT));
                     pOutput.add(stack);
                     stack = stack.copy();
-                    stack.getNbt().putBoolean("bonfire_private", true);
+                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData(null, true));
                     int[] random = new Random().ints(2,0, 9999).toArray();
-                    stack.getNbt().putString("bonfire_name", "Bonfire" + random[0]);
+                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData("Bonfire" + random[0], true));
                     pOutput.add(stack);
                     stack = stack.copy();
-                    stack.getNbt().putBoolean("bonfire_private", false);
-                    stack.getNbt().putString("bonfire_name", "Bonfire" + random[1]);
+                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData("Bonfire" + random[1], false));
                     pOutput.add(stack);
                 })
                 .build();

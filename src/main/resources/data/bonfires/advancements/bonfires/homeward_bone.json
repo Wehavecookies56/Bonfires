@@ -1,7 +1,7 @@
 {
 	"display": {
 		"icon": {
-			"item": "bonfires:homeward_bone"
+			"id": "bonfires:homeward_bone"
 		},
 		"title": {
 			"translate": "advancements.bonfires.homeward_bone"

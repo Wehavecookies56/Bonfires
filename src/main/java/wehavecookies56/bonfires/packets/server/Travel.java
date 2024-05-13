@@ -1,8 +1,8 @@
 package wehavecookies56.bonfires.packets.server;
 
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -13,49 +13,29 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
-public class Travel implements FabricPacket {
+public record Travel(BlockPos pos, RegistryKey<World> dim) implements CustomPayload {
 
-    public static final PacketType<Travel> TYPE = PacketType.create(new Identifier(Bonfires.modid, "travel"), Travel::new);
+    public static final Id<Travel> TYPE = new Id<>(new Identifier(Bonfires.modid, "travel"));
 
-    private int x;
-    private int y;
-    private int z;
-    private RegistryKey<World> dim;
-
-    public Travel(PacketByteBuf buffer) {
-        decode(buffer);
-    }
+    public static final PacketCodec<PacketByteBuf, Travel> STREAM_CODEC = PacketCodec.tuple(
+            BlockPos.PACKET_CODEC,
+            Travel::pos,
+            RegistryKey.createPacketCodec(RegistryKeys.WORLD),
+            Travel::dim,
+            Travel::new
+    );
 
     public Travel(Bonfire bonfire) {
-        this.x = bonfire.getPos().getX();
-        this.y = bonfire.getPos().getY();
-        this.z = bonfire.getPos().getZ();
-        this.dim = bonfire.getDimension();
-    }
-
-    public void decode(PacketByteBuf buffer) {
-        this.x = buffer.readInt();
-        this.y = buffer.readInt();
-        this.z = buffer.readInt();
-        this.dim = RegistryKey.of(RegistryKeys.WORLD, buffer.readIdentifier());
-    }
-
-    @Override
-    public void write(PacketByteBuf buffer) {
-        buffer.writeInt(x);
-        buffer.writeInt(y);
-        buffer.writeInt(z);
-        buffer.writeIdentifier(dim.getValue());
+        this(bonfire.getPos(), bonfire.getDimension());
     }
 
     public void handle(ServerPlayerEntity player) {
-        BlockPos pos = new BlockPos(x, y, z);
         player.incrementStat(Bonfires.TIMES_TRAVELLED);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
     }
 
     @Override
-    public PacketType<?> getType() {
+    public Id<? extends CustomPayload> getId() {
         return TYPE;
     }
 }

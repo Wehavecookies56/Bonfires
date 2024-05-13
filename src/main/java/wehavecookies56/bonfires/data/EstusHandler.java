@@ -1,14 +1,15 @@
 package wehavecookies56.bonfires.data;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
-import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
+import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 import wehavecookies56.bonfires.Bonfires;
 
 import java.util.UUID;
@@ -49,14 +50,14 @@ public class EstusHandler implements EntityComponentInitializer {
         }
 
         @Override
-        public void readFromNbt(NbtCompound tag) {
+        public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
             if (tag.contains("lastRested")) {
                 setLastRested(tag.getUuid("lastRested"));
             }
         }
 
         @Override
-        public void writeToNbt(NbtCompound tag) {
+        public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
             if (lastRested() != null) {
                 tag.putUuid("lastRested", lastRested());
             }

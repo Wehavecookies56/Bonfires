@@ -1,17 +1,22 @@
 package wehavecookies56.bonfires.blocks;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,8 +29,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -44,12 +49,14 @@ import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
+import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.DeleteScreenshot;
 import wehavecookies56.bonfires.packets.client.OpenBonfireGUI;
 import wehavecookies56.bonfires.packets.client.OpenCreateScreen;
 import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
+import wehavecookies56.bonfires.setup.ComponentSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
@@ -67,6 +74,22 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
     public static final BooleanProperty LIT = BooleanProperty.of("lit");
 
     public static final BooleanProperty EXPLODED = BooleanProperty.of("exploded");
+
+    public record BonfireData(String name, boolean privateBonfire) {
+        public static final Codec<BonfireData> CODEC = RecordCodecBuilder.create(
+                bonfireDataInstance -> bonfireDataInstance.group(
+                        Codec.STRING.fieldOf("bonfire_name").forGetter(BonfireData::name),
+                        Codec.BOOL.fieldOf("bonfire_private").forGetter(BonfireData::privateBonfire)
+                ).apply(bonfireDataInstance, BonfireData::new)
+        );
+        public static final PacketCodec<PacketByteBuf, BonfireData> STREAM_CODEC = PacketCodec.tuple(
+                PacketCodecs.STRING,
+                BonfireData::name,
+                PacketCodecs.BOOL,
+                BonfireData::privateBonfire,
+                BonfireData::new
+        );
+    }
 
     public AshBonePileBlock() {
         super(AbstractBlock.Settings.create().sounds(BlockSoundGroup.SAND).nonOpaque().strength(0.8F).luminance(AshBonePileBlock::getLightValue));
@@ -100,7 +123,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
             if (te.isBonfire()) {
                 if (!te.isLit()) {
@@ -110,19 +133,19 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                                 PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayerEntity) player);
                                 world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                             }
-                            return ActionResult.SUCCESS;
+                            return ItemActionResult.SUCCESS;
                         }
                     } else {
                         if (te.hasUnlitName()) {
                             PacketHandler.sendToServer(new LightBonfire(te.getUnlitName(), te, !te.isUnlitPrivate(), Bonfires.CONFIG.client.enableAutomaticScreenshotOnCreation()));
                         }
-                        return ActionResult.SUCCESS;
+                        return ItemActionResult.SUCCESS;
                     }
                 } else {
                     if (!world.isClient) {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
-                            return ActionResult.SUCCESS;
+                            return ItemActionResult.SUCCESS;
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
@@ -132,8 +155,9 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                             for (int i = 0; i < player.getInventory().main.size(); i++) {
                                 if (!ItemStack.areItemsEqual(player.getInventory().getStack(i), ItemStack.EMPTY)) {
                                     if (player.getInventory().getStack(i).getItem() == ItemSetup.estus_flask) {
-                                        if (player.getInventory().getStack(i).hasNbt()) {
-                                            player.getInventory().getStack(i).getNbt().putInt("estus", player.getInventory().getStack(i).getNbt().getInt("uses"));
+                                        if (player.getInventory().getStack(i).get(ComponentSetup.ESTUS) != null) {
+                                            EstusFlaskItem.Estus estus = player.getInventory().getStack(i).get(ComponentSetup.ESTUS);
+                                            player.getInventory().getStack(i).set(ComponentSetup.ESTUS, new EstusFlaskItem.Estus(estus.maxUses(), estus.maxUses()));
                                         }
                                     }
                                 }
@@ -149,7 +173,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                         }
                         world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     }
-                    return ActionResult.SUCCESS;
+                    return ItemActionResult.SUCCESS;
                 }
             } else {
                 if (player.getStackInHand(hand) != ItemStack.EMPTY) {
@@ -159,11 +183,11 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                         placeItem(world, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
                     }*/
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
-                    return ActionResult.PASS;
+                    return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                 }
             }
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     @Override
@@ -176,16 +200,16 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        NbtCompound compoundtag = itemStack.getNbt();
-        if (compoundtag != null && compoundtag.contains("bonfire_private")) {
+        BonfireData bonfireData = itemStack.get(ComponentSetup.BONFIRE_DATA);
+        if (bonfireData != null) {
             world.setBlockState(pos, state, 2);
             BonfireTileEntity te = new BonfireTileEntity(pos, state);
             te.setBonfire(true);
             te.setLit(false);
             te.setBonfireType(BonfireTileEntity.BonfireType.BONFIRE);
-            if (compoundtag.contains("bonfire_name")) {
-                te.setUnlitName(compoundtag.getString("bonfire_name"));
-                te.setUnlitPrivate(compoundtag.getBoolean("bonfire_private"));
+            if (bonfireData.name != null) {
+                te.setUnlitName(bonfireData.name);
+                te.setUnlitPrivate(bonfireData.privateBonfire);
             }
             world.addBlockEntity(te);
         }
@@ -308,22 +332,20 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        super.appendTooltip(stack, world, tooltip, options);
-        if(stack.getNbt() != null) {
-            NbtCompound tag = stack.getNbt();
-            if (tag.contains("bonfire_private")) {
-                MutableText text = Text.translatable(LocalStrings.TOOLTIP_UNLIT);
-                if (tag.contains("bonfire_name")) {
-                    text.append(" ");
-                    text.append(Text.translatable(tag.getString("bonfire_name")));
-                }
-                if (tag.getBoolean("bonfire_private")) {
-                    text.append(" ");
-                    text.append(Text.translatable(LocalStrings.TEXT_PRIVATE));
-                }
-                tooltip.add(text);
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+        if(stack.get(ComponentSetup.BONFIRE_DATA) != null) {
+            BonfireData bonfireData = stack.get(ComponentSetup.BONFIRE_DATA);
+            MutableText text = Text.translatable(LocalStrings.TOOLTIP_UNLIT);
+            if (bonfireData.name != null) {
+                text.append(" ");
+                text.append(Text.translatable(bonfireData.name));
             }
+            if (bonfireData.privateBonfire) {
+                text.append(" ");
+                text.append(Text.translatable(LocalStrings.TEXT_PRIVATE));
+            }
+            tooltip.add(text);
         }
     }
 

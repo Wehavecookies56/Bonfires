@@ -5,30 +5,25 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.item.v1.ModifyItemAttributeModifiersCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Uuids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.data.BonfireHandler;
-import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
-import wehavecookies56.bonfires.setup.BlockSetup;
-import wehavecookies56.bonfires.setup.CreativeTabSetup;
-import wehavecookies56.bonfires.setup.EntitySetup;
-import wehavecookies56.bonfires.setup.ItemSetup;
+import wehavecookies56.bonfires.setup.*;
 
 import java.util.Random;
 import java.util.UUID;
@@ -57,6 +52,9 @@ public class Bonfires implements ModInitializer {
         Registry.register(Registries.CUSTOM_STAT, TIMES_TRAVELLED.getPath(), TIMES_TRAVELLED);
         Stats.CUSTOM.getOrCreateStat(BONFIRES_LIT, StatFormatter.DEFAULT);
         Stats.CUSTOM.getOrCreateStat(TIMES_TRAVELLED, StatFormatter.DEFAULT);
+        ComponentSetup.REINFORCE_LEVEL.getClass();
+        ComponentSetup.ESTUS.getClass();
+        ComponentSetup.BONFIRE_DATA.getClass();
         BonfireLitTrigger.INSTANCE = Criteria.register(BonfireLitTrigger.ID.toString(), new BonfireLitTrigger());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             BonfiresCommand.register(dispatcher);
@@ -83,26 +81,24 @@ public class Bonfires implements ModInitializer {
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             //PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getEntity().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
         });
-        ModifyItemAttributeModifiersCallback.EVENT.register((stack, slot, attributeModifiers) -> {
-            if (slot == EquipmentSlot.MAINHAND && stack.getItem() != ItemSetup.estus_flask) {
-                if (ReinforceHandler.canReinforce(stack)) {
-                    ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(stack);
-                    if (rlevel != null && rlevel.level() != 0) {
-                        attributeModifiers.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(reinforceDamageModifier, "reinforce_damagebonus", Bonfires.CONFIG.common.reinforceDamagePerLevel() * rlevel.level(), EntityAttributeModifier.Operation.ADDITION));
-                    }
-                }
-            }
-        });
         PacketHandler.init();
     }
 
-    /*
-    @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event) {
-        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
-        BonfiresCommand.register(dispatcher);
-        TravelCommand.register(dispatcher);
-    }
+    public static final PacketCodec<PacketByteBuf, UUID> NULLABLE_UUID = new PacketCodec<>() {
+        @Override
+        public UUID decode(PacketByteBuf byteBuf) {
+            if (byteBuf.readBoolean()) {
+                return Uuids.PACKET_CODEC.decode(byteBuf);
+            }
+            return null;
+        }
 
-     */
+        @Override
+        public void encode(PacketByteBuf byteBuf, UUID uuid) {
+            byteBuf.writeBoolean(uuid != null);
+            if (uuid != null) {
+                Uuids.PACKET_CODEC.encode(byteBuf, uuid);
+            }
+        }
+    };
 }

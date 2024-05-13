@@ -9,6 +9,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -171,7 +172,7 @@ public class BonfireScreen extends Screen {
         if (bonfire.isRemoved()) {
             close();
         }
-        if (bonfire.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > MinecraftClient.getInstance().interactionManager.getReachDistance()+3) {
+        if (bonfire.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > client.player.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE)+3) {
             close();
         }
     }
