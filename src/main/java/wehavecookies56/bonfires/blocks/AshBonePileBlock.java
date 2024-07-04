@@ -374,7 +374,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                 stack.setTag(new CompoundTag());
                 stack.getTag().putBoolean("bonfire_private", false);
             } else if (te.isLit()) {
-                Bonfire bonfire = BonfireHandler.getServerHandler(player.getServer()).getRegistry().getBonfire(te.getID());
+                Bonfire bonfire = BonfireHandler.getServerHandler(ServerLifecycleHooks.getCurrentServer()).getRegistry().getBonfire(te.getID());
                 if (bonfire != null) {
                     stack.setTag(new CompoundTag());
                     stack.getTag().putString("bonfire_name", bonfire.getName());
