@@ -1,8 +1,8 @@
 package wehavecookies56.bonfires.setup;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
@@ -25,15 +25,17 @@ public class ClientSetup implements ClientModInitializer {
     public static void tooltipEvent(ItemStack stack, TooltipContext context, List<Text> tooltip) {
         if (stack.hasNbt()) {
             NbtCompound tag = stack.getNbt();
-            if (tag.contains("reinforce_level")) {
-                int level = tag.getInt("reinforce_level");
-                if (level > 0) {
-                    Text component = tooltip.get(0);
-                    MutableText name = (MutableText) component;
-                    name.append(" +" + level);
-                    tooltip.set(0, name.fillStyle(Style.EMPTY.withItalic(false)));
-                    if (!(stack.getItem() instanceof EstusFlaskItem)) {
-                        //tooltip.add(1, Text.translatable(LocalStrings.TOOLTIP_REINFORCE, Bonfires.CONFIG.common.reinforceDamagePerLevel() * level));
+            if (tag != null) {
+                if (tag.contains("reinforce_level")) {
+                    int level = tag.getInt("reinforce_level");
+                    if (level > 0) {
+                        Text component = tooltip.get(0);
+                        MutableText name = (MutableText) component;
+                        name.append(" +" + level);
+                        tooltip.set(0, name.fillStyle(Style.EMPTY.withItalic(false)));
+                        if (!(stack.getItem() instanceof EstusFlaskItem)) {
+                            //tooltip.add(1, Text.translatable(LocalStrings.TOOLTIP_REINFORCE, Bonfires.CONFIG.common.reinforceDamagePerLevel() * level));
+                        }
                     }
                 }
             }
@@ -42,7 +44,7 @@ public class ClientSetup implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientTickEvents.START_CLIENT_TICK.register(ScreenshotUtils::clientTick);
+        WorldRenderEvents.END.register(ScreenshotUtils::clientTick);
         ItemTooltipCallback.EVENT.register(ClientSetup::tooltipEvent);
         ModelPredicateProviderRegistry.register(ItemSetup.estus_flask, new Identifier(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
             return entity != null && stack.getNbt() != null ? (float) stack.getNbt().getInt("estus") / (float) stack.getNbt().getInt("uses") : 0.0F;

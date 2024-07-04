@@ -29,8 +29,6 @@ public class BonfiresConfig {
         public List<String> tabIcons = Arrays.asList("minecraft:overworld=minecraft:grass_block", "minecraft:the_nether=minecraft:netherrack", "minecraft:the_end=minecraft:end_stone", "kingdomkeys:dive_to_the_heart=kingdomkeys:mosaic_stained_glass");
         public boolean renderScreenshotsInGui = true;
         public boolean enableAutomaticScreenshotOnCreation = true;
-        @RangeConstraint(min = 1, max = 100)
-        public int screenshotWaitTicks = 5;
         public boolean deleteScreenshotsOnDestroyed = true;
         @PredicateConstraint("validateRegistryKey")
         public List<String> hiddenDimensions = new ArrayList<>();
@@ -68,6 +66,8 @@ public class BonfiresConfig {
         public boolean enableReinforcing = true;
         @PredicateConstraint("validateRegistryKey")
         public List<String> reinforceBlacklist = new ArrayList<>();
+        public double bonfireMonsterCheckRadius = 8.0D;
+        public boolean repairEquipment = false;
 
         public double estusFlaskBaseHeal = 6;
         public double estusFlaskHealPerLevel = 1;

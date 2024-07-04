@@ -52,6 +52,7 @@ public class Travel implements FabricPacket {
         BlockPos pos = new BlockPos(x, y, z);
         player.incrementStat(Bonfires.TIMES_TRAVELLED);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
+        player.setSpawnPoint(dim, pos, player.getYaw(), false, true);
     }
 
     @Override

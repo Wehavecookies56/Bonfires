@@ -14,8 +14,11 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.joml.Matrix4f;
+import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.gui.ReinforceScreen;
 import wehavecookies56.bonfires.data.ReinforceHandler;
+import wehavecookies56.bonfires.setup.ItemSetup;
 
 import java.awt.*;
 
@@ -66,17 +69,22 @@ public class ReinforceItemButton extends ButtonWidget {
             MinecraftClient mc = MinecraftClient.getInstance();
             double scale = mc.getWindow().getScaleFactor();
             int scissorX = getX(), scissorY = getY(), scissorWidth = 239, scissorHeight = 171;
-            //RenderSystem.enableScissor(0, mc.getWindow().getGuiScaledHeight() - (scissorY + scissorHeight) * scale, (scissorWidth + scissorX) * scale, scissorHeight * scale);
             RenderSystem.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
-            //guiGraphics.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
             int insideWidth = getX() + width;
             if (parent.scrollBar.visible) {
                 insideWidth -= 8;
             }
             int elementHeight = 36;
+            for (int i = 0; i < parent.reinforceableItems.size(); i++) {
+                if (i % 2 != 0) {
+                    guiGraphics.setShaderColor(1, 1, 1, 0.5F);
+                    guiGraphics.fill(getX(), getY() - (int) scrollOffset + (elementHeight * i), insideWidth, (int) (getY() - scrollOffset + elementHeight + (elementHeight * i)), new Color(44, 49, 43).getRGB());
+                    guiGraphics.setShaderColor(1, 1, 1, 1);
+                }
+            }
             if (parent.itemSelected != -1 ) {
-                guiGraphics.fill(getX(), getY() - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected)), new Color(160, 160, 160).hashCode());
-                guiGraphics.fill(getX() + 1, getY() + 1 - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth - 1, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected) - 1), new Color(0, 0, 0).hashCode());
+                guiGraphics.fill(getX(), getY() - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected)), new Color(160, 160, 160).getRGB());
+                guiGraphics.fill(getX() + 1, getY() + 1 - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth - 1, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected) - 1), new Color(0, 0, 0).getRGB());
             }
             for (int i = 0; i < parent.reinforceableItems.size(); i++) {
                 float yPos = getY()+2 + (((32 + 4) * i) - scrollOffset);
@@ -84,22 +92,34 @@ public class ReinforceItemButton extends ButtonWidget {
                 ItemStack item = parent.reinforceableItems.get(i);
                 int nextLevel = ReinforceHandler.getReinforceLevel(item).level()+1;
                 String nextLevelText = Integer.toString(nextLevel);
-                if (nextLevel == ReinforceHandler.getReinforceLevel(item).maxLevel()) {
-                    nextLevelText = "MAX";
-                } else if (nextLevel > ReinforceHandler.getReinforceLevel(item).maxLevel()) {
-
-                }
                 String itemName = parent.reinforceableItems.get(i).getName().getString();
                 if (ReinforceHandler.getReinforceLevel(item).level() > 0) {
                     itemName += " +" + ReinforceHandler.getReinforceLevel(item).level();
                 }
-                guiGraphics.drawText(mc.textRenderer, itemName, getX()+2 + 32, ((int)yPos + 16) - (mc.textRenderer.fontHeight / 2), new Color(255, 255, 255).hashCode(), true);
-                //ItemStack required = ReinforceHandler.getRequiredResources(parent.reinforceableItems.get(i));
-                //int textWidth = mc.font.width(required.getDisplayName());
-                //drawString(stack, mc.font, required.getDisplayName(), (x+2 + 220) - textWidth, ((int)yPos + 10) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
+                double currentDamage = 0;
+                double nextDamage = 0;
+                currentDamage = Bonfires.CONFIG.common.reinforceDamagePerLevel() * ReinforceHandler.getReinforceLevel(item).level();
+                nextDamage = currentDamage + Bonfires.CONFIG.common.reinforceDamagePerLevel();
+                Text upgradeText = Text.translatable(LocalStrings.TEXT_REINFORCE_ATTACK);
+                if (item.isOf(ItemSetup.estus_flask)) {
+                    currentDamage = Bonfires.CONFIG.common.estusFlaskBaseHeal();
+                    currentDamage += Bonfires.CONFIG.common.estusFlaskHealPerLevel() * ReinforceHandler.getReinforceLevel(item).level();
+                    nextDamage = currentDamage;
+                    nextDamage += Bonfires.CONFIG.common.estusFlaskHealPerLevel();
+                    currentDamage /= 2;
+                    nextDamage /= 2;
+                    upgradeText = Text.translatable(LocalStrings.TEXT_REINFORCE_HEAL);
+                }
+                Text next = Text.literal("+" + nextLevelText);
+                if (nextLevel-1 == ReinforceHandler.getReinforceLevel(item).maxLevel()) {
+                    next = Text.translatable(LocalStrings.TEXT_REINFORCE_MAX);
+                }
+                guiGraphics.drawText(mc.textRenderer, itemName + " > " + next.getString(), getX()+2 + 34, ((int)yPos + 16) - (mc.textRenderer.fontHeight / 2), new Color(255, 255, 255).getRGB(), true);
+                Text damageText = nextLevel-1 == ReinforceHandler.getReinforceLevel(item).maxLevel() ? Text.translatable(LocalStrings.TEXT_REINFORCE_MAX) : Text.literal("+" + nextDamage);
+                guiGraphics.drawCenteredTextWithShadow(mc.textRenderer,  upgradeText, insideWidth - 35, ((int)yPos+8) - (mc.textRenderer.fontHeight / 2), new Color(255, 255, 255).getRGB());
+                guiGraphics.drawText(mc.textRenderer,  "+" + currentDamage + " > " + damageText.getString(), insideWidth - 60, ((int)yPos+24) - (mc.textRenderer.fontHeight / 2), new Color(255, 255, 255).getRGB(), true);
             }
             RenderSystem.disableScissor();
-            //guiGraphics.disableScissor();
         }
     }
 

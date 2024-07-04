@@ -2,11 +2,10 @@ package wehavecookies56.bonfires;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.ModifyItemAttributeModifiersCallback;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -74,15 +73,6 @@ public class Bonfires implements ModInitializer {
                 }
             }
         });
-        ServerPlayConnectionEvents.JOIN.register(((handler, sender, client) -> {
-            if (!handler.getPlayer().getServerWorld().isClient) {
-                //PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry().getBonfires()), player);
-                //PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
-            }
-        }));
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
-            //PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getEntity().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
-        });
         ModifyItemAttributeModifiersCallback.EVENT.register((stack, slot, attributeModifiers) -> {
             if (slot == EquipmentSlot.MAINHAND && stack.getItem() != ItemSetup.estus_flask) {
                 if (ReinforceHandler.canReinforce(stack)) {
@@ -93,16 +83,17 @@ public class Bonfires implements ModInitializer {
                 }
             }
         });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (!alive) {
+                newPlayer.getInventory().main.forEach(stack -> {
+                    if (stack.isOf(ItemSetup.estus_flask)) {
+                        if (stack.getNbt() != null) {
+                            stack.getNbt().putInt("estus", stack.getNbt().getInt("uses"));
+                        }
+                    }
+                });
+            }
+        });
         PacketHandler.init();
     }
-
-    /*
-    @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event) {
-        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
-        BonfiresCommand.register(dispatcher);
-        TravelCommand.register(dispatcher);
-    }
-
-     */
 }
