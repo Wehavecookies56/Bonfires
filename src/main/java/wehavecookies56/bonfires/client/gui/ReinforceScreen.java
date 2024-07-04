@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
@@ -17,7 +18,7 @@ import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.server.ReinforceItem;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,6 @@ public class ReinforceScreen extends Screen {
     public List<ItemStack> reinforceableItems;
     public List<Integer> slots;
     public int itemSelected = -1;
-    float scrollOffset = 0;
     final int SCROLLBAR = 0;
     final int ITEMS = 1;
     final int CONFIRM = 2;
@@ -51,10 +51,15 @@ public class ReinforceScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         scrollBar.mouseClicked(mouseX, mouseY, button);
-        items.mousePressed(mc, mouseX, mouseY, scrollOffset);
+        if (button == 0) {
+            items.mousePressed(mc, mouseX, mouseY, scrollBar.scrollOffset);
+        }
         confirm.mouseClicked(mouseX, mouseY, button);
         if (confirm.isMouseOver(mouseX, mouseY)) {
             action(CONFIRM);
+        }
+        if (button == 1) {
+            mc.setScreen(parent);
         }
         updateButtons();
         return super.mouseClicked(mouseX, mouseY, button);
@@ -103,7 +108,7 @@ public class ReinforceScreen extends Screen {
         Window window = mc.getWindow();
         int centerX = (window.getGuiScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
-        addRenderableOnly(scrollBar = new ScrollBarButton(SCROLLBAR, (window.getGuiScaledWidth() / 2) + (texWidth / 2) - 16, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 8, 15, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 42 + 155));
+        addRenderableOnly(scrollBar = new ScrollBarButton(SCROLLBAR, (window.getGuiScaledWidth() / 2) + (texWidth / 2) - 16, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 8, 171, 171, 36 * reinforceableItems.size()));
         addRenderableOnly(items = new ReinforceItemButton(this, ITEMS, (window.getGuiScaledWidth() / 2) - (texWidth / 2) + 9, (window.getGuiScaledHeight() / 2) - (texHeight / 2) + 41, 239, 171));
         addRenderableWidget(confirm = Button.builder(Component.translatable(LocalStrings.BUTTON_REINFORCE), button -> {}).pos(centerX + 180, centerY + 14).size(60, 20).build());
         if (reinforceableItems.size() > 1) {
@@ -142,7 +147,7 @@ public class ReinforceScreen extends Screen {
         RenderSystem.setShaderTexture(0, texture);
         blit(stack, centerX, centerY, 0, 0, texWidth, texHeight);
         super.render(stack, mouseX, mouseY, partialTicks);
-        int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.top);
+        int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.getY());
         int listHeight = (36 * reinforceableItems.size());
         if (scrollBarHeight >= listHeight) {
             scrollBar.visible = false;
@@ -152,10 +157,7 @@ public class ReinforceScreen extends Screen {
             scrollBar.active = true;
         }
 
-        float buttonRelativeToBar = scrollBar.getY() - (scrollBar.top-1);
-        float scrollPos = Math.min(buttonRelativeToBar != 0 ? buttonRelativeToBar / (scrollBarHeight) : 0, 1);
-        scrollOffset = scrollPos*(listHeight-scrollBarHeight);
-        items.drawButtons(stack, mouseX, mouseY, partialTicks, scrollOffset);
+        items.drawButtons(stack, mouseX, mouseY, partialTicks, scrollBar.scrollOffset);
         drawString(stack, font, Component.translatable(LocalStrings.TEXT_REINFORCE), centerX + 10, centerY + 10, new Color(255, 255, 255).hashCode());
         if (itemSelected != -1) {
             ItemStack required = ReinforceHandler.getRequiredResources(reinforceableItems.get(itemSelected));
@@ -183,6 +185,10 @@ public class ReinforceScreen extends Screen {
                 items.add(mc.player.getInventory().getItem(i));
                 slots.add(i);
             }
+        }
+        if (ReinforceHandler.canReinforce(mc.player.getOffhandItem())) {
+            items.add(mc.player.getOffhandItem());
+            slots.add(Inventory.SLOT_OFFHAND);
         }
         reinforceableItems = items;
         this.slots = slots;

@@ -5,13 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import wehavecookies56.bonfires.Bonfires;
-import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 import wehavecookies56.bonfires.client.gui.CreateBonfireScreen;
 
@@ -25,13 +22,15 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ScreenshotUtils {
 
-    private static int timerTicks = 0;
-    private static boolean timerStarted = false;
+    private static boolean takingScreenshot = false;
+
     private static String name;
     private static UUID uuid;
+    public static int width = 103;
+    public static int height = 110;
 
-    public static boolean isTimerStarted() {
-        return timerStarted;
+    public static boolean isTakingScreenshot() {
+        return takingScreenshot;
     }
 
     public static String getFileNameString(String bonfireName, UUID bonfireUUID) {
@@ -42,7 +41,7 @@ public class ScreenshotUtils {
     public static void startScreenshotTimer(String bonfireName, UUID bonfireUUID) {
         name = bonfireName;
         uuid = bonfireUUID;
-        timerStarted = true;
+        takingScreenshot = true;
         Minecraft.getInstance().options.hideGui = true;
     }
 
@@ -70,16 +69,12 @@ public class ScreenshotUtils {
     }
 
     @SubscribeEvent
-    public static void clientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
+    public static void clientTick(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
             if (Minecraft.getInstance().level != null) {
                 if (Minecraft.getInstance().player != null) {
-                    if (timerStarted) {
-                        timerTicks++;
-                    }
-                    if (timerTicks >= BonfiresConfig.Client.screenshotWaitTicks) {
-                        timerTicks = 0;
-                        timerStarted = false;
+                    if (takingScreenshot) {
+                        takingScreenshot = false;
                         Minecraft.getInstance().options.hideGui = false;
                         takeScreenshot(name, uuid);
                         if (Minecraft.getInstance().screen != null) {
@@ -98,17 +93,7 @@ public class ScreenshotUtils {
 
     @SubscribeEvent
     public static void renderOverlays(RenderGuiOverlayEvent event) {
-        event.setCanceled(timerStarted);
-    }
-
-    @SubscribeEvent
-    public static void renderHand(RenderHandEvent event) {
-        //event.setCanceled(timerStarted);
-    }
-
-    @SubscribeEvent
-    public static void renderHitBoxes(RenderHighlightEvent event){
-        //event.setCanceled(timerStarted);
+        event.setCanceled(takingScreenshot);
     }
 
 }

@@ -14,8 +14,11 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import wehavecookies56.bonfires.BonfiresConfig;
+import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.gui.ReinforceScreen;
 import wehavecookies56.bonfires.data.ReinforceHandler;
+import wehavecookies56.bonfires.setup.ItemSetup;
 
 import java.awt.*;
 
@@ -71,9 +74,16 @@ public class ReinforceItemButton extends Button {
                 insideWidth -= 8;
             }
             int elementHeight = 36;
+            for (int i = 0; i < parent.reinforceableItems.size(); i++) {
+                if (i % 2 != 0) {
+                    RenderSystem.setShaderColor(1, 1, 1, 0.5F);
+                    fill(stack, getX(), getY() - (int) scrollOffset + (elementHeight * i), insideWidth, (int) (getY() - scrollOffset + elementHeight + (elementHeight * i)), new Color(44, 49, 43).getRGB());
+                    RenderSystem.setShaderColor(1, 1, 1, 1);
+                }
+            }
             if (parent.itemSelected != -1 ) {
-                fill(stack, getX(), getY() - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected)), new Color(160, 160, 160).hashCode());
-                fill(stack, getX() + 1, getY() + 1 - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth - 1, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected) - 1), new Color(0, 0, 0).hashCode());
+                fill(stack, getX(), getY() - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected)), new Color(160, 160, 160).getRGB());
+                fill(stack, getX() + 1, getY() + 1 - (int)scrollOffset + (elementHeight * parent.itemSelected), insideWidth - 1, (int)(getY() - scrollOffset + elementHeight + (elementHeight * parent.itemSelected) - 1), new Color(0, 0, 0).getRGB());
             }
             for (int i = 0; i < parent.reinforceableItems.size(); i++) {
                 float yPos = getY()+2 + (((32 + 4) * i) - scrollOffset);
@@ -81,19 +91,32 @@ public class ReinforceItemButton extends Button {
                 ItemStack item = parent.reinforceableItems.get(i);
                 int nextLevel = ReinforceHandler.getReinforceLevel(item).level()+1;
                 String nextLevelText = Integer.toString(nextLevel);
-                if (nextLevel == ReinforceHandler.getReinforceLevel(item).maxLevel()) {
-                    nextLevelText = "MAX";
-                } else if (nextLevel > ReinforceHandler.getReinforceLevel(item).maxLevel()) {
-
-                }
                 String itemName = parent.reinforceableItems.get(i).getHoverName().getString();
                 if (ReinforceHandler.getReinforceLevel(item).level() > 0) {
                     itemName += " +" + ReinforceHandler.getReinforceLevel(item).level();
                 }
-                drawString(stack, mc.font, itemName, getX()+2 + 32, ((int)yPos + 16) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
-                //ItemStack required = ReinforceHandler.getRequiredResources(parent.reinforceableItems.get(i));
-                //int textWidth = mc.font.width(required.getDisplayName());
-                //drawString(stack, mc.font, required.getDisplayName(), (x+2 + 220) - textWidth, ((int)yPos + 10) - (mc.font.lineHeight / 2), new Color(255, 255, 255).hashCode());
+                double currentDamage = 0;
+                double nextDamage = 0;
+                currentDamage = BonfiresConfig.Server.reinforceDamagePerLevel * ReinforceHandler.getReinforceLevel(item).level();
+                nextDamage = currentDamage + BonfiresConfig.Server.reinforceDamagePerLevel;
+                Component upgradeText = Component.translatable(LocalStrings.TEXT_REINFORCE_ATTACK);
+                if (item.is(ItemSetup.estus_flask.get())) {
+                    currentDamage = BonfiresConfig.Server.estusFlaskBaseHeal;
+                    currentDamage += BonfiresConfig.Server.estusFlaskHealPerLevel * ReinforceHandler.getReinforceLevel(item).level();
+                    nextDamage = currentDamage;
+                    nextDamage += BonfiresConfig.Server.estusFlaskHealPerLevel;
+                    currentDamage /= 2;
+                    nextDamage /= 2;
+                    upgradeText = Component.translatable(LocalStrings.TEXT_REINFORCE_HEAL);
+                }
+                Component next = Component.literal("+" + nextLevelText);
+                if (nextLevel-1 == ReinforceHandler.getReinforceLevel(item).maxLevel()) {
+                    next = Component.translatable(LocalStrings.TEXT_REINFORCE_MAX);
+                }
+                drawString(stack, mc.font, itemName + " > " + next.getString(), getX()+2 + 34, ((int)yPos + 16) - (mc.font.lineHeight / 2), new Color(255, 255, 255).getRGB());
+                Component damageText = nextLevel-1 == ReinforceHandler.getReinforceLevel(item).maxLevel() ? Component.translatable(LocalStrings.TEXT_REINFORCE_MAX) : Component.literal("+" + nextDamage);
+                drawCenteredString(stack, mc.font,  upgradeText, insideWidth - 35, ((int)yPos+8) - (mc.font.lineHeight / 2), new Color(255, 255, 255).getRGB());
+                drawString(stack, mc.font,  "+" + currentDamage + " > " + damageText.getString(), insideWidth - 60, ((int)yPos+24) - (mc.font.lineHeight / 2), new Color(255, 255, 255).getRGB());
             }
             RenderSystem.disableScissor();
         }
