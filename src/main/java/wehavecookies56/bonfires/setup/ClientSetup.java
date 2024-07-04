@@ -3,6 +3,7 @@ package wehavecookies56.bonfires.setup;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.item.TooltipType;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
@@ -37,7 +38,7 @@ public class ClientSetup implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientTickEvents.START_CLIENT_TICK.register(ScreenshotUtils::clientTick);
+        WorldRenderEvents.END.register(ScreenshotUtils::clientTick);
         ItemTooltipCallback.EVENT.register(ClientSetup::tooltipEvent);
         ModelPredicateProviderRegistry.register(ItemSetup.estus_flask, new Identifier(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
             return entity != null && stack.get(ComponentSetup.ESTUS) != null ? (float) stack.get(ComponentSetup.ESTUS).uses() / (float) stack.get(ComponentSetup.ESTUS).maxUses() : 0.0F;

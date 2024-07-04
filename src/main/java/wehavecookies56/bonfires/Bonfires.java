@@ -2,10 +2,9 @@ package wehavecookies56.bonfires;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.setup.*;
 
@@ -72,14 +72,17 @@ public class Bonfires implements ModInitializer {
                 }
             }
         });
-        ServerPlayConnectionEvents.JOIN.register(((handler, sender, client) -> {
-            if (!handler.getPlayer().getServerWorld().isClient) {
-                //PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry().getBonfires()), player);
-                //PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (!alive) {
+                newPlayer.getInventory().main.forEach(stack -> {
+                    if (stack.isOf(ItemSetup.estus_flask)) {
+                        EstusFlaskItem.Estus estus = stack.get(ComponentSetup.ESTUS);
+                        if (estus != null) {
+                            stack.set(ComponentSetup.ESTUS, new EstusFlaskItem.Estus(estus.maxUses(), estus.maxUses()));
+                        }
+                    }
+                });
             }
-        }));
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
-            //PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getEntity().getServer()).getRegistry().getBonfires()), (ServerPlayer) event.getEntity());
         });
         PacketHandler.init();
     }

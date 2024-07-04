@@ -8,8 +8,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -33,14 +35,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 import wehavecookies56.bonfires.Bonfires;
@@ -56,6 +57,7 @@ import wehavecookies56.bonfires.packets.client.OpenBonfireGUI;
 import wehavecookies56.bonfires.packets.client.OpenCreateScreen;
 import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
+import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ComponentSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
@@ -122,6 +124,12 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
         return BlockRenderType.MODEL;
     }
 
+    private void repair(ItemStack stack) {
+        if (stack.get(DataComponentTypes.DAMAGE) != null) {
+            stack.set(DataComponentTypes.DAMAGE, 0);
+        }
+    }
+
     @Override
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
@@ -146,6 +154,20 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
                             return ItemActionResult.SUCCESS;
+                        }
+                        if (Bonfires.CONFIG.common.bonfireMonsterCheckRadius() > 0.0) {
+                            Vec3d vec3 = Vec3d.ofBottomCenter(new Vec3i(pos.getX(), pos.getY(), pos.getZ()));
+                            double r = Bonfires.CONFIG.common.bonfireMonsterCheckRadius();
+                            List<HostileEntity> list = world.getEntitiesByClass(HostileEntity.class, new Box(vec3.x - r, vec3.y - r, vec3.z - r, vec3.x + r, vec3.y + r, vec3.z + r), p_9062_ -> p_9062_.isAngryAt(player));
+                            if (!list.isEmpty()) {
+                                player.sendMessage(Text.translatable(LocalStrings.TEXT_ENEMY_NEARBY));
+                                return ItemActionResult.SUCCESS;
+                            }
+                        }
+                        if (Bonfires.CONFIG.common.repairEquipment()) {
+                            player.getInventory().main.forEach(this::repair);
+                            player.getInventory().armor.forEach(this::repair);
+                            player.getInventory().offHand.forEach(this::repair);
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
@@ -347,6 +369,22 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
             }
             tooltip.add(text);
         }
+    }
+
+    @Override
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+        if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
+            ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile);
+            if (te.isBonfire()) {
+                if (te.hasUnlitName()) {
+                    stack.set(ComponentSetup.BONFIRE_DATA, new BonfireData(te.getUnlitName(), te.isUnlitPrivate()));
+                } else {
+                    stack.set(ComponentSetup.BONFIRE_DATA, new BonfireData("", false));
+                }
+            }
+            return stack;
+        }
+        return super.getPickStack(world, pos, state);
     }
 
     @Nullable

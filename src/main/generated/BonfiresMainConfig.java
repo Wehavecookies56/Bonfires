@@ -17,12 +17,13 @@ public class BonfiresMainConfig extends ConfigWrapper<wehavecookies56.bonfires.B
     private final Option<java.util.List<java.lang.String>> client_tabIcons = this.optionForKey(this.keys.client_tabIcons);
     private final Option<java.lang.Boolean> client_renderScreenshotsInGui = this.optionForKey(this.keys.client_renderScreenshotsInGui);
     private final Option<java.lang.Boolean> client_enableAutomaticScreenshotOnCreation = this.optionForKey(this.keys.client_enableAutomaticScreenshotOnCreation);
-    private final Option<java.lang.Integer> client_screenshotWaitTicks = this.optionForKey(this.keys.client_screenshotWaitTicks);
     private final Option<java.lang.Boolean> client_deleteScreenshotsOnDestroyed = this.optionForKey(this.keys.client_deleteScreenshotsOnDestroyed);
     private final Option<java.util.List<java.lang.String>> client_hiddenDimensions = this.optionForKey(this.keys.client_hiddenDimensions);
     private final Option<java.lang.Boolean> common_enableUBSBonfire = this.optionForKey(this.keys.common_enableUBSBonfire);
     private final Option<java.lang.Boolean> common_enableReinforcing = this.optionForKey(this.keys.common_enableReinforcing);
     private final Option<java.util.List<java.lang.String>> common_reinforceBlacklist = this.optionForKey(this.keys.common_reinforceBlacklist);
+    private final Option<java.lang.Double> common_bonfireMonsterCheckRadius = this.optionForKey(this.keys.common_bonfireMonsterCheckRadius);
+    private final Option<java.lang.Boolean> common_repairEquipment = this.optionForKey(this.keys.common_repairEquipment);
     private final Option<java.lang.Double> common_estusFlaskBaseHeal = this.optionForKey(this.keys.common_estusFlaskBaseHeal);
     private final Option<java.lang.Double> common_estusFlaskHealPerLevel = this.optionForKey(this.keys.common_estusFlaskHealPerLevel);
     private final Option<java.lang.Double> common_reinforceDamagePerLevel = this.optionForKey(this.keys.common_reinforceDamagePerLevel);
@@ -81,14 +82,6 @@ public class BonfiresMainConfig extends ConfigWrapper<wehavecookies56.bonfires.B
             client_enableAutomaticScreenshotOnCreation.set(value);
         }
 
-        public int screenshotWaitTicks() {
-            return client_screenshotWaitTicks.value();
-        }
-
-        public void screenshotWaitTicks(int value) {
-            client_screenshotWaitTicks.set(value);
-        }
-
         public boolean deleteScreenshotsOnDestroyed() {
             return client_deleteScreenshotsOnDestroyed.value();
         }
@@ -132,6 +125,22 @@ public class BonfiresMainConfig extends ConfigWrapper<wehavecookies56.bonfires.B
             common_reinforceBlacklist.set(value);
         }
 
+        public double bonfireMonsterCheckRadius() {
+            return common_bonfireMonsterCheckRadius.value();
+        }
+
+        public void bonfireMonsterCheckRadius(double value) {
+            common_bonfireMonsterCheckRadius.set(value);
+        }
+
+        public boolean repairEquipment() {
+            return common_repairEquipment.value();
+        }
+
+        public void repairEquipment(boolean value) {
+            common_repairEquipment.set(value);
+        }
+
         public double estusFlaskBaseHeal() {
             return common_estusFlaskBaseHeal.value();
         }
@@ -166,8 +175,6 @@ public class BonfiresMainConfig extends ConfigWrapper<wehavecookies56.bonfires.B
         void renderScreenshotsInGui(boolean value);
         boolean enableAutomaticScreenshotOnCreation();
         void enableAutomaticScreenshotOnCreation(boolean value);
-        int screenshotWaitTicks();
-        void screenshotWaitTicks(int value);
         boolean deleteScreenshotsOnDestroyed();
         void deleteScreenshotsOnDestroyed(boolean value);
         java.util.List<java.lang.String> hiddenDimensions();
@@ -180,6 +187,10 @@ public class BonfiresMainConfig extends ConfigWrapper<wehavecookies56.bonfires.B
         void enableReinforcing(boolean value);
         java.util.List<java.lang.String> reinforceBlacklist();
         void reinforceBlacklist(java.util.List<java.lang.String> value);
+        double bonfireMonsterCheckRadius();
+        void bonfireMonsterCheckRadius(double value);
+        boolean repairEquipment();
+        void repairEquipment(boolean value);
         double estusFlaskBaseHeal();
         void estusFlaskBaseHeal(double value);
         double estusFlaskHealPerLevel();
@@ -192,12 +203,13 @@ public class BonfiresMainConfig extends ConfigWrapper<wehavecookies56.bonfires.B
         public final Option.Key client_tabIcons = new Option.Key("client.tabIcons");
         public final Option.Key client_renderScreenshotsInGui = new Option.Key("client.renderScreenshotsInGui");
         public final Option.Key client_enableAutomaticScreenshotOnCreation = new Option.Key("client.enableAutomaticScreenshotOnCreation");
-        public final Option.Key client_screenshotWaitTicks = new Option.Key("client.screenshotWaitTicks");
         public final Option.Key client_deleteScreenshotsOnDestroyed = new Option.Key("client.deleteScreenshotsOnDestroyed");
         public final Option.Key client_hiddenDimensions = new Option.Key("client.hiddenDimensions");
         public final Option.Key common_enableUBSBonfire = new Option.Key("common.enableUBSBonfire");
         public final Option.Key common_enableReinforcing = new Option.Key("common.enableReinforcing");
         public final Option.Key common_reinforceBlacklist = new Option.Key("common.reinforceBlacklist");
+        public final Option.Key common_bonfireMonsterCheckRadius = new Option.Key("common.bonfireMonsterCheckRadius");
+        public final Option.Key common_repairEquipment = new Option.Key("common.repairEquipment");
         public final Option.Key common_estusFlaskBaseHeal = new Option.Key("common.estusFlaskBaseHeal");
         public final Option.Key common_estusFlaskHealPerLevel = new Option.Key("common.estusFlaskHealPerLevel");
         public final Option.Key common_reinforceDamagePerLevel = new Option.Key("common.reinforceDamagePerLevel");

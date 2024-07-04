@@ -9,6 +9,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3i;
+import org.lwjgl.glfw.GLFW;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.ScreenshotUtils;
@@ -17,8 +18,6 @@ import wehavecookies56.bonfires.client.gui.widgets.NameTextField;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
-
-import java.util.UUID;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -37,14 +36,20 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (!ScreenshotUtils.isTimerStarted()) {
+        if (!ScreenshotUtils.isTakingScreenshot()) {
             super.render(guiGraphics, mouseX, mouseY, partialTicks);
             guiGraphics.drawText(client.textRenderer, Text.translatable(LocalStrings.TEXT_NAME), (width / 2) - client.textRenderer.getWidth(Text.translatable(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (client.textRenderer.fontHeight / 2) - 20, 0xFFFFFF, true);
             nameBox.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
     }
-    UUID uuid;
-    String name;
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+            action(0);
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
 
     @Override
     public boolean charTyped(char c, int key) {
@@ -85,7 +90,7 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public boolean shouldCloseOnEsc() {
-        return !ScreenshotUtils.isTimerStarted();
+        return !ScreenshotUtils.isTakingScreenshot();
     }
 
     @Override

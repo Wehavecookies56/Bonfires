@@ -52,9 +52,9 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.terraformersmc:modmenu:10.0.0-beta.1"
+	modImplementation "com.terraformersmc:modmenu:10.0.0"
 
-	annotationProcessor modImplementation("io.wispforest:owo-lib:0.12.8+1.20.5")
+	annotationProcessor modImplementation("io.wispforest:owo-lib:0.12.9+1.20.5")
 	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:6.0.0-beta.3")
 	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-world:6.0.0-beta.3")
 	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:6.0.0-beta.3")

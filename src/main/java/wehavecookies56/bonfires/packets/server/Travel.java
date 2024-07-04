@@ -32,6 +32,7 @@ public record Travel(BlockPos pos, RegistryKey<World> dim) implements CustomPayl
     public void handle(ServerPlayerEntity player) {
         player.incrementStat(Bonfires.TIMES_TRAVELLED);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
+        player.setSpawnPoint(dim, pos, player.getYaw(), false, true);
     }
 
     @Override

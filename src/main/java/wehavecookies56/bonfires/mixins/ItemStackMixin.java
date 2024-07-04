@@ -20,14 +20,14 @@ import java.util.UUID;
 public class ItemStackMixin {
 
     @Redirect(method = "applyAttributeModifiers", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getOrDefault(Lnet/minecraft/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"))
-    public Object getOrDefaultRedirect(ItemStack instance, DataComponentType dataComponentType, Object o) {
+    public Object getOrDefaultRedirect(ItemStack instance, DataComponentType<AttributeModifiersComponent> dataComponentType, Object o) {
         if (ReinforceHandler.canReinforce(instance)) {
             ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(instance);
             if (rlevel != null && rlevel.level() > 0) {
                 return instance.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT).with(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(Bonfires.reinforceDamageModifier, "reinforce_damagebonus", Bonfires.CONFIG.common.reinforceDamagePerLevel() * rlevel.level(), EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
             }
         }
-        return dataComponentType;
+        return instance.getOrDefault(dataComponentType, o);
     }
 
     @Redirect(method = "appendAttributeModifierTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeModifier;uuid()Ljava/util/UUID;"))

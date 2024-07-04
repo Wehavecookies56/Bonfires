@@ -111,7 +111,7 @@ public class BonfireRegistry {
 
     public static List<Bonfire> sortBonfiresByTime(List<Bonfire> bonfiresToSort) {
         List<Bonfire> sortedList = new ArrayList<>(bonfiresToSort);
-        sortedList.sort(Comparator.comparing(Bonfire::getTimeCreated));
+        sortedList.sort(Comparator.comparing(Bonfire::getTimeCreated).reversed());
         return sortedList;
     }
 
