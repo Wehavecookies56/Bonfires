@@ -8,6 +8,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import org.lwjgl.glfw.GLFW;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.ScreenshotUtils;
@@ -36,7 +37,7 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (!ScreenshotUtils.isTimerStarted()) {
+        if (!ScreenshotUtils.isTakingScreenshot()) {
             super.render(guiGraphics, mouseX, mouseY, partialTicks);
             guiGraphics.drawString(minecraft.font, Component.translatable(LocalStrings.TEXT_NAME), (width / 2) - minecraft.font.width(Component.translatable(LocalStrings.TEXT_NAME)) / 2, (height / 2) - (minecraft.font.lineHeight / 2) - 20, 0xFFFFFF);
             nameBox.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -53,6 +54,14 @@ public class CreateBonfireScreen extends Screen {
             updateButtons();
         }
         return nameBoxReturn;
+    }
+
+    @Override
+    public boolean keyPressed(int p_96552_, int p_96553_, int p_96554_) {
+        if (p_96552_ == GLFW.GLFW_KEY_ENTER) {
+            action(0);
+        }
+        return super.keyPressed(p_96552_, p_96553_, p_96554_);
     }
 
     @Override
@@ -84,7 +93,7 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public boolean shouldCloseOnEsc() {
-        return !ScreenshotUtils.isTimerStarted();
+        return !ScreenshotUtils.isTakingScreenshot();
     }
 
     @Override

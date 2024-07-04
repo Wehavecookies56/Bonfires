@@ -41,13 +41,15 @@ public class ClientSetup {
             ItemStack stack = event.getItemStack();
             if (event.getItemStack().hasTag()) {
                 CompoundTag tag = event.getItemStack().getTag();
-                if (tag.contains("reinforce_level")) {
-                    int level = tag.getInt("reinforce_level");
-                    if (level > 0) {
-                        Component component = event.getToolTip().get(0);
-                        MutableComponent name = (MutableComponent) component;
-                        name.append(" +" + level);
-                        event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
+                if (tag != null) {
+                    if (tag.contains("reinforce_level")) {
+                        int level = tag.getInt("reinforce_level");
+                        if (level > 0) {
+                            Component component = event.getToolTip().get(0);
+                            MutableComponent name = (MutableComponent) component;
+                            name.append(" +" + level);
+                            event.getToolTip().set(0, name.withStyle(Style.EMPTY.withItalic(false)));
+                        }
                     }
                 }
             }

@@ -29,9 +29,6 @@ public class BonfiresConfig {
         public static boolean enableAutomaticScreenshotOnCreation = true;
         public final ModConfigSpec.ConfigValue<Boolean> enableAutomaticScreenshotOnCreationConfig;
 
-        public static int screenshotWaitTicks = 5;
-        public final ModConfigSpec.IntValue screenshotWaitTicksConfig;
-
         public static boolean deleteScreenshotsOnDestroyed = true;
         public final ModConfigSpec.ConfigValue<Boolean> deleteScreenshotsOnDestroyedConfig;
 
@@ -43,7 +40,6 @@ public class BonfiresConfig {
             this.tabIconsConfig = builder.comment("Set the icons to display for the dimension tabs in the Bonfire GUI, mod:dimensionname=mod:itemname").defineList("Bonfire Dimension Tab Icons", tabIcons, input -> validateIcon((String) input));
             this.renderScreenshotsInGuiConfig = builder.comment("Whether to render screenshots of the Bonfires in the Bonfire GUI, default:true").define("Render Screenshots in GUI", renderScreenshotsInGui);
             this.enableAutomaticScreenshotOnCreationConfig = builder.comment("Enables creating a screenshot of a Bonfire when it is created, default:true").define("Enable Automatic Screenshot on Creation", enableAutomaticScreenshotOnCreation);
-            this.screenshotWaitTicksConfig = builder.comment("Set the number of ticks to wait to take a screenshot increase this if you are seeing the HUD and GUI in the screenshots, default:5").defineInRange("Screenshot Wait Ticks", screenshotWaitTicks, 1, 100);
             this.deleteScreenshotsOnDestroyedConfig = builder.comment("Whether to delete Bonfire screenshots when the Bonfire is destroyed, default:true").define("Delete Screenshots on Destroyed", deleteScreenshotsOnDestroyed);
             this.hiddenDimensionsConfig = builder.comment("List of dimensions to hide from the Bonfire GUI useful if you can't place a bonfire in the dimension, mod:dimensionname").defineList("Hidden Dimensions in GUI", hiddenDimensions, input -> ((String)input).contains(":"));
         }
@@ -72,10 +68,18 @@ public class BonfiresConfig {
         public static List<String> reinforceBlacklist = new ArrayList<>();
         public final ModConfigSpec.ConfigValue<List<? extends String>> reinforceBlacklistConfig;
 
+        public static double bonfireMonsterCheckRadius = 8.0D;
+        public final ModConfigSpec.ConfigValue<Double> bonfireMonsterCheckRadiusConfig;
+
+        public static boolean repairEquipment = false;
+        public final ModConfigSpec.BooleanValue repairEquipmentConfig;
+
         public Common(ModConfigSpec.Builder builder) {
             this.enableUBSBonfireConfig = builder.comment("Enable undead bone shard drops from blowing up a bonfire, default:true").define("Enable Undead Bone Shard drops", enableUBSBonfire);
             this.enableReinforcingConfig = builder.comment("Enable weapon/tool reinforcing, default:true").define("Enable reinforcing", enableReinforcing);
             this.reinforceBlacklistConfig = builder.worldRestart().comment("Disable specific items from being able to reinforce them").defineList("Reinforce item blacklist", reinforceBlacklist, input -> validateBlacklist((String) input));
+            this.bonfireMonsterCheckRadiusConfig = builder.comment("The radius to check for Monsters around the Bonfire, set to 0 to disable, default:8.0").define("Bonfire Monster Check Radius", bonfireMonsterCheckRadius);
+            this.repairEquipmentConfig = builder.comment("Repair tools and armour when using a Bonfire, default:false").define("Repair equipment", repairEquipment);
         }
 
         public boolean validateBlacklist(String input) {
@@ -127,13 +131,14 @@ public class BonfiresConfig {
             Client.tabIcons = (List<String>) CLIENT.tabIconsConfig.get();
             Client.renderScreenshotsInGui = CLIENT.renderScreenshotsInGuiConfig.get();
             Client.enableAutomaticScreenshotOnCreation = CLIENT.enableAutomaticScreenshotOnCreationConfig.get();
-            Client.screenshotWaitTicks = CLIENT.screenshotWaitTicksConfig.get();
             Client.deleteScreenshotsOnDestroyed = CLIENT.deleteScreenshotsOnDestroyedConfig.get();
             Client.hiddenDimensions = (List<String>) CLIENT.hiddenDimensionsConfig.get();
         } else if (event.getConfig().getSpec() == COMMON_SPEC) {
             Common.enableReinforcing = COMMON.enableReinforcingConfig.get();
             Common.enableUBSBonfire = COMMON.enableUBSBonfireConfig.get();
             Common.reinforceBlacklist = (List<String>) COMMON.reinforceBlacklistConfig.get();
+            Common.bonfireMonsterCheckRadius = COMMON.bonfireMonsterCheckRadiusConfig.get();
+            Common.repairEquipment = COMMON.repairEquipmentConfig.get();
         } else if (event.getConfig().getSpec() == SERVER_SPEC) {
             Server.estusFlaskBaseHeal = SERVER.estusFlaskBaseHealConfig.get();
             Server.estusFlaskHealPerLevel = SERVER.estusFlaskHealPerLevelConfig.get();

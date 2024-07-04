@@ -20,6 +20,7 @@ import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,6 +96,19 @@ public class Bonfires {
                     event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(reinforceDamageModifier, "reinforce_damagebonus", BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level(), AttributeModifier.Operation.ADDITION));
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void respawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (!event.isEndConquered()) {
+            event.getEntity().getInventory().items.forEach(stack -> {
+                if (stack.is(ItemSetup.estus_flask.get())) {
+                    if (stack.getTag() != null) {
+                        stack.getTag().putInt("estus", stack.getTag().getInt("uses"));
+                    }
+                }
+            });
         }
     }
 

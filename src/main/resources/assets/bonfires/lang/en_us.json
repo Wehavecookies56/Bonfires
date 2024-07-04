@@ -55,6 +55,10 @@
     "text.bonfires.private": "(Private)",
     "text.bonfires.reinforce": "Select item to reinforce",
     "text.bonfires.max_level": "Max Level",
+    "text.bonfires.enemy_nearby": "Cannot use Bonfire whilst enemies are nearby",
+    "text.bonfires.reinforce.attack": "Attack",
+    "text.bonfires.reinforce.heal": "Heal",
+    "text.bonfires.reinforce.max": "MAX",
 
     "tooltip.bonfires.estus.heal": "Heals %f hearts",
     "tooltip.bonfires.reinforce": "Reinforced: +%f damage",
