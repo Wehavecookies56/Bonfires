@@ -5,6 +5,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -21,6 +23,7 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +44,9 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -58,6 +63,7 @@ import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
+import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ComponentSetup;
 import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
@@ -96,8 +102,8 @@ public class AshBonePileBlock extends Block implements EntityBlock {
 
 
     @Override
-    public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader world, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
-        return Optional.of(BonfireTeleporter.attemptToPlaceNextToBonfire(pos, (Level) world));
+    public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
+        return Optional.of(BonfireTeleporter.attemptToPlaceNextToBonfire(pos, (Level) levelReader));
     }
 
     @Override
@@ -110,6 +116,12 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    private void repair(ItemStack stack) {
+        if (stack.has(DataComponents.DAMAGE)) {
+            stack.set(DataComponents.DAMAGE, 0);
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -137,6 +149,20 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
                             return ItemInteractionResult.SUCCESS;
+                        }
+                        if (BonfiresConfig.Common.bonfireMonsterCheckRadius > 0.0) {
+                            Vec3 vec3 = Vec3.atBottomCenterOf(new Vec3i(pos.getX(), pos.getY(), pos.getZ()));
+                            double r = BonfiresConfig.Common.bonfireMonsterCheckRadius;
+                            List<Monster> list = world.getEntitiesOfClass(Monster.class, new AABB(vec3.x() - r, vec3.y() - r, vec3.z() - r, vec3.x() + r, vec3.y() + r, vec3.z() + r), p_9062_ -> p_9062_.isPreventingPlayerRest(player));
+                            if (!list.isEmpty()) {
+                                player.sendSystemMessage(Component.translatable(LocalStrings.TEXT_ENEMY_NEARBY));
+                                return ItemInteractionResult.SUCCESS;
+                            }
+                        }
+                        if (BonfiresConfig.Common.repairEquipment) {
+                            player.getInventory().items.forEach(this::repair);
+                            player.getInventory().armor.forEach(this::repair);
+                            player.getInventory().offhand.forEach(this::repair);
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
@@ -333,6 +359,25 @@ public class AshBonePileBlock extends Block implements EntityBlock {
             }
         }
         super.animateTick(state, world, pos, random);
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+        if (level.getBlockEntity(pos) instanceof BonfireTileEntity te) {
+            ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile.get());
+            if (!player.isCrouching() && te.isBonfire()) {
+                stack.set(ComponentSetup.BONFIRE_DATA, new BonfireData("", false));
+            } else if (te.isLit()) {
+                Bonfire bonfire = BonfireHandler.getServerHandler(ServerLifecycleHooks.getCurrentServer()).getRegistry().getBonfire(te.getID());
+                if (bonfire != null) {
+                    stack.set(ComponentSetup.BONFIRE_DATA, new BonfireData(bonfire.getName(), !bonfire.isPublic()));
+                }
+            } else if (te.hasUnlitName()) {
+                stack.set(ComponentSetup.BONFIRE_DATA, new BonfireData(te.getUnlitName(), te.isUnlitPrivate()));
+            }
+            return stack;
+        }
+        return super.getCloneItemStack(state, target, level, pos, player);
     }
 
     @Nullable

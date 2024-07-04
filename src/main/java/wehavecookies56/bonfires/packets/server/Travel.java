@@ -38,6 +38,7 @@ public record Travel(BlockPos pos, ResourceKey<Level> dim) implements Packet {
     public void handle(IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
         BonfireTeleporter.travelToBonfire(player, pos, dim);
+        player.setRespawnPosition(dim, pos, player.getYRot(), false, true);
     }
 
     @Override
