@@ -53,7 +53,7 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
             stack.mulPose(Axis.ZP.rotationDegrees(-130));
             Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemDisplayContext.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, Minecraft.getInstance().level, 0);
             stack.popPose();
-            if (te.isLit() && !ScreenshotUtils.isTimerStarted()) {
+            if (te.isLit() && !ScreenshotUtils.isTakingScreenshot()) {
                 renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
             }
         }
