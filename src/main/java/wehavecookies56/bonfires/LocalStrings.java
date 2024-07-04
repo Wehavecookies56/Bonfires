@@ -49,6 +49,10 @@ public class LocalStrings {
             TEXT_PRIVATE = "text.bonfires.private",
             TEXT_REINFORCE = "text.bonfires.reinforce",
             TEXT_MAX_LEVEL = "text.bonfires.max_level",
+            TEXT_ENEMY_NEARBY = "text.bonfires.enemy_nearby",
+            TEXT_REINFORCE_ATTACK = "text.bonfires.reinforce.attack",
+            TEXT_REINFORCE_HEAL = "text.bonfires.reinforce.heal",
+            TEXT_REINFORCE_MAX = "text.bonfires.reinforce.max",
 
             TOOLTIP_ESTUS_HEAL = "tooltip.bonfires.estus.heal",
             TOOLTIP_REINFORCE = "tooltip.bonfires.reinforce",

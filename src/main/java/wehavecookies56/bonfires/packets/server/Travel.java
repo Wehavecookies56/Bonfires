@@ -54,5 +54,6 @@ public class Travel extends Packet<Travel> {
         ServerPlayer player = context.getSender();
         BlockPos pos = new BlockPos(x, y, z);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
+        player.setRespawnPosition(dim, pos, player.getYRot(), false, true);
     }
 }

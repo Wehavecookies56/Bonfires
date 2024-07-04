@@ -35,7 +35,7 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
     @Override
     public void render(BonfireTileEntity te, float pPartialTicks, PoseStack stack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
         if (te.isBonfire()) {
-            if (te.isLit() && !ScreenshotUtils.isTimerStarted()) {
+            if (te.isLit() && !ScreenshotUtils.isTakingScreenshot()) {
                 renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
             }
             stack.pushPose();
@@ -57,7 +57,7 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
             stack.mulPose(Vector3f.ZP.rotationDegrees(-130));
             Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ItemSetup.coiled_sword.get()), ItemTransforms.TransformType.NONE, pCombinedLight, pCombinedOverlay, stack, pBuffer, 0);
             stack.popPose();
-            if (te.isLit() && !ScreenshotUtils.isTimerStarted()) {
+            if (te.isLit() && !ScreenshotUtils.isTakingScreenshot()) {
                 renderNameTag(te, te.getDisplayName(), stack, pBuffer, pCombinedLight, pPartialTicks);
             }
         }
