@@ -223,7 +223,9 @@ public class BonfireScreen extends Screen {
 
     @Override
     public void onClose() {
-        screenshotImage.close();
+        if (screenshotImage != null) {
+            screenshotImage.close();
+        }
         super.onClose();
     }
 
@@ -368,8 +370,6 @@ public class BonfireScreen extends Screen {
     public void action(int id) {
         action(id, false);
     }
-
-    ResourceLocation screenshotLocation;
 
     public void action(int id, boolean closesScreen) {
         switch (id) {
