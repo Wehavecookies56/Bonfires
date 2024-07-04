@@ -222,7 +222,9 @@ public class BonfireScreen extends Screen {
 
     @Override
     public void onClose() {
-        screenshotImage.close();
+        if (screenshotImage != null) {
+            screenshotImage.close();
+        }
         super.onClose();
     }
 
