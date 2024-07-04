@@ -138,6 +138,8 @@ public class BonfiresConfig {
             Common.enableReinforcing = COMMON.enableReinforcingConfig.get();
             Common.enableUBSBonfire = COMMON.enableUBSBonfireConfig.get();
             Common.reinforceBlacklist = (List<String>) COMMON.reinforceBlacklistConfig.get();
+            Common.bonfireMonsterCheckRadius = COMMON.bonfireMonsterCheckRadiusConfig.get();
+            Common.repairEquipment = COMMON.repairEquipmentConfig.get();
         } else if (event.getConfig().getSpec() == SERVER_SPEC) {
             Server.estusFlaskBaseHeal = SERVER.estusFlaskBaseHealConfig.get();
             Server.estusFlaskHealPerLevel = SERVER.estusFlaskHealPerLevelConfig.get();
