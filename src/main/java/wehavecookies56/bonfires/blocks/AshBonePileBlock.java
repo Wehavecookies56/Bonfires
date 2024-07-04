@@ -1,9 +1,11 @@
 package wehavecookies56.bonfires.blocks;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,6 +19,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +41,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -55,15 +60,16 @@ import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
+import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import javax.annotation.Nullable;
 
 /**
  * Created by Toby on 05/11/2016.
@@ -108,6 +114,14 @@ public class AshBonePileBlock extends Block implements EntityBlock {
         return RenderShape.MODEL;
     }
 
+    private void repair(ItemStack stack) {
+        if (stack.getTag() != null) {
+            if (stack.getTag().contains("Damage")) {
+                stack.getTag().putInt("Damage", 0);
+            }
+        }
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
@@ -133,6 +147,20 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
                             return InteractionResult.SUCCESS;
+                        }
+                        if (BonfiresConfig.Common.bonfireMonsterCheckRadius > 0.0) {
+                            Vec3 vec3 = Vec3.atBottomCenterOf(new Vec3i(pos.getX(), pos.getY(), pos.getZ()));
+                            double r = BonfiresConfig.Common.bonfireMonsterCheckRadius;
+                            List<Monster> list = world.getEntitiesOfClass(Monster.class, new AABB(vec3.x() - r, vec3.y() - r, vec3.z() - r, vec3.x() + r, vec3.y() + r, vec3.z() + r), p_9062_ -> p_9062_.isPreventingPlayerRest(player));
+                            if (!list.isEmpty()) {
+                                player.sendMessage(new TranslatableComponent(LocalStrings.TEXT_ENEMY_NEARBY), Util.NIL_UUID);
+                                return InteractionResult.SUCCESS;
+                            }
+                        }
+                        if (BonfiresConfig.Common.repairEquipment) {
+                            player.getInventory().items.forEach(this::repair);
+                            player.getInventory().armor.forEach(this::repair);
+                            player.getInventory().offhand.forEach(this::repair);
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
@@ -336,6 +364,30 @@ public class AshBonePileBlock extends Block implements EntityBlock {
             }
         }
         super.animateTick(state, world, pos, random);
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+        if (level.getBlockEntity(pos) instanceof BonfireTileEntity te) {
+            ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile.get());
+            if (!player.isCrouching() && te.isBonfire()) {
+                stack.setTag(new CompoundTag());
+                stack.getTag().putBoolean("bonfire_private", false);
+            } else if (te.isLit()) {
+                Bonfire bonfire = BonfireHandler.getServerHandler(player.getServer()).getRegistry().getBonfire(te.getID());
+                if (bonfire != null) {
+                    stack.setTag(new CompoundTag());
+                    stack.getTag().putString("bonfire_name", bonfire.getName());
+                    stack.getTag().putBoolean("bonfire_private", !bonfire.isPublic());
+                }
+            } else if (te.hasUnlitName()) {
+                stack.setTag(new CompoundTag());
+                stack.getTag().putString("bonfire_name", te.getUnlitName());
+                stack.getTag().putBoolean("bonfire_private", te.isUnlitPrivate());
+            }
+            return stack;
+        }
+        return super.getCloneItemStack(state, target, level, pos, player);
     }
 
     @Nullable

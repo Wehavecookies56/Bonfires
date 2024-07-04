@@ -116,6 +116,19 @@ public class Bonfires {
     }
 
     @SubscribeEvent
+    public void respawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (!event.isEndConquered()) {
+            event.getPlayer().getInventory().items.forEach(stack -> {
+                if (stack.is(ItemSetup.estus_flask.get())) {
+                    if (stack.getTag() != null) {
+                        stack.getTag().putInt("estus", stack.getTag().getInt("uses"));
+                    }
+                }
+            });
+        }
+    }
+
+    @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         BonfiresCommand.register(dispatcher);
