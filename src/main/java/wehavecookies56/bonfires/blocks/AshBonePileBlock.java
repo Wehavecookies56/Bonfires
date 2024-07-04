@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -28,9 +29,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -49,6 +48,7 @@ import wehavecookies56.bonfires.packets.client.OpenBonfireGUI;
 import wehavecookies56.bonfires.packets.client.OpenCreateScreen;
 import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
+import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
@@ -97,6 +97,14 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
         return BlockRenderType.MODEL;
     }
 
+    private void repair(ItemStack stack) {
+        if (stack.getNbt() != null) {
+            if (stack.getNbt().contains("Damage")) {
+                stack.getNbt().putInt("Damage", 0);
+            }
+        }
+    }
+
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
@@ -121,6 +129,20 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
                             return ActionResult.SUCCESS;
+                        }
+                        if (Bonfires.CONFIG.common.bonfireMonsterCheckRadius() > 0.0) {
+                            Vec3d vec3 = Vec3d.ofBottomCenter(new Vec3i(pos.getX(), pos.getY(), pos.getZ()));
+                            double r = Bonfires.CONFIG.common.bonfireMonsterCheckRadius();
+                            List<HostileEntity> list = world.getEntitiesByClass(HostileEntity.class, new Box(vec3.x - r, vec3.y - r, vec3.z - r, vec3.x + r, vec3.y + r, vec3.z + r), p_9062_ -> p_9062_.isAngryAt(player));
+                            if (!list.isEmpty()) {
+                                player.sendMessage(Text.translatable(LocalStrings.TEXT_ENEMY_NEARBY));
+                                return ActionResult.SUCCESS;
+                            }
+                        }
+                        if (Bonfires.CONFIG.common.repairEquipment()) {
+                            player.getInventory().main.forEach(this::repair);
+                            player.getInventory().armor.forEach(this::repair);
+                            player.getInventory().offHand.forEach(this::repair);
                         }
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
                         if (registry.getBonfire(te.getID()) != null) {
@@ -315,6 +337,22 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                 tooltip.add(text);
             }
         }
+    }
+
+    @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
+            ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile);
+            if (te.isBonfire()) {
+                stack.setNbt(new NbtCompound());
+                stack.getNbt().putBoolean("bonfire_private", false);
+                if (te.hasUnlitName()) {
+                    stack.getNbt().putString("bonfire_name", te.getUnlitName());
+                }
+            }
+            return stack;
+        }
+        return super.getPickStack(world, pos, state);
     }
 
     @Nullable

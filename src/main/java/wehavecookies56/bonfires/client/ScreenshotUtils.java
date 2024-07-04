@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.client;
 
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotRecorder;
@@ -16,13 +17,15 @@ import java.util.UUID;
 
 public class ScreenshotUtils {
 
-    private static int timerTicks = 0;
-    private static boolean timerStarted = false;
+    private static boolean takingScreenshot = false;
+
     private static String name;
     private static UUID uuid;
+    public static int width = 103;
+    public static int height = 110;
 
-    public static boolean isTimerStarted() {
-        return timerStarted;
+    public static boolean isTakingScreenshot() {
+        return takingScreenshot;
     }
 
     public static String getFileNameString(String bonfireName, UUID bonfireUUID) {
@@ -33,7 +36,7 @@ public class ScreenshotUtils {
     public static void startScreenshotTimer(String bonfireName, UUID bonfireUUID) {
         name = bonfireName;
         uuid = bonfireUUID;
-        timerStarted = true;
+        takingScreenshot = true;
         MinecraftClient.getInstance().options.hudHidden = true;
     }
 
@@ -60,15 +63,12 @@ public class ScreenshotUtils {
         //Screenshot.grab(p.toFile(), nameNoInvalid + "_" + bonfireUUID.toString() + ".png", Minecraft.getInstance().getMainRenderTarget(), (m) -> {});
     }
 
-    public static void clientTick(MinecraftClient client) {
+    public static void clientTick(WorldRenderContext context) {
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.world != null) {
             if (client.player != null) {
-                if (timerStarted) {
-                    timerTicks++;
-                }
-                if (timerTicks >= Bonfires.CONFIG.client.screenshotWaitTicks()) {
-                    timerTicks = 0;
-                    timerStarted = false;
+                if (takingScreenshot) {
+                    takingScreenshot = false;
                     client.options.hudHidden = false;
                     takeScreenshot(name, uuid);
                     if (client.currentScreen != null) {

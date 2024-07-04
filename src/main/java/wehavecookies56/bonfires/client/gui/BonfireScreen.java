@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.client.gui;
 
+import blue.endless.jankson.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -40,7 +42,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Toby on 10/11/2016.
@@ -116,8 +117,7 @@ public class BonfireScreen extends Screen {
     public List<RegistryKey<World>> dimensions;
     public final boolean canReinforce;
 
-    NativeImageBackedTexture dynamicBonfireScreenshot;
-    NativeImage nativeBonfireScreenshot;
+    Screenshot screenshotImage;
 
     boolean showInfo = true;
 
@@ -127,11 +127,46 @@ public class BonfireScreen extends Screen {
         this.ownerName = ownerName;
         this.registry = registry;
         client = MinecraftClient.getInstance();
-        this.dimensions = dimensions.stream().sorted(Comparator.comparing(RegistryKey::getValue)).collect(Collectors.toList());
+        this.dimensions = dimensions.stream().sorted((o1, o2) -> {
+            if (o1.equals(World.OVERWORLD)) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }).sorted((o1, o2) -> {
+            if (o1.equals(World.NETHER)) {
+                if (o2.equals(World.OVERWORLD)) {
+                    return 1;
+                }
+                return -1;
+            } else {
+                return 0;
+            }
+        }).sorted((o1, o2) -> {
+            if (o1.equals(World.END)) {
+                if (o2.equals(World.NETHER)) {
+                    return 1;
+                } else if (o2.equals(World.OVERWORLD)) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            } else {
+                return 0;
+            }
+        }).toList();
         this.canReinforce = canReinforce;
         if (Bonfires.CONFIG.client.renderScreenshotsInGui()) {
-            dynamicBonfireScreenshot = new NativeImageBackedTexture(client.getWindow().getWidth(), client.getWindow().getHeight(), false);
+            screenshotImage = new Screenshot(MinecraftClient.getInstance().getTextureManager(), new Identifier(Bonfires.modid, bonfire.getID().toString()));
         }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 1) {
+            MinecraftClient.getInstance().setScreen(new BonfireScreen(bonfire, ownerName, dimensions, registry, canReinforce));
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     public void drawCenteredStringNoShadow(DrawContext guiGraphics, TextRenderer fr, String text, int x, int y, int color) {
@@ -140,7 +175,13 @@ public class BonfireScreen extends Screen {
 
     private Map<RegistryKey<World>, List<List<Bonfire>>> createSeries(RegistryKey<World> dimension) {
         List<Bonfire> bonfires = BonfireRegistry.sortBonfiresByTime(registry.getPrivateBonfiresByOwnerAndPublicPerDimension(MinecraftClient.getInstance().player.getUuid(), dimension.getValue()));
-
+        bonfires.sort((o1, o2) -> {
+            if (o1.getId().equals(bonfire.getID())) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
         if (!bonfires.isEmpty()) {
             List<List<Bonfire>> book = new ArrayList<>();
 
@@ -178,15 +219,15 @@ public class BonfireScreen extends Screen {
 
     @Override
     public void close() {
-        if (dynamicBonfireScreenshot != null) {
-            dynamicBonfireScreenshot.close();
+        if (screenshotImage != null) {
+            screenshotImage.close();
         }
         super.close();
     }
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (!ScreenshotUtils.isTimerStarted()) {
+        if (!ScreenshotUtils.isTakingScreenshot()) {
             renderBackground(guiGraphics);
             guiGraphics.setShaderColor(1, 1, 1, 1);
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
@@ -275,8 +316,8 @@ public class BonfireScreen extends Screen {
         if (selectedInstance != null) {
             int nameX = (width / 2) - 10 + 12;
             int nameY = (height / 2) - 45;
-            if (Bonfires.CONFIG.client.renderScreenshotsInGui() && dynamicBonfireScreenshot.getImage() != null && screenshotLocation != null && !noScreenshot) {
-                guiGraphics.drawTexture(screenshotLocation, nameX-3, nameY-5, width/2-103/2, height/2-110/2, 103, 110, width, height);
+            if (Bonfires.CONFIG.client.renderScreenshotsInGui() && screenshotImage != null && screenshotImage.textureLocation() != null && !noScreenshot) {
+                guiGraphics.drawTexture(screenshotImage.textureLocation(), nameX-3, nameY-5, (float) ScreenshotUtils.width /2, 0, ScreenshotUtils.width, ScreenshotUtils.height, ScreenshotUtils.width*2, ScreenshotUtils.height);
             }
 
             if (showInfo) {
@@ -320,8 +361,6 @@ public class BonfireScreen extends Screen {
     public void action(int id) {
         action(id, false);
     }
-
-    Identifier screenshotLocation;
 
     public void action(int id, boolean closesScreen) {
         switch (id) {
@@ -397,6 +436,15 @@ public class BonfireScreen extends Screen {
             case TAB6:
                 dimTabSelected = id;
                 bonfireSelected = 0;
+                if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
+                    if (!bonfires.get(tabs[dimTabSelected - 5].getDimension()).isEmpty()) {
+                        if (!bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(0).isEmpty()) {
+                            bonfireSelected = BONFIRE1;
+                            selectedInstance = registry.getBonfires().get(bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(0).get(0).getId());
+                            loadBonfireScreenshot();
+                        }
+                    }
+                }
                 bonfirePage = 0;
                 break;
             case BONFIRE1:
@@ -427,21 +475,12 @@ public class BonfireScreen extends Screen {
             File screenshotFile = getBonfireScreenshot(selectedInstance.getName(), selectedInstance.getId());
             if (screenshotFile != null) {
                 try {
-                    if (nativeBonfireScreenshot != null) {
-                        nativeBonfireScreenshot.close();
+                    if (screenshotImage != null) {
+                        screenshotImage.close();
+                        screenshotImage = new Screenshot(MinecraftClient.getInstance().getTextureManager(), new Identifier(Bonfires.modid, bonfire.getID().toString()));
                     }
-                    NativeImage nativeImage = NativeImage.read(new FileInputStream(screenshotFile)); //Screenshot.takeScreenshot(minecraft.getMainRenderTarget());
-                    int i = nativeImage.getWidth();
-                    int j = nativeImage.getHeight();
-                    nativeBonfireScreenshot = new NativeImage(client.getWindow().getWidth(), client.getWindow().getHeight(), false);
-                    nativeImage.resizeSubRectTo(0, 0, i, j, nativeBonfireScreenshot);
-                    dynamicBonfireScreenshot.setImage(nativeBonfireScreenshot);
-                    dynamicBonfireScreenshot.upload();
-                    screenshotLocation = client.getTextureManager().registerDynamicTexture("screenshot", dynamicBonfireScreenshot);
-                    nativeImage.close();
+                    screenshotImage.upload(NativeImage.read(new FileInputStream(screenshotFile)));
                     noScreenshot = false;
-                    screenshot.visible = false;
-                    screenshot.active = false;
                     info.visible = true;
                     info.active = true;
                 } catch (IOException e) {
@@ -462,23 +501,30 @@ public class BonfireScreen extends Screen {
         if (travelOpen) {
             if (bonfireSelected >= BONFIRE1) {
                 travel.visible = true;
+                if (selectedInstance != null) {
+                    if (selectedInstance.getId().equals(bonfire.getID())) {
+                        travel.active = false;
+                    } else {
+                        travel.active = true;
+                    }
+                }
                 travel.setX((width / 2) - 5 + 12);
                 travel.setY((height / 2) + 38);
-                if (noScreenshot && Bonfires.CONFIG.client.renderScreenshotsInGui()) {
+                info.visible = !noScreenshot;
+                info.active = !noScreenshot;
+                if (Bonfires.CONFIG.client.renderScreenshotsInGui()) {
                     if (bonfire.getID().equals(selectedInstance.getId())) {
                         screenshot.visible = true;
                         screenshot.active = true;
+                        if (noScreenshot) {
+                            screenshot.setY((height / 2) - 50);
+                        } else {
+                            screenshot.setY((height / 2) - 36);
+                        }
                     } else {
                         screenshot.visible = false;
                         screenshot.active = false;
                     }
-                    info.visible = false;
-                    info.active = false;
-                } else {
-                    screenshot.visible = false;
-                    screenshot.active = false;
-                    info.visible = Bonfires.CONFIG.client.renderScreenshotsInGui();
-                    info.active = Bonfires.CONFIG.client.renderScreenshotsInGui();
                 }
             } else {
                 travel.visible = false;
@@ -559,14 +605,8 @@ public class BonfireScreen extends Screen {
     }
 
     @Override
-    public void resize(MinecraftClient pMinecraft, int pWidth, int pHeight) {
-        super.resize(pMinecraft, pWidth, pHeight);
-        dynamicBonfireScreenshot = new NativeImageBackedTexture(pMinecraft.getWindow().getWidth(), pMinecraft.getWindow().getHeight(), false);
-    }
-
-    @Override
     public boolean shouldCloseOnEsc() {
-        return !ScreenshotUtils.isTimerStarted();
+        return !ScreenshotUtils.isTakingScreenshot();
     }
 
     @Override
@@ -625,7 +665,6 @@ public class BonfireScreen extends Screen {
         bonfire_next.setX((width / 2) - (travel_width / 2) + 63);
         bonfire_next.setY((height / 2) - (travel_height / 2) + 128 - 17);
         updateBonfires();
-        //dimensions = Lists.reverse(dimensions);
         int plus = 1;
         if (dimensions.size() % 6 == 0)
             plus = 0;
@@ -647,11 +686,41 @@ public class BonfireScreen extends Screen {
                 }
             }
         }
+        bonfireSelected = BONFIRE1;
+        selectedInstance = registry.getBonfire(bonfire.getID());
+        loadBonfireScreenshot();
         updateButtons();
     }
 
     public void updateDimensionsFromServer(BonfireRegistry registry, List<RegistryKey<World>> dimensions) {
-        this.dimensions = dimensions;
+        this.dimensions = dimensions.stream().sorted((o1, o2) -> {
+            if (o1.equals(World.OVERWORLD)) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }).sorted((o1, o2) -> {
+            if (o1.equals(World.NETHER)) {
+                if (o2.equals(World.OVERWORLD)) {
+                    return 1;
+                }
+                return -1;
+            } else {
+                return 0;
+            }
+        }).sorted((o1, o2) -> {
+            if (o1.equals(World.END)) {
+                if (o2.equals(World.NETHER)) {
+                    return 1;
+                } else if (o2.equals(World.OVERWORLD)) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            } else {
+                return 0;
+            }
+        }).toList();
         this.registry = registry;
         updateBonfires();
         updateButtons();
@@ -670,7 +739,7 @@ public class BonfireScreen extends Screen {
         if (selectedInstance != null && bonfireSelected != 0) {
             if (bonfires.get(tabs[dimTabSelected - 5].getDimension()) != null) {
                 List<Bonfire> bonfiresInCurrentPage = bonfires.get(tabs[dimTabSelected - 5].getDimension()).get(bonfirePage);
-                if (bonfiresInCurrentPage.stream().filter(b -> selectedInstance.getId().equals(b.getId())).toList().size() == 0) {
+                if (bonfiresInCurrentPage.stream().filter(b -> selectedInstance.getId().equals(b.getId())).toList().isEmpty()) {
                     selectedInstance = null;
                     bonfireSelected = 0;
                 }
@@ -684,5 +753,77 @@ public class BonfireScreen extends Screen {
     @Override
     public boolean shouldPause() {
         return false;
+    }
+
+    public static class Screenshot implements AutoCloseable {
+        private static final Identifier MISSING_LOCATION = null;
+        private final TextureManager textureManager;
+        private final Identifier textureLocation;
+
+        @Nullable
+        private NativeImageBackedTexture texture;
+        private boolean closed;
+        private Screenshot(TextureManager pTextureManager, Identifier pTextureLocation) {
+            this.textureManager = pTextureManager;
+            this.textureLocation = pTextureLocation;
+        }
+
+        public void upload(NativeImage pImage) {
+            try {
+                this.checkOpen();
+                if (this.texture == null) {
+                    this.texture = new NativeImageBackedTexture(pImage);
+                } else {
+                    this.texture.setImage(pImage);
+                    this.texture.upload();
+                }
+
+                this.textureManager.registerTexture(this.textureLocation, this.texture);
+            } catch (Throwable throwable) {
+                pImage.close();
+                this.clear();
+                throw throwable;
+            }
+        }
+
+        public void clear() {
+            this.checkOpen();
+            if (this.texture != null) {
+                this.textureManager.destroyTexture(this.textureLocation);
+                this.texture.close();
+                this.texture = null;
+            }
+        }
+
+        public int getHeight() {
+            if (texture != null) {
+                return texture.getImage().getHeight();
+            } else {
+                return 0;
+            }
+        }
+
+        public int getWidth() {
+            if (texture != null) {
+                return texture.getImage().getWidth();
+            } else {
+                return 0;
+            }
+        }
+
+        public Identifier textureLocation() {
+            return this.texture != null ? this.textureLocation : MISSING_LOCATION;
+        }
+
+        public void close() {
+            this.clear();
+            this.closed = true;
+        }
+
+        private void checkOpen() {
+            if (this.closed) {
+                throw new IllegalStateException("Icon already closed");
+            }
+        }
     }
 }
