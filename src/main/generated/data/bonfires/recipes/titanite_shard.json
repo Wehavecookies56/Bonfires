@@ -4,7 +4,7 @@
   "cookingtime": 1000,
   "experience": 0.25,
   "ingredient": {
-    "tag": "minecraft:obsidian"
+    "item": "minecraft:obsidian"
   },
   "result": {
     "count": 1,
