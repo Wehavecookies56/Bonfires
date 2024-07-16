@@ -13,7 +13,7 @@
       "item": "minecraft:golden_apple"
     },
     {
-      "tag": "c:nuggets/gold"
+      "item": "minecraft:gold_nugget"
     }
   ],
   "result": {
