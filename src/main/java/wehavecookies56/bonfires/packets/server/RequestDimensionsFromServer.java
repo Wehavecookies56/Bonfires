@@ -4,6 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -50,6 +51,10 @@ public class RequestDimensionsFromServer extends Packet<RequestDimensionsFromSer
         }
         invalidBonfires.forEach(handler::removeBonfire);
         PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(player.server).getRegistry().getBonfires()), player);
-        PacketHandler.sendTo(new SendBonfiresToClient(), player);
+        if (BonfiresConfig.Common.bonfireDiscoveryMode) {
+            PacketHandler.sendTo(new SendBonfiresToClient(player), player);
+        } else {
+            PacketHandler.sendTo(new SendBonfiresToClient(), player);
+        }
     }
 }

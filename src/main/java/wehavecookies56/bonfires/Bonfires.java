@@ -24,14 +24,19 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import wehavecookies56.bonfires.bonfire.Bonfire;
+import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
+import wehavecookies56.bonfires.packets.client.SyncDiscoveryData;
 import wehavecookies56.bonfires.packets.client.SyncEstusData;
 import wehavecookies56.bonfires.packets.client.SyncSaveData;
 import wehavecookies56.bonfires.setup.*;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -79,6 +84,14 @@ public class Bonfires {
             if (event.getEntity() instanceof ServerPlayer player) {
                 PacketHandler.sendTo(new SyncSaveData(BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry().getBonfires()), player);
                 PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
+                PacketHandler.sendTo(new SyncDiscoveryData(DiscoveryHandler.getHandler(player)), player);
+                if (DiscoveryHandler.getHandler(player).getDiscovered().isEmpty()) {
+                    //No discovered bonfires, could potentially be an old world so add all (if any) Bonfires created by the player to discovered
+                    BonfireRegistry registry = BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry();
+                    DiscoveryHandler.IDiscoveryHandler discoveryHandler = DiscoveryHandler.getHandler(player);
+                    List<Bonfire> bonfires = registry.getBonfiresByOwner(player.getUUID());
+                    bonfires.forEach(bonfire -> discoveryHandler.setDiscovered(bonfire.getId(), bonfire.getTimeCreated()));
+                }
             }
         }
     }

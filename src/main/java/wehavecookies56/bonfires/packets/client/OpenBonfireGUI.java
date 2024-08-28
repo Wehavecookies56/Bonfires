@@ -15,13 +15,12 @@ import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
 
     public BlockPos tileEntity;
-    public String ownerName;
+    public Map<UUID, String>  ownerNames;
     public BonfireRegistry registry;
     public List<ResourceKey<Level>> dimensions;
     public boolean canReinforce;
@@ -30,8 +29,8 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
         super(buffer);
     }
 
-    public OpenBonfireGUI(BonfireTileEntity bonfire, String ownerName, BonfireRegistry registry, boolean canReinforce) {
-        this.ownerName = ownerName;
+    public OpenBonfireGUI(BonfireTileEntity bonfire, Map<UUID, String> ownerNames, BonfireRegistry registry, boolean canReinforce) {
+        this.ownerNames = ownerNames;
         this.tileEntity = bonfire.getBlockPos();
         this.registry = registry;
         this.dimensions = new ArrayList<>(ServerLifecycleHooks.getCurrentServer().levelKeys());
@@ -41,7 +40,11 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     @Override
     public void decode(FriendlyByteBuf buffer) {
         canReinforce = buffer.readBoolean();
-        ownerName = buffer.readUtf();
+        CompoundTag owners = buffer.readNbt();
+        ownerNames = new HashMap<>();
+        owners.getAllKeys().forEach(s -> {
+            ownerNames.put(UUID.fromString(s), owners.getString(s));
+        });
         tileEntity = buffer.readBlockPos();
         registry = new BonfireRegistry();
         registry.readFromNBT(buffer.readNbt(), registry.getBonfires());
@@ -55,7 +58,9 @@ public class OpenBonfireGUI extends Packet<OpenBonfireGUI> {
     @Override
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeBoolean(canReinforce);
-        buffer.writeUtf(ownerName);
+        CompoundTag owners = new CompoundTag();
+        ownerNames.forEach((uuid, s) -> owners.putString(uuid.toString(), s));
+        buffer.writeNbt(owners);
         buffer.writeBlockPos(tileEntity);
         buffer.writeNbt(registry.writeToNBT(new CompoundTag(), registry.getBonfires()));
         buffer.writeVarInt(dimensions.size());

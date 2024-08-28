@@ -5,10 +5,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -73,10 +75,14 @@ public class LightBonfire extends Packet<LightBonfire> {
                 player.level().setBlock(pos, player.level().getBlockState(pos).setValue(AshBonePileBlock.LIT, true), 2);
                 player.setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
+                DiscoveryHandler.getHandler(player).discover(id);
                 BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger(player);
                 PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
                 PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level()).getRegistry().getBonfires()));
-                PacketHandler.sendToAll(new SendBonfiresToClient());
+                if (!BonfiresConfig.Common.bonfireDiscoveryMode) {
+                    PacketHandler.sendToAll(new SendBonfiresToClient());
+                }
+                PacketHandler.sendTo(new SyncDiscoveryData(DiscoveryHandler.getHandler(player)), player);
                 if (createScreenshot) {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), player);
                 }

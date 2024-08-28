@@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.level.Level;
 
 import java.time.Instant;
@@ -23,11 +25,29 @@ public class BonfireRegistry {
         bonfires = new HashMap<>();
     }
 
+    public static Map<UUID, String> getOwnerNames(MinecraftServer server) {
+        Map<UUID, String> ownerNames = new HashMap<>();
+        server.getPlayerList().getPlayers().forEach(serverPlayer -> {
+            GameProfileCache gameProfileCache = server.getProfileCache();
+            if (gameProfileCache.get(serverPlayer.getUUID()).isPresent()) {
+                ownerNames.put(serverPlayer.getUUID(), gameProfileCache.get(serverPlayer.getUUID()).get().getName());
+            } else {
+                ownerNames.put(serverPlayer.getUUID(), "Unknown");
+            }
+        });
+        return ownerNames;
+    }
+
     public BonfireRegistry getFilteredRegistry(List<UUID> filter) {
         BonfireRegistry registry = new BonfireRegistry();
         Map<UUID, Bonfire> bonfires = this.getBonfires();
-        filter.forEach(bonfires::remove);
-        registry.setBonfires(bonfires);
+        Map<UUID, Bonfire> filtered = new HashMap<>();
+        bonfires.forEach((uuid, bonfire) -> {
+            if (filter.contains(uuid)) {
+                filtered.put(uuid, bonfire);
+            }
+        });
+        registry.setBonfires(filtered);
         return registry;
     }
 

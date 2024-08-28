@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -19,6 +20,7 @@ public class CommonSetup {
         EstusHandler.init();
         ReinforceHandler.init();
         BonfireHandler.init();
+        DiscoveryHandler.init();
         BonfireLitTrigger.TRIGGER_BONFIRE_LIT = CriteriaTriggers.register(new BonfireLitTrigger());
     }
 
