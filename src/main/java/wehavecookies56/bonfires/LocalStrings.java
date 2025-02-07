@@ -3,9 +3,6 @@ package wehavecookies56.bonfires;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 
-/**
- * Created by Toby on 15/11/2016.
- */
 public class LocalStrings {
 
     public static final String

@@ -12,10 +12,6 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
-/**
- * Created by Toby on 05/11/2016.
- */
-
 public class ReinforceHandler {
 
     public static boolean canReinforce(ItemStack stack) {

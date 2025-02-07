@@ -17,15 +17,14 @@ import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class OpenBonfireGUI implements FabricPacket {
 
     public static final PacketType<OpenBonfireGUI> TYPE = PacketType.create(new Identifier(Bonfires.modid, "open_bonfires_gui"), OpenBonfireGUI::new);
 
     public BlockPos tileEntity;
-    public String ownerName;
+    public Map<UUID, String>  ownerNames;
     public BonfireRegistry registry;
     public List<RegistryKey<World>> dimensions;
     public boolean canReinforce;
@@ -34,8 +33,8 @@ public class OpenBonfireGUI implements FabricPacket {
         decode(buffer);
     }
 
-    public OpenBonfireGUI(BonfireTileEntity bonfire, String ownerName, BonfireRegistry registry, boolean canReinforce, MinecraftServer server) {
-        this.ownerName = ownerName;
+    public OpenBonfireGUI(BonfireTileEntity bonfire, Map<UUID, String> ownerNames, BonfireRegistry registry, boolean canReinforce, MinecraftServer server) {
+        this.ownerNames = ownerNames;
         this.tileEntity = bonfire.getPos();
         this.registry = registry;
         this.dimensions = new ArrayList<>(server.getWorldRegistryKeys());
@@ -44,7 +43,11 @@ public class OpenBonfireGUI implements FabricPacket {
 
     public void decode(PacketByteBuf buffer) {
         canReinforce = buffer.readBoolean();
-        ownerName = buffer.readString();
+        NbtCompound owners = buffer.readNbt();
+        ownerNames = new HashMap<>();
+        owners.getKeys().forEach(s -> {
+            ownerNames.put(UUID.fromString(s), owners.getString(s));
+        });
         tileEntity = buffer.readBlockPos();
         registry = new BonfireRegistry();
         registry.readFromNBT(buffer.readNbt(), registry.getBonfires());
@@ -58,7 +61,9 @@ public class OpenBonfireGUI implements FabricPacket {
     @Override
     public void write(PacketByteBuf buffer) {
         buffer.writeBoolean(canReinforce);
-        buffer.writeString(ownerName);
+        NbtCompound owners = new NbtCompound();
+        ownerNames.forEach((uuid, s) -> owners.putString(uuid.toString(), s));
+        buffer.writeNbt(owners);
         buffer.writeBlockPos(tileEntity);
         buffer.writeNbt(registry.writeToNBT(new NbtCompound(), registry.getBonfires()));
         buffer.writeVarInt(dimensions.size());

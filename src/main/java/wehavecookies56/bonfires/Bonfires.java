@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.ModifyItemAttributeModifiersCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -21,7 +22,10 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
+import wehavecookies56.bonfires.bonfire.Bonfire;
+import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.setup.BlockSetup;
@@ -29,12 +33,10 @@ import wehavecookies56.bonfires.setup.CreativeTabSetup;
 import wehavecookies56.bonfires.setup.EntitySetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class Bonfires implements ModInitializer {
     public static final String modid = "bonfires";
     public static Logger LOGGER = LoggerFactory.getLogger(modid);
@@ -81,6 +83,14 @@ public class Bonfires implements ModInitializer {
                         attributeModifiers.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(reinforceDamageModifier, "reinforce_damagebonus", Bonfires.CONFIG.common.reinforceDamagePerLevel() * rlevel.level(), EntityAttributeModifier.Operation.ADDITION));
                     }
                 }
+            }
+        });
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            if (DiscoveryHandler.getHandler(handler.player).getDiscovered().isEmpty()) {
+                BonfireRegistry registry = BonfireHandler.getServerHandler(server).getRegistry();
+                DiscoveryHandler.IDiscoveryHandler discoveryHandler = DiscoveryHandler.getHandler(handler.player);
+                List<Bonfire> bonfires = registry.getBonfiresByOwner(handler.player.getUuid());
+                bonfires.forEach(bonfire -> discoveryHandler.setDiscovered(bonfire.getId(), bonfire.getTimeCreated()));
             }
         });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {

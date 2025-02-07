@@ -74,6 +74,8 @@ public class BonfiresConfig {
         public double estusFlaskHealPerLevel = 1;
         public double reinforceDamagePerLevel = 0.5;
 
+        public boolean bonfireDiscoveryMode = true;
+
         public static boolean validateRegistryKey(List<String> input) {
             for (String entry : input) {
                 if (!entry.contains(":") && entry.contains(" ")) {

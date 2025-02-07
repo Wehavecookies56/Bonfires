@@ -12,9 +12,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ClickType;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class CoiledSwordItem extends SwordItem {
 
     public CoiledSwordItem() {

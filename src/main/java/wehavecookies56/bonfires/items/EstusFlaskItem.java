@@ -18,9 +18,6 @@ import wehavecookies56.bonfires.data.ReinforceHandler;
 
 import java.util.List;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class EstusFlaskItem extends Item {
 
     public EstusFlaskItem() {

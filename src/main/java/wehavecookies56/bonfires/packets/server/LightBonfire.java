@@ -10,6 +10,7 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.client.DisplayTitle;
@@ -61,11 +62,14 @@ public class LightBonfire implements FabricPacket {
                 player.getWorld().setBlockState(pos, player.getWorld().getBlockState(pos).with(AshBonePileBlock.LIT, true), 2);
                 player.setSpawnPoint(te.getWorld().getRegistryKey(), te.getPos(), player.getYaw(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
+                DiscoveryHandler.getHandler(player).discover(id);
                 BonfireLitTrigger.INSTANCE.trigger(player);
                 player.incrementStat(Bonfires.BONFIRES_LIT);
                 //PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
                 //PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getHandler(player.level()).getRegistry().getBonfires()));
-                PacketHandler.sendToAll(new SendBonfiresToClient(player.server), player.server);
+                if (!Bonfires.CONFIG.common.bonfireDiscoveryMode()) {
+                    PacketHandler.sendToAll(new SendBonfiresToClient(player.server), player.server);
+                }
                 if (createScreenshot) {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), player);
                 }

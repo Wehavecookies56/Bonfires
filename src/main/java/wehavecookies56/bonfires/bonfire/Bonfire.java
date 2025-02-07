@@ -10,9 +10,6 @@ import net.minecraft.world.World;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * Created by Toby on 07/11/2016.
- */
 public class Bonfire {
 
     private String name;

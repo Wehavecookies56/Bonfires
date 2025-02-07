@@ -9,9 +9,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class EstusShardItem extends Item {
 
     public EstusShardItem() {

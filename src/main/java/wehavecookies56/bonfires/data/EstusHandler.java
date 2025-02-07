@@ -13,10 +13,6 @@ import wehavecookies56.bonfires.Bonfires;
 
 import java.util.UUID;
 
-/**
- * Created by Toby on 05/11/2016.
- */
-
 public class EstusHandler implements EntityComponentInitializer {
 
     public static final ComponentKey<IEstusHandler> ESTUS = ComponentRegistry.getOrCreate(new Identifier(Bonfires.modid, "estus"), IEstusHandler.class);

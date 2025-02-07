@@ -4,9 +4,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class NameTextField extends TextFieldWidget {
 
     private int max = 0;
