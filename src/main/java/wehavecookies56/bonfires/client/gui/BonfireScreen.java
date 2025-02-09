@@ -47,9 +47,6 @@ import java.util.List;
 import java.util.*;
 import javax.annotation.Nullable;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class BonfireScreen extends Screen {
 
     private final ResourceLocation MENU = new ResourceLocation(Bonfires.modid, "textures/gui/bonfire_menu.png");
@@ -115,7 +112,7 @@ public class BonfireScreen extends Screen {
     private final int travel_width = 195;
     public final int travel_height = 136;
 
-    public String ownerName = "";
+    public Map<UUID, String> ownerNames = new HashMap<>();
 
     public BonfireRegistry registry;
     public List<ResourceKey<Level>> dimensions;
@@ -125,10 +122,10 @@ public class BonfireScreen extends Screen {
 
     boolean showInfo = true;
 
-    public BonfireScreen(BonfireTileEntity bonfire, String ownerName, List<ResourceKey<Level>> dimensions, BonfireRegistry registry, boolean canReinforce) {
+    public BonfireScreen(BonfireTileEntity bonfire, Map<UUID, String> ownerNames, List<ResourceKey<Level>> dimensions, BonfireRegistry registry, boolean canReinforce) {
         super(Component.empty());
         this.bonfire = bonfire;
-        this.ownerName = ownerName;
+        this.ownerNames = ownerNames;
         this.registry = registry;
         minecraft = Minecraft.getInstance();
         this.dimensions = dimensions.stream().sorted((o1, o2) -> {
@@ -168,7 +165,7 @@ public class BonfireScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 1) {
-            Minecraft.getInstance().setScreen(new BonfireScreen(bonfire, ownerName, dimensions, registry, canReinforce));
+            Minecraft.getInstance().setScreen(new BonfireScreen(bonfire, ownerNames, dimensions, registry, canReinforce));
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -304,8 +301,7 @@ public class BonfireScreen extends Screen {
                     }
                 }
                 drawCenteredStringNoShadow(guiGraphics, font, name, (width / 4), (height / 2) - (tex_height / 2) + 10, new Color(255, 255, 255).hashCode());
-                if (!ownerName.isEmpty())
-                    drawCenteredStringNoShadow(guiGraphics, font, ownerName, (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
+                drawCenteredStringNoShadow(guiGraphics, font, ownerNames.get(currentBonfire.getOwner()), (width / 4), (height / 2) - (tex_height / 2) + tex_height - 10, new Color(255, 255, 255).hashCode());
             }
         }
     }
@@ -333,7 +329,7 @@ public class BonfireScreen extends Screen {
                 Font font = Minecraft.getInstance().font;
                 guiGraphics.drawString(font, selectedInstance.getName(), nameX, nameY, new Color(255, 255, 255).hashCode());
                 guiGraphics.drawString(font, "X:" + selectedInstance.getPos().getX() + " Y:" + selectedInstance.getPos().getY() + " Z:" + selectedInstance.getPos().getZ(), nameX, nameY + font.lineHeight + 3, new Color(255, 255, 255).hashCode());
-                guiGraphics.drawString(font, ownerName, nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
+                guiGraphics.drawString(font, ownerNames.get(selectedInstance.getOwner()), nameX, nameY + (font.lineHeight + 3) * 2, new Color(255, 255, 255).hashCode());
             }
         }
     }
@@ -703,7 +699,7 @@ public class BonfireScreen extends Screen {
         updateButtons();
     }
 
-    public void updateDimensionsFromServer(BonfireRegistry registry, List<ResourceKey<Level>> dimensions) {
+    public void updateDimensionsFromServer(BonfireRegistry registry, List<ResourceKey<Level>> dimensions, Map<UUID, String> ownerNames) {
         this.dimensions = dimensions.stream().sorted((o1, o2) -> {
             if (o1.equals(Level.OVERWORLD)) {
                 return -1;
@@ -733,6 +729,7 @@ public class BonfireScreen extends Screen {
             }
         }).toList();
         this.registry = registry;
+        this.ownerNames = ownerNames;
         updateBonfires();
         updateButtons();
     }

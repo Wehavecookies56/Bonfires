@@ -23,9 +23,6 @@ import java.time.Instant;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class BonfireTileEntity extends BlockEntity {
 
     private boolean bonfire = false;

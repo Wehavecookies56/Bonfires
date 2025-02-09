@@ -14,9 +14,6 @@ import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.setup.ComponentSetup;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public record ReinforceItem(int slot) implements Packet {
 
     public static final Type<ReinforceItem> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "reinforce_item"));

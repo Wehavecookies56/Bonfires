@@ -15,9 +15,6 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public record SyncBonfire(boolean bonfire, boolean lit, UUID id, BlockPos pos, BonfireTileEntity.BonfireType bonfireType) implements Packet {
 
     public static final Type<SyncBonfire> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "sync_bonfire"));

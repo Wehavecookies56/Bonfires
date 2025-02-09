@@ -3,6 +3,7 @@ package wehavecookies56.bonfires.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -15,6 +16,7 @@ import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 import wehavecookies56.bonfires.client.gui.CreateBonfireScreen;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.client.DisplayTitle;
 import wehavecookies56.bonfires.packets.client.OpenBonfireGUI;
@@ -27,20 +29,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-/**
- * Created by Toby on 07/11/2016.
- */
 public class ClientPacketHandler {
 
     public static void openBonfire(OpenBonfireGUI packet) {
-        Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.pos()), packet.ownerName(), packet.dimensions().stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.registry(), packet.canReinforce()));
+        Minecraft.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) Minecraft.getInstance().level.getBlockEntity(packet.pos()), packet.ownerNames(), packet.dimensions().stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.registry(), packet.canReinforce()));
 
     }
 
     public static void setBonfiresFromServer(SendBonfiresToClient packet) {
         if (Minecraft.getInstance().screen != null) {
             if (Minecraft.getInstance().screen instanceof BonfireScreen gui) {
-                gui.updateDimensionsFromServer(packet.registry(), packet.dimensions().stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList());
+                gui.updateDimensionsFromServer(packet.registry(), packet.dimensions().stream().filter(dim -> !BonfiresConfig.Client.hiddenDimensions.contains(dim.location().toString())).toList(), packet.ownerNames());
             }
         }
     }
@@ -73,6 +72,11 @@ public class ClientPacketHandler {
     public static void syncEstusData(UUID lastRested) {
         EstusHandler.EstusHandlerInstance handler = EstusHandler.getHandler(Minecraft.getInstance().player);
         handler.setLastRested(lastRested);
+    }
+
+    public static void syncDiscoveryData(CompoundTag tag) {
+        DiscoveryHandler.IDiscoveryHandler handler = DiscoveryHandler.getHandler(Minecraft.getInstance().player);
+        handler.deserializeNBT(Minecraft.getInstance().player.registryAccess(), tag);
     }
 
     public static void displayBonfireTravelled(Bonfire bonfire) {

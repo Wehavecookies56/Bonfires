@@ -15,9 +15,6 @@ import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public record Travel(BlockPos pos, ResourceKey<Level> dim) implements Packet {
 
     public static final Type<Travel> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "travel"));

@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.packets.Packet;
@@ -44,7 +45,11 @@ public record RequestDimensionsFromServer() implements Packet {
             }
         }
         invalidBonfires.forEach(handler::removeBonfire);
-        PacketHandler.sendTo(new SendBonfiresToClient(), player);
+        if (BonfiresConfig.Common.bonfireDiscoveryMode) {
+            PacketHandler.sendTo(new SendBonfiresToClient(player), player);
+        } else {
+            PacketHandler.sendTo(new SendBonfiresToClient(), player);
+        }
     }
 
     @Override

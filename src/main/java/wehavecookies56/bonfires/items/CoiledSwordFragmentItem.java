@@ -6,9 +6,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-/**
- * Created by Toby on 16/11/2016.
- */
 public class CoiledSwordFragmentItem extends HomewardBoneItem {
 
     public CoiledSwordFragmentItem() {

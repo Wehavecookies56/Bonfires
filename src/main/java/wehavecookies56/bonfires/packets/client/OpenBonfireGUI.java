@@ -20,11 +20,13 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-public record OpenBonfireGUI(BlockPos pos, String ownerName, BonfireRegistry registry, boolean canReinforce, List<ResourceKey<Level>> dimensions) implements Packet {
+public record OpenBonfireGUI(BlockPos pos, Map<UUID, String> ownerNames, BonfireRegistry registry, boolean canReinforce, List<ResourceKey<Level>> dimensions) implements Packet {
 
-    public OpenBonfireGUI(BonfireTileEntity bonfire, String ownerName, BonfireRegistry registry, boolean canReinforce) {
-        this(bonfire.getBlockPos(), ownerName, registry, canReinforce, new ArrayList<>(ServerLifecycleHooks.getCurrentServer().levelKeys()));
+    public OpenBonfireGUI(BonfireTileEntity bonfire, Map<UUID, String> ownerNames, BonfireRegistry registry, boolean canReinforce) {
+        this(bonfire.getBlockPos(), ownerNames, registry, canReinforce, new ArrayList<>(ServerLifecycleHooks.getCurrentServer().levelKeys()));
     }
 
     public static final Type<OpenBonfireGUI> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "open_bonfire_gui"));
@@ -32,8 +34,8 @@ public record OpenBonfireGUI(BlockPos pos, String ownerName, BonfireRegistry reg
     public static final StreamCodec<FriendlyByteBuf, OpenBonfireGUI> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,
             OpenBonfireGUI::pos,
-            ByteBufCodecs.STRING_UTF8,
-            OpenBonfireGUI::ownerName,
+            Bonfires.OWNER_NAMES,
+            OpenBonfireGUI::ownerNames,
             BonfireRegistry.STREAM_CODEC,
             OpenBonfireGUI::registry,
             ByteBufCodecs.BOOL,

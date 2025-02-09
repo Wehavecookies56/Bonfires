@@ -31,6 +31,7 @@ public class PacketHandler {
 		registrar.playToClient(QueueBonfireScreenshot.TYPE, QueueBonfireScreenshot.STREAM_CODEC, PacketHandler::handlePacket);
 		registrar.playToClient(DeleteScreenshot.TYPE, DeleteScreenshot.STREAM_CODEC, PacketHandler::handlePacket);
 		registrar.playToClient(DisplayBonfireTitle.TYPE, DisplayBonfireTitle.STREAM_CODEC, PacketHandler::handlePacket);
+		registrar.playToClient(SyncDiscoveryData.TYPE, SyncDiscoveryData.STREAM_CODEC, PacketHandler::handlePacket);
 
 		//From Client to Server
 		registrar.playToServer(LightBonfire.TYPE, LightBonfire.STREAM_CODEC, PacketHandler::handlePacket);

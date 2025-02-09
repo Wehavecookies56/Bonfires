@@ -3,6 +3,7 @@ package wehavecookies56.bonfires;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -26,29 +28,36 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
+import wehavecookies56.bonfires.bonfire.Bonfire;
+import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
+import wehavecookies56.bonfires.packets.client.SyncDiscoveryData;
 import wehavecookies56.bonfires.packets.client.SyncEstusData;
 import wehavecookies56.bonfires.setup.*;
 
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Supplier;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 @Mod("bonfires")
 public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
 
     public static final UUID reinforceDamageModifier = UUID.fromString("117e876c-c9bd-4898-985a-2ecb24198350");
+
+    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Bonfires.modid);
+    public static final Supplier<AttachmentType<EstusHandler.EstusHandlerInstance>> ESTUS = Bonfires.ATTACHMENT_TYPES.register("estus", () -> AttachmentType.serializable(() -> new EstusHandler.EstusHandlerInstance(null)).copyOnDeath().build());
+    public static final Supplier<AttachmentType<DiscoveryHandler.DiscoveryHandlerInstance>> DISCOVERY = Bonfires.ATTACHMENT_TYPES.register("discovery", () -> AttachmentType.serializable(DiscoveryHandler.DiscoveryHandlerInstance::new).copyOnDeath().build());
 
     public Bonfires(IEventBus modEventBus) {
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
@@ -57,15 +66,15 @@ public class Bonfires {
         ItemSetup.ITEMS.register(modEventBus);
         EntitySetup.TILE_ENTITIES.register(modEventBus);
         CreativeTabSetup.TABS.register(modEventBus);
-        EstusHandler.ATTACHMENT_TYPES.register(modEventBus);
+        ATTACHMENT_TYPES.register(modEventBus);
         BonfireLitTrigger.CRITERION_TRIGGERS.register(modEventBus);
         ComponentSetup.COMPONENTS.register(modEventBus);
 
         modEventBus.addListener(PacketHandler::register);
 
-        modLoadingContext.registerConfig(ModConfig.Type.CLIENT, BonfiresConfig.CLIENT_SPEC);
-        modLoadingContext.registerConfig(ModConfig.Type.COMMON, BonfiresConfig.COMMON_SPEC);
-        modLoadingContext.registerConfig(ModConfig.Type.SERVER, BonfiresConfig.SERVER_SPEC);
+        modLoadingContext.getActiveContainer().registerConfig(ModConfig.Type.CLIENT, BonfiresConfig.CLIENT_SPEC);
+        modLoadingContext.getActiveContainer().registerConfig(ModConfig.Type.COMMON, BonfiresConfig.COMMON_SPEC);
+        modLoadingContext.getActiveContainer().registerConfig(ModConfig.Type.SERVER, BonfiresConfig.SERVER_SPEC);
 
         NeoForge.EVENT_BUS.register(this);
     }
@@ -86,6 +95,14 @@ public class Bonfires {
         if (!event.getLevel().isClientSide) {
             if (event.getEntity() instanceof ServerPlayer player) {
                 PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), player);
+                PacketHandler.sendTo(new SyncDiscoveryData(DiscoveryHandler.getHandler(player), player), player);
+                if (DiscoveryHandler.getHandler(player).getDiscovered().isEmpty()) {
+                    //No discovered bonfires, could potentially be an old world so add all (if any) Bonfires created by the player to discovered
+                    BonfireRegistry registry = BonfireHandler.getServerHandler(event.getLevel().getServer()).getRegistry();
+                    DiscoveryHandler.IDiscoveryHandler discoveryHandler = DiscoveryHandler.getHandler(player);
+                    List<Bonfire> bonfires = registry.getBonfiresByOwner(player.getUUID());
+                    bonfires.forEach(bonfire -> discoveryHandler.setDiscovered(bonfire.getId(), bonfire.getTimeCreated()));
+                }
             }
         }
     }
@@ -156,6 +173,25 @@ public class Bonfires {
             if (uuid != null) {
                 UUIDUtil.STREAM_CODEC.encode(byteBuf, uuid);
             }
+        }
+    };
+
+    public static final StreamCodec<FriendlyByteBuf, Map<UUID, String>> OWNER_NAMES = new StreamCodec<>() {
+        @Override
+        public Map<UUID, String> decode(FriendlyByteBuf buf) {
+            CompoundTag owners = buf.readNbt();
+            Map<UUID, String> ownerNames = new HashMap<>();
+            owners.getAllKeys().forEach(s -> {
+                ownerNames.put(UUID.fromString(s), owners.getString(s));
+            });
+            return ownerNames;
+        }
+
+        @Override
+        public void encode(FriendlyByteBuf buf, Map<UUID, String> ownerNames) {
+            CompoundTag owners = new CompoundTag();
+            ownerNames.forEach((uuid, s) -> owners.putString(uuid.toString(), s));
+            buf.writeNbt(owners);
         }
     };
 }

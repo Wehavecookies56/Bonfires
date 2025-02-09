@@ -22,9 +22,6 @@ import wehavecookies56.bonfires.setup.ComponentSetup;
 
 import java.util.List;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class EstusFlaskItem extends Item {
 
     public record Estus(int uses, int maxUses){

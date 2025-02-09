@@ -9,23 +9,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
 import wehavecookies56.bonfires.blocks.AshBonePileBlock;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.Packet;
 import wehavecookies56.bonfires.packets.PacketHandler;
-import wehavecookies56.bonfires.packets.client.DisplayTitle;
-import wehavecookies56.bonfires.packets.client.QueueBonfireScreenshot;
-import wehavecookies56.bonfires.packets.client.SendBonfiresToClient;
-import wehavecookies56.bonfires.packets.client.SyncBonfire;
+import wehavecookies56.bonfires.packets.client.*;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, boolean createScreenshot) implements Packet {
 
     public static final Type<LightBonfire> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "light_bonfire"));
@@ -59,9 +55,13 @@ public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, bo
                 player.level().setBlock(bonfireTE, player.level().getBlockState(bonfireTE).setValue(AshBonePileBlock.LIT, true), 2);
                 player.setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                 EstusHandler.getHandler(player).setLastRested(te.getID());
+                DiscoveryHandler.getHandler(player).discover(id);
                 ((BonfireLitTrigger)BonfireLitTrigger.TRIGGER_BONFIRE_LIT.get()).trigger(player);
                 PacketHandler.sendToAll(new SyncBonfire(te.isBonfire(), te.getBonfireType(), te.isLit(), te.getID(), te));
-                PacketHandler.sendToAll(new SendBonfiresToClient());
+                if (!BonfiresConfig.Common.bonfireDiscoveryMode) {
+                    PacketHandler.sendToAll(new SendBonfiresToClient());
+                }
+                PacketHandler.sendTo(new SyncDiscoveryData(DiscoveryHandler.getHandler(player), player), player);
                 if (createScreenshot) {
                     PacketHandler.sendTo(new QueueBonfireScreenshot(name, id), player);
                 }

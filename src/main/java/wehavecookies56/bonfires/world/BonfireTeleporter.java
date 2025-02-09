@@ -14,9 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.ITeleporter;
 import java.util.function.Function;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class BonfireTeleporter implements ITeleporter {
 
     BlockPos pos;
@@ -31,7 +28,7 @@ public class BonfireTeleporter implements ITeleporter {
             Direction dir = Direction.from2DDataValue(i);
             BlockPos newPos = bonfirePos.relative(dir);
             BlockState state = world.getBlockState(new BlockPos(newPos));
-            if (state.getBlock().isPossibleToRespawnInThis(state)) {
+            if (state.getBlock().isPossibleToRespawnInThis(state) && !world.getBlockState(newPos.below()).canBeReplaced()) {
                 return new Vec3(newPos.getX() + 0.5D, newPos.getY() + 0.5, newPos.getZ() + 0.5);
             }
         }

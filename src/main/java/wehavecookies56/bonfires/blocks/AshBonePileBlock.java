@@ -1,6 +1,5 @@
 package wehavecookies56.bonfires.blocks;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
@@ -58,6 +57,7 @@ import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -74,9 +74,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class AshBonePileBlock extends Block implements EntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -164,15 +161,15 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                             player.getInventory().armor.forEach(this::repair);
                             player.getInventory().offhand.forEach(this::repair);
                         }
+                        DiscoveryHandler.IDiscoveryHandler discoveryHandler = DiscoveryHandler.getHandler(player);
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
+                        if (registry.getBonfire(te.getID()).isPublic() || registry.getBonfire(te.getID()).getOwner().equals(player.getUUID())) {
+                            discoveryHandler.discover(te.getID());
+                        }
+                        if (BonfiresConfig.Common.bonfireDiscoveryMode) {
+                            registry = registry.getFilteredRegistry(discoveryHandler.getDiscovered().keySet().stream().toList());
+                        }
                         if (registry.getBonfire(te.getID()) != null) {
-                            GameProfile profile;
-                            Optional<GameProfile> cachedProfile = world.getServer().getProfileCache().get(registry.getBonfire(te.getID()).getOwner());
-                            if (cachedProfile.isPresent()) {
-                                profile = cachedProfile.get();
-                            } else {
-                                profile = new GameProfile(registry.getBonfire(te.getID()).getOwner(), "Unknown");
-                            }
                             for (int i = 0; i < player.getInventory().items.size(); i++) {
                                 if (!player.getInventory().getItem(i).isEmpty()) {
                                     if (player.getInventory().getItem(i).getItem() == ItemSetup.estus_flask.get()) {
@@ -183,11 +180,12 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                                     }
                                 }
                             }
-                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry, BonfiresConfig.Common.enableReinforcing), (ServerPlayer) player);
+                            PacketHandler.sendTo(new OpenBonfireGUI(te, BonfireRegistry.getOwnerNames(world.getServer()), registry, BonfiresConfig.Common.enableReinforcing), (ServerPlayer) player);
                             player.heal(player.getMaxHealth());
                             ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
                             EstusHandler.getHandler(player).setLastRested(te.getID());
                             PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), (ServerPlayer) player);
+                            PacketHandler.sendTo(new SyncDiscoveryData(DiscoveryHandler.getHandler(player), player), (ServerPlayer) player);
                         } else {
                             //Bonfire lit but not in data, so should not be lit
                             te.setLit(false);
@@ -289,7 +287,13 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         Bonfire destroyed = BonfireHandler.getServerHandler(server).getRegistry().getBonfire(te.getID());
                         te.destroyBonfire(te.getID());
                         BonfireHandler.getServerHandler(server).removeBonfire(te.getID());
-                        PacketHandler.sendToAll(new SendBonfiresToClient());
+                        if (BonfiresConfig.Common.bonfireDiscoveryMode) {
+                            server.getPlayerList().getPlayers().forEach(serverPlayer -> {
+                                PacketHandler.sendTo(new SendBonfiresToClient(serverPlayer), serverPlayer);
+                            });
+                        } else {
+                            PacketHandler.sendToAll(new SendBonfiresToClient());
+                        }
                         PacketHandler.sendToAll(new DeleteScreenshot(te.getID(), destroyed.getName()));
                     }
                 }

@@ -19,9 +19,6 @@ import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.packets.server.LightBonfire;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class CreateBonfireScreen extends Screen {
 
     private NameTextField nameBox;

@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by Toby on 17/12/2016.
- */
 @EventBusSubscriber(modid = Bonfires.modid, bus = EventBusSubscriber.Bus.MOD)
 public class BonfiresConfig {
 
@@ -74,12 +71,16 @@ public class BonfiresConfig {
         public static boolean repairEquipment = false;
         public final ModConfigSpec.BooleanValue repairEquipmentConfig;
 
+        public static boolean bonfireDiscoveryMode = true;
+        public final ModConfigSpec.BooleanValue bonfireDiscoveryModeConfig;
+
         public Common(ModConfigSpec.Builder builder) {
             this.enableUBSBonfireConfig = builder.comment("Enable undead bone shard drops from blowing up a bonfire, default:true").define("Enable Undead Bone Shard drops", enableUBSBonfire);
             this.enableReinforcingConfig = builder.comment("Enable weapon/tool reinforcing, default:true").define("Enable reinforcing", enableReinforcing);
             this.reinforceBlacklistConfig = builder.worldRestart().comment("Disable specific items from being able to reinforce them").defineList("Reinforce item blacklist", reinforceBlacklist, input -> validateBlacklist((String) input));
             this.bonfireMonsterCheckRadiusConfig = builder.comment("The radius to check for Monsters around the Bonfire, set to 0 to disable, default:8.0").define("Bonfire Monster Check Radius", bonfireMonsterCheckRadius);
             this.repairEquipmentConfig = builder.comment("Repair tools and armour when using a Bonfire, default:false").define("Repair equipment", repairEquipment);
+            this.bonfireDiscoveryModeConfig = builder.comment("Bonfire menu will only display Bonfires that the player has discovered, default:true").define("Enable Bonfire Discovery Mode", bonfireDiscoveryMode);
         }
 
         public boolean validateBlacklist(String input) {
@@ -139,6 +140,7 @@ public class BonfiresConfig {
             Common.reinforceBlacklist = (List<String>) COMMON.reinforceBlacklistConfig.get();
             Common.bonfireMonsterCheckRadius = COMMON.bonfireMonsterCheckRadiusConfig.get();
             Common.repairEquipment = COMMON.repairEquipmentConfig.get();
+            Common.bonfireDiscoveryMode = COMMON.bonfireDiscoveryModeConfig.get();
         } else if (event.getConfig().getSpec() == SERVER_SPEC) {
             Server.estusFlaskBaseHeal = SERVER.estusFlaskBaseHealConfig.get();
             Server.estusFlaskHealPerLevel = SERVER.estusFlaskHealPerLevelConfig.get();

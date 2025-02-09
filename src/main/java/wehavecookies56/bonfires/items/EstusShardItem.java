@@ -9,9 +9,6 @@ import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.setup.ComponentSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class EstusShardItem extends Item {
 
     public EstusShardItem() {

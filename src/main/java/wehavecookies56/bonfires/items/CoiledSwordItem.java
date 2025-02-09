@@ -11,9 +11,6 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class CoiledSwordItem extends SwordItem {
 
     static Tier material = new Tier() {

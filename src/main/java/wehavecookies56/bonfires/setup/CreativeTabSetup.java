@@ -14,10 +14,6 @@ import wehavecookies56.bonfires.items.EstusFlaskItem;
 import java.util.Random;
 import java.util.function.Supplier;
 
-/**
- * Created by Toby on 05/11/2016.
- */
-
 public class CreativeTabSetup {
 
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Bonfires.modid);

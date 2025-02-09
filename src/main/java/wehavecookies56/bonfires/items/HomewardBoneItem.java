@@ -16,9 +16,6 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 import java.util.UUID;
 
-/**
- * Created by Toby on 16/11/2016.
- */
 public class HomewardBoneItem extends Item {
 
     public HomewardBoneItem(Item.Properties properties) {
