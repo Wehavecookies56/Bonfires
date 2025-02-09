@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public record SyncBonfire(boolean bonfire, boolean lit, UUID id, BlockPos pos, BonfireTileEntity.BonfireType bonfireType) implements Packet {
 
-    public static final Type<SyncBonfire> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "sync_bonfire"));
+    public static final Type<SyncBonfire> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "sync_bonfire"));
 
     public static final StreamCodec<FriendlyByteBuf, SyncBonfire> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,

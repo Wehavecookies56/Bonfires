@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires.datagen;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -21,6 +22,7 @@ import wehavecookies56.bonfires.setup.ItemSetup;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -38,8 +40,8 @@ public class BonfiresDataGen {
 
     public static class BonfiresBlockLoot extends BlockLootSubProvider {
 
-        protected BonfiresBlockLoot() {
-            super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
+        protected BonfiresBlockLoot(HolderLookup.Provider provider) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
         }
 
         @Override

@@ -24,7 +24,7 @@ import java.util.UUID;
 
 public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, boolean createScreenshot) implements Packet {
 
-    public static final Type<LightBonfire> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "light_bonfire"));
+    public static final Type<LightBonfire> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "light_bonfire"));
 
     public static final StreamCodec<FriendlyByteBuf, LightBonfire> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

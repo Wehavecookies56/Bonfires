@@ -24,7 +24,7 @@ public class ClientSetup {
     public static void setupClient(final FMLClientSetupEvent event) {
         NeoForge.EVENT_BUS.register(new ClientSetup.GameBusEvents());
         event.enqueueWork(() -> {
-            ItemProperties.register(ItemSetup.estus_flask.get(), new ResourceLocation(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
+            ItemProperties.register(ItemSetup.estus_flask.get(), ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
                 return entity != null && stack.has(ComponentSetup.ESTUS) ? (float) stack.get(ComponentSetup.ESTUS).uses() / (float) stack.get(ComponentSetup.ESTUS).maxUses() : 0.0F;
             });
         });

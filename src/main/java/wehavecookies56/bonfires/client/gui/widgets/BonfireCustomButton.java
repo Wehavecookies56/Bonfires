@@ -15,7 +15,7 @@ import java.util.List;
 public class BonfireCustomButton extends Button {
 
     private int id;
-    private final ResourceLocation TRAVEL_TEX = new ResourceLocation(Bonfires.modid, "textures/gui/travel_menu.png");
+    private final ResourceLocation TRAVEL_TEX = ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "textures/gui/travel_menu.png");
 
     public enum ButtonType {
         SCREENSHOT(240, 42, "tooltip.bonfires.screenshot"), INFO(240, 58, "tooltip.bonfires.info");

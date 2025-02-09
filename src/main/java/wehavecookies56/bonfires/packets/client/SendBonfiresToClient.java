@@ -26,7 +26,7 @@ import java.util.UUID;
 
 public record SendBonfiresToClient(List<ResourceKey<Level>> dimensions, BonfireRegistry registry, Map<UUID, String> ownerNames) implements Packet {
 
-    public static final Type<SendBonfiresToClient> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "send_bonfires_to_client"));
+    public static final Type<SendBonfiresToClient> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "send_bonfires_to_client"));
 
     public static final StreamCodec<FriendlyByteBuf, SendBonfiresToClient> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.collection(ArrayList::new, ResourceKey.streamCodec(Registries.DIMENSION)),

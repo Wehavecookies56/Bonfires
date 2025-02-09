@@ -6,9 +6,10 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -24,8 +25,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -53,7 +54,7 @@ public class Bonfires {
     public static Logger LOGGER = LogManager.getLogger();
     public static final String modid = "bonfires";
 
-    public static final UUID reinforceDamageModifier = UUID.fromString("117e876c-c9bd-4898-985a-2ecb24198350");
+    public static final ResourceLocation reinforceDamageModifier = ResourceLocation.fromNamespaceAndPath(modid, "reinforce_damagebonus");
 
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Bonfires.modid);
     public static final Supplier<AttachmentType<EstusHandler.EstusHandlerInstance>> ESTUS = Bonfires.ATTACHMENT_TYPES.register("estus", () -> AttachmentType.serializable(() -> new EstusHandler.EstusHandlerInstance(null)).copyOnDeath().build());
@@ -108,12 +109,12 @@ public class Bonfires {
     }
 
     @SubscribeEvent
-    public void livingHurt(LivingHurtEvent event) {
+    public void livingHurt(LivingDamageEvent.Pre event) {
         if (event.getSource().getDirectEntity() instanceof Player player) {
             if (ReinforceHandler.canReinforce(player.getMainHandItem())) {
                 ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(player.getMainHandItem());
                 if (rlevel != null) {
-                    event.setAmount((float) ((event.getAmount() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())) * player.getAttackStrengthScale(0)));
+                    event.setNewDamage((float) ((event.getOriginalDamage() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())) * player.getAttackStrengthScale(0)));
                 }
             }
         }
@@ -148,11 +149,11 @@ public class Bonfires {
 
     @SubscribeEvent
     public void modifyAttributes(ItemAttributeModifierEvent event) {
-        if (event.getSlotType() == EquipmentSlot.MAINHAND && event.getItemStack().getItem() != ItemSetup.estus_flask) {
+        if (event.getItemStack().getItem() != ItemSetup.estus_flask) {
             if (ReinforceHandler.canReinforce(event.getItemStack())) {
                 ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(event.getItemStack());
                 if (rlevel != null && rlevel.level() != 0) {
-                    event.getModifiers().put(Attributes.ATTACK_DAMAGE, new AttributeModifier(reinforceDamageModifier, "reinforce_damagebonus", BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level(), AttributeModifier.Operation.ADD_VALUE));
+                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(reinforceDamageModifier, BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
                 }
             }
         }

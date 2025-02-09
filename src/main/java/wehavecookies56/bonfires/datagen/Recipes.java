@@ -63,7 +63,7 @@ public class Recipes extends RecipeProvider {
 
         SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.FIRE_CHARGE), Ingredient.of(Items.IRON_SWORD), Ingredient.of(ItemSetup.coiled_sword_fragment.get()), RecipeCategory.COMBAT, ItemSetup.coiled_sword.get())
                 .unlocks("has_coiled_sword_fragment", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.coiled_sword_fragment.get()))
-                .save(recipeConsumer, new ResourceLocation(Bonfires.modid, "coiled_sword_smithing"));
+                .save(recipeConsumer, ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "coiled_sword_smithing"));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BREWING, ItemSetup.estus_shard.get())
                 .requires(Tags.Items.GEMS_DIAMOND)

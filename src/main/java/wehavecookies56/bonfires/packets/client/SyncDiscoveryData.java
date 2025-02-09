@@ -16,7 +16,7 @@ import wehavecookies56.bonfires.packets.Packet;
 
 public record SyncDiscoveryData(CompoundTag nbt) implements Packet {
 
-    public static final Type<SyncDiscoveryData> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "sync_discovery_data"));
+    public static final Type<SyncDiscoveryData> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "sync_discovery_data"));
 
     public static final StreamCodec<FriendlyByteBuf, SyncDiscoveryData> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG,

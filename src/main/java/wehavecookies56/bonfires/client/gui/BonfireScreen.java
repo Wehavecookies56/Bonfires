@@ -49,8 +49,8 @@ import javax.annotation.Nullable;
 
 public class BonfireScreen extends Screen {
 
-    private final ResourceLocation MENU = new ResourceLocation(Bonfires.modid, "textures/gui/bonfire_menu.png");
-    public final ResourceLocation TRAVEL_TEX = new ResourceLocation(Bonfires.modid, "textures/gui/travel_menu.png");
+    private final ResourceLocation MENU = ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "textures/gui/bonfire_menu.png");
+    public final ResourceLocation TRAVEL_TEX = ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "textures/gui/travel_menu.png");
 
     private BonfireCustomButton screenshot, info;
 
@@ -158,7 +158,7 @@ public class BonfireScreen extends Screen {
         }).toList();
         this.canReinforce = canReinforce;
         if (BonfiresConfig.Client.renderScreenshotsInGui) {
-            screenshotImage = new Screenshot(Minecraft.getInstance().textureManager, new ResourceLocation(Bonfires.modid, bonfire.getID().toString()));
+            screenshotImage = new Screenshot(Minecraft.getInstance().getTextureManager(), ResourceLocation.fromNamespaceAndPath(Bonfires.modid, bonfire.getID().toString()));
         }
     }
 
@@ -483,7 +483,7 @@ public class BonfireScreen extends Screen {
                 try {
                     if (screenshotImage != null) {
                         screenshotImage.close();
-                        screenshotImage = new Screenshot(Minecraft.getInstance().textureManager, new ResourceLocation(Bonfires.modid, bonfire.getID().toString()));
+                        screenshotImage = new Screenshot(Minecraft.getInstance().getTextureManager(), ResourceLocation.fromNamespaceAndPath(Bonfires.modid, bonfire.getID().toString()));
                     }
                     screenshotImage.upload(NativeImage.read(new FileInputStream(screenshotFile)));
                     noScreenshot = false;

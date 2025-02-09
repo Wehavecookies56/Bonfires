@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public record SyncEstusData(UUID lastRested) implements Packet {
 
-    public static final Type<SyncEstusData> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "sync_estus_data"));
+    public static final Type<SyncEstusData> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "sync_estus_data"));
 
     public static final StreamCodec<FriendlyByteBuf, SyncEstusData> STREAM_CODEC = StreamCodec.composite(
             Bonfires.NULLABLE_UUID,

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public record QueueBonfireScreenshot(String name, UUID uuid) implements Packet {
 
-    public static final Type<QueueBonfireScreenshot> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "queue_bonfire_screenshot"));
+    public static final Type<QueueBonfireScreenshot> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "queue_bonfire_screenshot"));
 
     public static final StreamCodec<FriendlyByteBuf, QueueBonfireScreenshot> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

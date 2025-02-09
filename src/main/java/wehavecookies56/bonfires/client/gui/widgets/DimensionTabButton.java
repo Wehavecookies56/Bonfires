@@ -40,8 +40,8 @@ public class DimensionTabButton extends Button {
                     String dimID = split[0];
                     String item = split[1];
                     if (dimID.equals(dimension.location().toString())) {
-                        if (BuiltInRegistries.ITEM.containsKey(new ResourceLocation(item))) {
-                            return icon = BuiltInRegistries.ITEM.get(new ResourceLocation(item));
+                        if (BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item))) {
+                            return icon = BuiltInRegistries.ITEM.get(ResourceLocation.parse(item));
                         } else {
                             return icon;
                         }

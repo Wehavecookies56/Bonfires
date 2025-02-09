@@ -99,9 +99,11 @@ public class AshBonePileBlock extends Block implements EntityBlock {
 
 
     @Override
-    public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
+    public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
         return Optional.of(BonfireTeleporter.attemptToPlaceNextToBonfire(pos, (Level) levelReader));
     }
+
+
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilder) {

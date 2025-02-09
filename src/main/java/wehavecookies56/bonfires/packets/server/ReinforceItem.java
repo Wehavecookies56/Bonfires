@@ -16,7 +16,7 @@ import wehavecookies56.bonfires.setup.ComponentSetup;
 
 public record ReinforceItem(int slot) implements Packet {
 
-    public static final Type<ReinforceItem> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "reinforce_item"));
+    public static final Type<ReinforceItem> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "reinforce_item"));
 
     public static final StreamCodec<FriendlyByteBuf, ReinforceItem> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,

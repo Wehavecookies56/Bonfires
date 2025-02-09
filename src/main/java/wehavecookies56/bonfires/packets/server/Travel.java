@@ -17,7 +17,7 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 public record Travel(BlockPos pos, ResourceKey<Level> dim) implements Packet {
 
-    public static final Type<Travel> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "travel"));
+    public static final Type<Travel> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "travel"));
 
     public static final StreamCodec<FriendlyByteBuf, Travel> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,

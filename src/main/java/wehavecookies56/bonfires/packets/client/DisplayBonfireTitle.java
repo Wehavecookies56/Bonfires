@@ -13,7 +13,7 @@ import wehavecookies56.bonfires.packets.Packet;
 
 public record DisplayBonfireTitle(Bonfire bonfire) implements Packet {
 
-    public static final Type<DisplayBonfireTitle> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "display_bonfire_title"));
+    public static final Type<DisplayBonfireTitle> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "display_bonfire_title"));
 
     public static final StreamCodec<FriendlyByteBuf, DisplayBonfireTitle> STREAM_CODEC = StreamCodec.composite(
             Bonfire.STREAM_CODEC,

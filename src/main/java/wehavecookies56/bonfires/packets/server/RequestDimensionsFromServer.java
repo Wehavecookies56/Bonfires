@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public record RequestDimensionsFromServer() implements Packet {
 
-    public static final Type<RequestDimensionsFromServer> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "request_dimensions_from_server"));
+    public static final Type<RequestDimensionsFromServer> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "request_dimensions_from_server"));
 
     public static final StreamCodec<FriendlyByteBuf, RequestDimensionsFromServer> STREAM_CODEC = StreamCodec.of((byteBuf, packet) -> {}, byteBuf -> new RequestDimensionsFromServer());
 

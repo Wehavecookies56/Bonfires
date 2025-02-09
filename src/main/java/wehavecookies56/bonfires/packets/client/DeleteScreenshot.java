@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public record DeleteScreenshot(UUID uuid, String name) implements Packet {
 
-    public static final Type<DeleteScreenshot> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "delete_screenshot"));
+    public static final Type<DeleteScreenshot> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "delete_screenshot"));
 
     public static final StreamCodec<FriendlyByteBuf, DeleteScreenshot> STREAM_CODEC = StreamCodec.composite(
             UUIDUtil.STREAM_CODEC,

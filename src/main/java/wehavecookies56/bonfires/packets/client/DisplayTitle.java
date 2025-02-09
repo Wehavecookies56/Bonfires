@@ -13,7 +13,7 @@ import wehavecookies56.bonfires.packets.Packet;
 
 public record DisplayTitle(String title, String subtitle, int fadein, int stay, int fadeout) implements Packet {
 
-    public static final Type<DisplayTitle> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "display_title"));
+    public static final Type<DisplayTitle> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "display_title"));
 
     public static final StreamCodec<FriendlyByteBuf, DisplayTitle> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

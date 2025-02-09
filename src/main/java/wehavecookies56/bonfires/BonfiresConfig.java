@@ -142,9 +142,11 @@ public class BonfiresConfig {
             Common.repairEquipment = COMMON.repairEquipmentConfig.get();
             Common.bonfireDiscoveryMode = COMMON.bonfireDiscoveryModeConfig.get();
         } else if (event.getConfig().getSpec() == SERVER_SPEC) {
-            Server.estusFlaskBaseHeal = SERVER.estusFlaskBaseHealConfig.get();
-            Server.estusFlaskHealPerLevel = SERVER.estusFlaskHealPerLevelConfig.get();
-            Server.reinforceDamagePerLevel = SERVER.reinforceDamagePerLevelConfig.get();
+            if (event.getConfig().getLoadedConfig() != null) {
+                Server.estusFlaskBaseHeal = SERVER.estusFlaskBaseHealConfig.get();
+                Server.estusFlaskHealPerLevel = SERVER.estusFlaskHealPerLevelConfig.get();
+                Server.reinforceDamagePerLevel = SERVER.reinforceDamagePerLevelConfig.get();
+            }
         }
     }
 }

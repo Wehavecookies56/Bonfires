@@ -15,7 +15,7 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 public record OpenCreateScreen(BlockPos tePos) implements Packet {
 
-    public static final Type<OpenCreateScreen> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "open_create_screen"));
+    public static final Type<OpenCreateScreen> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "open_create_screen"));
 
     public static final StreamCodec<FriendlyByteBuf, OpenCreateScreen> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,

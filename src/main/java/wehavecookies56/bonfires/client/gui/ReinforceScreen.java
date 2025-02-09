@@ -35,7 +35,7 @@ public class ReinforceScreen extends Screen {
     BonfireScreen parent;
     public ScrollBarButton scrollBar;
     Button confirm;
-    private static ResourceLocation texture = new ResourceLocation(Bonfires.modid, "textures/gui/reinforce_menu.png");
+    private static ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "textures/gui/reinforce_menu.png");
     int texWidth = 256;
     int texHeight = 219;
     Minecraft mc;

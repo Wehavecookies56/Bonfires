@@ -115,7 +115,7 @@ public class Bonfire {
         this.name = tag.getString("NAME");
         this.owner = tag.getUUID("OWNER");
         this.isPublic = tag.getBoolean("PUBLIC");
-        this.dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("DIM")));
+        this.dimension = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("DIM")));
         this.pos = new BlockPos((int) tag.getDouble("POSX"), (int) tag.getDouble("POSY"), (int) tag.getDouble("POSZ"));
         CompoundTag timeTag = tag.getCompound("TIME");
         this.timeCreated = Instant.ofEpochSecond(timeTag.getLong("SECOND"), timeTag.getInt("NANO"));

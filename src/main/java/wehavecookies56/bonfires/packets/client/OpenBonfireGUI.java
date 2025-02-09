@@ -29,7 +29,7 @@ public record OpenBonfireGUI(BlockPos pos, Map<UUID, String> ownerNames, Bonfire
         this(bonfire.getBlockPos(), ownerNames, registry, canReinforce, new ArrayList<>(ServerLifecycleHooks.getCurrentServer().levelKeys()));
     }
 
-    public static final Type<OpenBonfireGUI> TYPE = new Type<>(new ResourceLocation(Bonfires.modid, "open_bonfire_gui"));
+    public static final Type<OpenBonfireGUI> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Bonfires.modid, "open_bonfire_gui"));
 
     public static final StreamCodec<FriendlyByteBuf, OpenBonfireGUI> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,
