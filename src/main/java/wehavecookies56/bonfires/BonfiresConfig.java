@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by Toby on 17/12/2016.
- */
 @Modmenu(modId = "bonfires")
 @Config(name = "bonfires-config", wrapperName = "BonfiresMainConfig")
 public class BonfiresConfig {
