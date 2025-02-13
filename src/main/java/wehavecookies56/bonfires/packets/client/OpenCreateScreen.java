@@ -15,7 +15,7 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 public record OpenCreateScreen(BlockPos tePos) implements CustomPayload {
 
-    public static final Id<OpenCreateScreen> TYPE = new Id<>(new Identifier(Bonfires.modid, "open_create_screen"));
+    public static final Id<OpenCreateScreen> TYPE = new Id<>(Identifier.of(Bonfires.modid, "open_create_screen"));
 
     public static final PacketCodec<PacketByteBuf, OpenCreateScreen> STREAM_CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC,

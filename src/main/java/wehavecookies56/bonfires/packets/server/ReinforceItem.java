@@ -14,7 +14,7 @@ import wehavecookies56.bonfires.setup.ComponentSetup;
 
 public record ReinforceItem(int slot) implements CustomPayload {
 
-    public static final Id<ReinforceItem> TYPE = new Id<>(new Identifier(Bonfires.modid, "reinforce_item"));
+    public static final Id<ReinforceItem> TYPE = new Id<>(Identifier.of(Bonfires.modid, "reinforce_item"));
 
     public static final PacketCodec<PacketByteBuf, ReinforceItem> STREAM_CODEC = PacketCodec.tuple(
             PacketCodecs.INTEGER,

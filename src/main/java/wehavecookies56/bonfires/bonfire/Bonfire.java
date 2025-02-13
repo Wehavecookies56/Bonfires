@@ -115,7 +115,7 @@ public class Bonfire {
         this.name = tag.getString("NAME");
         this.owner = tag.getUuid("OWNER");
         this.isPublic = tag.getBoolean("PUBLIC");
-        this.dimension = RegistryKey.of(RegistryKeys.WORLD, new Identifier(tag.getString("DIM")));
+        this.dimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(tag.getString("DIM")));
         this.pos = new BlockPos((int) tag.getDouble("POSX"), (int) tag.getDouble("POSY"), (int) tag.getDouble("POSZ"));
         NbtCompound timeTag = tag.getCompound("TIME");
         this.timeCreated = Instant.ofEpochSecond(timeTag.getLong("SECOND"), timeTag.getInt("NANO"));

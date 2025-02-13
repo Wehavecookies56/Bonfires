@@ -22,8 +22,8 @@ public class ReinforceHandler {
     public static boolean canReinforce(ItemStack stack) {
         Item i = stack.getItem();
         for (String s : Bonfires.CONFIG.common.reinforceBlacklist()) {
-            if (Registries.ITEM.containsId(new Identifier(s))) {
-                Item blacklistedItem = Registries.ITEM.get(new Identifier(s));
+            if (Registries.ITEM.containsId(Identifier.of(s))) {
+                Item blacklistedItem = Registries.ITEM.get(Identifier.of(s));
                 if (i == blacklistedItem) {
                     return false;
                 }

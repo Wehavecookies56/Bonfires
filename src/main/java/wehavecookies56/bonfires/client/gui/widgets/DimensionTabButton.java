@@ -39,8 +39,8 @@ public class DimensionTabButton extends ButtonWidget {
                     String dimID = split[0];
                     String item = split[1];
                     if (dimID.equals(dimension.getValue().toString())) {
-                        if (Registries.ITEM.containsId(new Identifier(item))) {
-                            return icon = Registries.ITEM.get(new Identifier(item));
+                        if (Registries.ITEM.containsId(Identifier.of(item))) {
+                            return icon = Registries.ITEM.get(Identifier.of(item));
                         } else {
                             return icon;
                         }

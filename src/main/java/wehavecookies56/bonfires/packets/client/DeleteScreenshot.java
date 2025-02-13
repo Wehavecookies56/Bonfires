@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public record DeleteScreenshot(UUID uuid, String name) implements CustomPayload {
 
-    public static final Id<DeleteScreenshot> TYPE = new Id<>(new Identifier(Bonfires.modid, "delete_screenshot"));
+    public static final Id<DeleteScreenshot> TYPE = new Id<>(Identifier.of(Bonfires.modid, "delete_screenshot"));
 
     public static final PacketCodec<PacketByteBuf, DeleteScreenshot> STREAM_CODEC = PacketCodec.tuple(
             Uuids.PACKET_CODEC,

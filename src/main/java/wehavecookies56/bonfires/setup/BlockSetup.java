@@ -17,8 +17,8 @@ public class BlockSetup {
     ;
 
     public static Block create(String name, Block block) {
-        Block newBlock = Registry.register(Registries.BLOCK, new Identifier(Bonfires.modid, name), block);
-        Registry.register(Registries.ITEM, new Identifier(Bonfires.modid, name), new BlockItem(newBlock, new Item.Settings()));
+        Block newBlock = Registry.register(Registries.BLOCK, Identifier.of(Bonfires.modid, name), block);
+        Registry.register(Registries.ITEM, Identifier.of(Bonfires.modid, name), new BlockItem(newBlock, new Item.Settings()));
         return newBlock;
     }
 

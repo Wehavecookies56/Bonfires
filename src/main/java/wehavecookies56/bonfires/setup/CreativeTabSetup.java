@@ -43,6 +43,6 @@ public class CreativeTabSetup {
                 .build();
 
     public static void init() {
-        Registry.register(Registries.ITEM_GROUP, new Identifier(Bonfires.modid, Bonfires.modid), tab);
+        Registry.register(Registries.ITEM_GROUP, Identifier.of(Bonfires.modid, Bonfires.modid), tab);
     }
 }

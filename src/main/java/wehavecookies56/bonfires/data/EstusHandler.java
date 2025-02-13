@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class EstusHandler implements EntityComponentInitializer {
 
-    public static final ComponentKey<IEstusHandler> ESTUS = ComponentRegistry.getOrCreate(new Identifier(Bonfires.modid, "estus"), IEstusHandler.class);
+    public static final ComponentKey<IEstusHandler> ESTUS = ComponentRegistry.getOrCreate(Identifier.of(Bonfires.modid, "estus"), IEstusHandler.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {

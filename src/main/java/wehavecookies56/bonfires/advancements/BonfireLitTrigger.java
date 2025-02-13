@@ -15,7 +15,7 @@ public class BonfireLitTrigger extends AbstractCriterion<BonfireLitTrigger.Insta
 
     public static BonfireLitTrigger INSTANCE;
 
-    public static final Identifier ID = new Identifier(Bonfires.modid, "bonfire_lit");
+    public static final Identifier ID = Identifier.of(Bonfires.modid, "bonfire_lit");
 
     public void trigger(ServerPlayerEntity player) {
         this.trigger(player, p -> true);

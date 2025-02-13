@@ -183,7 +183,7 @@ public class BonfireRegistry {
                 UUID id = compound.getUuid("ID");
                 UUID owner = compound.getUuid("OWNER");
                 BlockPos pos = new BlockPos((int) compound.getDouble("POSX"), (int) compound.getDouble("POSY"), (int) compound.getDouble("POSZ"));
-                RegistryKey<World> dimension = RegistryKey.of(RegistryKeys.WORLD, new Identifier(compound.getString("DIM")));
+                RegistryKey<World> dimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(compound.getString("DIM")));
                 boolean isPublic = compound.getBoolean("PUBLIC");
                 Instant time;
                 if (compound.contains("TIME", NbtElement.COMPOUND_TYPE)) {

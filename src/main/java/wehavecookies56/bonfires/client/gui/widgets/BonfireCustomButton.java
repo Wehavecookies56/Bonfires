@@ -14,7 +14,7 @@ import java.util.List;
 public class BonfireCustomButton extends ButtonWidget {
 
     private int id;
-    private final Identifier TRAVEL_TEX = new Identifier(Bonfires.modid, "textures/gui/travel_menu.png");
+    private final Identifier TRAVEL_TEX = Identifier.of(Bonfires.modid, "textures/gui/travel_menu.png");
 
     public enum ButtonType {
         SCREENSHOT(240, 42, "tooltip.bonfires.screenshot"), INFO(240, 58, "tooltip.bonfires.info");

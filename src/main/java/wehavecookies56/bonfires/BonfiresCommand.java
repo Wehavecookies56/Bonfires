@@ -69,7 +69,7 @@ public class BonfiresCommand {
             case "dim":
                 input = StringArgumentType.getString(context, "dimension");
                 if (input.contains(":")) {
-                    RegistryKey<World> dimensionKey = RegistryKey.of(RegistryKeys.WORLD, new Identifier(input));
+                    RegistryKey<World> dimensionKey = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(input));
                     if (server.getWorldRegistryKeys().contains(dimensionKey)) {
                         query = BonfireHandler.getServerHandler(server).getRegistry().getBonfiresByDimension(dimensionKey.getValue());
                         if (query.isEmpty()) {

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public record RequestDimensionsFromServer() implements CustomPayload {
 
-    public static final Id<RequestDimensionsFromServer> TYPE = new Id<>(new Identifier(Bonfires.modid, "request_dimensions_from_server"));
+    public static final Id<RequestDimensionsFromServer> TYPE = new Id<>(Identifier.of(Bonfires.modid, "request_dimensions_from_server"));
 
     public static final PacketCodec<PacketByteBuf, RequestDimensionsFromServer> STREAM_CODEC = PacketCodec.of((byteBuf, packet) -> {}, byteBuf -> new RequestDimensionsFromServer());
 

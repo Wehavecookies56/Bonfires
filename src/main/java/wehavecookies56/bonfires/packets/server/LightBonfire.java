@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, boolean createScreenshot) implements CustomPayload {
 
-    public static final Id<LightBonfire> TYPE = new Id<>(new Identifier(Bonfires.modid, "light_bonfire"));
+    public static final Id<LightBonfire> TYPE = new Id<>(Identifier.of(Bonfires.modid, "light_bonfire"));
 
     public static final PacketCodec<PacketByteBuf, LightBonfire> STREAM_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING,

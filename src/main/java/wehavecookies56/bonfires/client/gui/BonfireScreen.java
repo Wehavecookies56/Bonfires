@@ -46,8 +46,8 @@ import java.util.*;
 
 public class BonfireScreen extends Screen {
 
-    private final Identifier MENU = new Identifier(Bonfires.modid, "textures/gui/bonfire_menu.png");
-    public final Identifier TRAVEL_TEX = new Identifier(Bonfires.modid, "textures/gui/travel_menu.png");
+    private final Identifier MENU = Identifier.of(Bonfires.modid, "textures/gui/bonfire_menu.png");
+    public final Identifier TRAVEL_TEX = Identifier.of(Bonfires.modid, "textures/gui/travel_menu.png");
 
     private BonfireCustomButton screenshot, info;
 
@@ -155,7 +155,7 @@ public class BonfireScreen extends Screen {
         }).toList();
         this.canReinforce = canReinforce;
         if (Bonfires.CONFIG.client.renderScreenshotsInGui()) {
-            screenshotImage = new Screenshot(MinecraftClient.getInstance().getTextureManager(), new Identifier(Bonfires.modid, bonfire.getID().toString()));
+            screenshotImage = new Screenshot(MinecraftClient.getInstance().getTextureManager(), Identifier.of(Bonfires.modid, bonfire.getID().toString()));
         }
     }
 
@@ -474,7 +474,7 @@ public class BonfireScreen extends Screen {
                 try {
                     if (screenshotImage != null) {
                         screenshotImage.close();
-                        screenshotImage = new Screenshot(MinecraftClient.getInstance().getTextureManager(), new Identifier(Bonfires.modid, bonfire.getID().toString()));
+                        screenshotImage = new Screenshot(MinecraftClient.getInstance().getTextureManager(), Identifier.of(Bonfires.modid, bonfire.getID().toString()));
                     }
                     screenshotImage.upload(NativeImage.read(new FileInputStream(screenshotFile)));
                     noScreenshot = false;

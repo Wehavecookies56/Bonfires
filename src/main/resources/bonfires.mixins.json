@@ -6,7 +6,8 @@
   "mixins": [
     "PlayerMixin",
     "WorldSavePathMixin",
-    "ItemStackMixin"
+    "ItemStackMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
     "ScreenMixin"

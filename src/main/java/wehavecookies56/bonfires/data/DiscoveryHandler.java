@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class DiscoveryHandler implements EntityComponentInitializer {
-    public static final ComponentKey<IDiscoveryHandler> DISCOVERY = ComponentRegistry.getOrCreate(new Identifier(Bonfires.modid, "discovery"), IDiscoveryHandler.class);
+    public static final ComponentKey<IDiscoveryHandler> DISCOVERY = ComponentRegistry.getOrCreate(Identifier.of(Bonfires.modid, "discovery"), IDiscoveryHandler.class);
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(DISCOVERY, player -> new DiscoveryHandler.Default(), RespawnCopyStrategy.ALWAYS_COPY);

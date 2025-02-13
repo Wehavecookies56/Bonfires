@@ -25,7 +25,7 @@ import java.util.UUID;
 
 public record SendBonfiresToClient(List<RegistryKey<World>> dimensions, BonfireRegistry registry, Map<UUID, String> ownerNames) implements CustomPayload {
 
-    public static final Id<SendBonfiresToClient> TYPE = new Id<>(new Identifier(Bonfires.modid, "send_bonfires_to_client"));
+    public static final Id<SendBonfiresToClient> TYPE = new Id<>(Identifier.of(Bonfires.modid, "send_bonfires_to_client"));
 
     public static final PacketCodec<PacketByteBuf, SendBonfiresToClient> STREAM_CODEC = PacketCodec.tuple(
             PacketCodecs.collection(ArrayList::new, RegistryKey.createPacketCodec(RegistryKeys.WORLD)),

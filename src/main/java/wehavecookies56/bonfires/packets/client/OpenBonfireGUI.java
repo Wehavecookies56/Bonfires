@@ -24,7 +24,7 @@ import java.util.UUID;
 
 public record OpenBonfireGUI(BlockPos pos, Map<UUID, String> ownerNames, BonfireRegistry registry, boolean canReinforce, List<RegistryKey<World>> dimensions) implements CustomPayload {
 
-    public static final Id<OpenBonfireGUI> TYPE = new Id<>(new Identifier(Bonfires.modid, "open_bonfires_gui"));
+    public static final Id<OpenBonfireGUI> TYPE = new Id<>(Identifier.of(Bonfires.modid, "open_bonfires_gui"));
 
     public static final PacketCodec<PacketByteBuf, OpenBonfireGUI> STREAM_CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC,

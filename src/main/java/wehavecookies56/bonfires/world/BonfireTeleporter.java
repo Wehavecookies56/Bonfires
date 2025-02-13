@@ -31,7 +31,7 @@ public class BonfireTeleporter {
         if (entity instanceof ServerPlayerEntity playerMP) {
             playerMP.setVelocity(0, 0, 0);
             Vec3d destination = attemptToPlaceNextToBonfire(pos, destWorld);
-            playerMP.teleport(destination.x, destination.y, destination.z);
+            playerMP.teleport(destWorld, destination.x, destination.y, destination.z, playerMP.getYaw(), playerMP.getPitch());
         }
     }
 

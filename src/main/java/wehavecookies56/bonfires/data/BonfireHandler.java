@@ -21,7 +21,7 @@ import java.io.*;
 import java.util.UUID;
 
 public class BonfireHandler implements WorldComponentInitializer {
-    public static final ComponentKey<IBonfireHandler> BONFIRES = ComponentRegistry.getOrCreate(new Identifier(Bonfires.modid, "bonfires"), IBonfireHandler.class);
+    public static final ComponentKey<IBonfireHandler> BONFIRES = ComponentRegistry.getOrCreate(Identifier.of(Bonfires.modid, "bonfires"), IBonfireHandler.class);
 
     public static IBonfireHandler getServerHandler(MinecraftServer server) {
         return BONFIRES.get(server.getOverworld());

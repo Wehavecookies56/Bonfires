@@ -12,7 +12,7 @@ import wehavecookies56.bonfires.client.ClientPacketHandler;
 
 public record DisplayTitle(String title, String subtitle, int fadein, int stay, int fadeout) implements CustomPayload {
 
-    public static final Id<DisplayTitle> TYPE = new Id<>(new Identifier(Bonfires.modid, "display_title"));
+    public static final Id<DisplayTitle> TYPE = new Id<>(Identifier.of(Bonfires.modid, "display_title"));
 
     public static final PacketCodec<PacketByteBuf, DisplayTitle> STREAM_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING,

@@ -36,10 +36,10 @@ public class Bonfires implements ModInitializer {
     public static final String modid = "bonfires";
     public static Logger LOGGER = LoggerFactory.getLogger(modid);
 
-    public static final Identifier BONFIRES_LIT = new Identifier(modid, "bonfires_lit");
-    public static final Identifier TIMES_TRAVELLED = new Identifier(modid, "times_travelled");
+    public static final Identifier BONFIRES_LIT = Identifier.of(modid, "bonfires_lit");
+    public static final Identifier TIMES_TRAVELLED = Identifier.of(modid, "times_travelled");
 
-    public static final UUID reinforceDamageModifier = UUID.fromString("117e876c-c9bd-4898-985a-2ecb24198350");
+    public static final Identifier reinforceDamageModifier = Identifier.of(modid, "reinforce_damagebonus");
 
     public static final wehavecookies56.bonfires.BonfiresMainConfig CONFIG = wehavecookies56.bonfires.BonfiresMainConfig.createAndLoad();
 

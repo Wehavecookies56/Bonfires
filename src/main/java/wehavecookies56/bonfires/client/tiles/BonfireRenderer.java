@@ -61,13 +61,14 @@ public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
             pMatrixStack.push();
             pMatrixStack.translate(0.5D, (double)f, 0.5D);
             pMatrixStack.multiply(context.getEntityRenderDispatcher().camera.getRotation());
-            pMatrixStack.scale(-0.025F, -0.025F, 0.025F);
+            pMatrixStack.scale(0.025F, -0.025F, 0.025F);
             Matrix4f matrix4f = pMatrixStack.peek().getPositionMatrix();
             float f1 = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
             int j = (int)(f1 * 255.0F) << 24;
             TextRenderer fontrenderer = context.getTextRenderer();
             float f2 = (float)(-fontrenderer.getWidth(pDisplayName) / 2);
             fontrenderer.draw(pDisplayName, f2, 0, 553648127, false, matrix4f, pBuffer, TextRenderer.TextLayerType.NORMAL, j, pPackedLight);
+            pMatrixStack.translate(0, 0, 0.5D);
             fontrenderer.draw(pDisplayName, f2, 0, -1, false, matrix4f, pBuffer, TextRenderer.TextLayerType.NORMAL, 0, pPackedLight);
             pMatrixStack.pop();
         }

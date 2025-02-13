@@ -36,7 +36,7 @@ public class ItemSetup {
     }
 
     public static Item create(String name, Item item) {
-        return Registry.register(Registries.ITEM, new Identifier(Bonfires.modid, name), item);
+        return Registry.register(Registries.ITEM, Identifier.of(Bonfires.modid, name), item);
     }
 
 }

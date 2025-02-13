@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public record QueueBonfireScreenshot(String name, UUID uuid) implements CustomPayload {
 
-    public static final Id<QueueBonfireScreenshot> TYPE = new Id<>(new Identifier(Bonfires.modid, "queue_bonfire_screenshot"));
+    public static final Id<QueueBonfireScreenshot> TYPE = new Id<>(Identifier.of(Bonfires.modid, "queue_bonfire_screenshot"));
 
     public static final PacketCodec<PacketByteBuf, QueueBonfireScreenshot> STREAM_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING,

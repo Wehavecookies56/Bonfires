@@ -13,7 +13,7 @@ public class EntitySetup {
     public static final BlockEntityType<BonfireTileEntity> BONFIRE = FabricBlockEntityTypeBuilder.create(BonfireTileEntity::new, BlockSetup.ash_bone_pile).build();
 
     public static void init() {
-        Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(Bonfires.modid, "bonfire"), BONFIRE);
+        Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(Bonfires.modid, "bonfire"), BONFIRE);
     }
 
 }

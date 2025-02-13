@@ -15,7 +15,7 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 public record Travel(BlockPos pos, RegistryKey<World> dim) implements CustomPayload {
 
-    public static final Id<Travel> TYPE = new Id<>(new Identifier(Bonfires.modid, "travel"));
+    public static final Id<Travel> TYPE = new Id<>(Identifier.of(Bonfires.modid, "travel"));
 
     public static final PacketCodec<PacketByteBuf, Travel> STREAM_CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC,
