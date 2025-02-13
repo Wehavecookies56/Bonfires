@@ -175,5 +175,7 @@
     "text.config.bonfires-config.option.common.estusFlaskHealPerLevel": "Estus Flask heal per level",
     "text.config.bonfires-config.option.common.estusFlaskHealPerLevel.tooltip": "Set the amount to increase Estus Flask healing per reinforcement level, default:1",
     "text.config.bonfires-config.option.common.reinforceDamagePerLevel": "Reinforce damage increase per level",
-    "text.config.bonfires-config.option.common.reinforceDamagePerLevel.tooltip": "Set the amount to increase damage for reinforced tools per level, default:0.5"
+    "text.config.bonfires-config.option.common.reinforceDamagePerLevel.tooltip": "Set the amount to increase damage for reinforced tools per level, default:0.5",
+    "text.config.bonfires-config.option.common.bonfireDiscoveryMode": "Enable Bonfire Discovery Mode",
+    "text.config.bonfires-config.option.common.bonfireDiscoveryMode.tooltip": "Bonfire menu will only display Bonfires that the player has discovered, default:true"
 }

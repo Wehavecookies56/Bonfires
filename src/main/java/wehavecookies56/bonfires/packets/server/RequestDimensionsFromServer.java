@@ -40,7 +40,11 @@ public record RequestDimensionsFromServer() implements CustomPayload {
             }
         }
         invalidBonfires.forEach(handler::removeBonfire);
-        PacketHandler.sendTo(new SendBonfiresToClient(player.server), player);
+        if (Bonfires.CONFIG.common.bonfireDiscoveryMode()) {
+            PacketHandler.sendTo(new SendBonfiresToClient(player), player);
+        } else {
+            PacketHandler.sendTo(new SendBonfiresToClient(player.server), player);
+        }
     }
 
     @Override

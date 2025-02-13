@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by Toby on 17/12/2016.
- */
 @Modmenu(modId = "bonfires")
 @Config(name = "bonfires-config", wrapperName = "BonfiresMainConfig")
 public class BonfiresConfig {
@@ -72,6 +69,8 @@ public class BonfiresConfig {
         public double estusFlaskBaseHeal = 6;
         public double estusFlaskHealPerLevel = 1;
         public double reinforceDamagePerLevel = 0.5;
+
+        public boolean bonfireDiscoveryMode = true;
 
         public static boolean validateRegistryKey(List<String> input) {
             for (String entry : input) {

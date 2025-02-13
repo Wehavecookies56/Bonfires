@@ -6,7 +6,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -14,9 +16,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Toby on 07/11/2016.
- */
 public class BonfireRegistry {
 
     private Map<UUID, Bonfire> bonfires;
@@ -25,11 +24,28 @@ public class BonfireRegistry {
         bonfires = new HashMap<>();
     }
 
+    public static Map<UUID, String> getOwnerNames(MinecraftServer server) {
+        Map<UUID, String> ownerNames = new HashMap<>();
+        server.getPlayerManager().getPlayerList().forEach(serverPlayer -> {
+            UserCache gameProfileCache = server.getUserCache();
+            if (gameProfileCache.getByUuid(serverPlayer.getUuid()).isPresent()) {
+                ownerNames.put(serverPlayer.getUuid(), gameProfileCache.getByUuid(serverPlayer.getUuid()).get().getName());
+            } else {
+                ownerNames.put(serverPlayer.getUuid(), "Unknown");
+            }
+        });
+        return ownerNames;
+    }
     public BonfireRegistry getFilteredRegistry(List<UUID> filter) {
         BonfireRegistry registry = new BonfireRegistry();
         Map<UUID, Bonfire> bonfires = this.getBonfires();
-        filter.forEach(bonfires::remove);
-        registry.setBonfires(bonfires);
+        Map<UUID, Bonfire> filtered = new HashMap<>();
+        bonfires.forEach((uuid, bonfire) -> {
+            if (filter.contains(uuid)) {
+                filtered.put(uuid, bonfire);
+            }
+        });
+        registry.setBonfires(filtered);
         return registry;
     }
 

@@ -21,20 +21,17 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Created by Toby on 07/11/2016.
- */
 public class ClientPacketHandler {
 
 
     public static void openBonfire(OpenBonfireGUI packet) {
-        MinecraftClient.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) MinecraftClient.getInstance().world.getBlockEntity(packet.pos()), packet.ownerName(), packet.dimensions().stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList(), packet.registry(), packet.canReinforce()));
+        MinecraftClient.getInstance().setScreen(new BonfireScreen((BonfireTileEntity) MinecraftClient.getInstance().world.getBlockEntity(packet.pos()), packet.ownerNames(), packet.dimensions().stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList(), packet.registry(), packet.canReinforce()));
     }
 
     public static void setBonfiresFromServer(SendBonfiresToClient packet) {
         if (MinecraftClient.getInstance().currentScreen != null) {
             if (MinecraftClient.getInstance().currentScreen instanceof BonfireScreen gui) {
-                gui.updateDimensionsFromServer(packet.registry(), packet.dimensions().stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList());
+                gui.updateDimensionsFromServer(packet.registry(), packet.dimensions().stream().filter(dim -> !Bonfires.CONFIG.client.hiddenDimensions().contains(dim.getValue().toString())).toList(), packet.ownerNames());
             }
         }
     }

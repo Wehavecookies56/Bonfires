@@ -49,6 +49,7 @@ import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
@@ -67,9 +68,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class AshBonePileBlock extends Block implements BlockEntityProvider {
 
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
@@ -169,11 +167,15 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                             player.getInventory().armor.forEach(this::repair);
                             player.getInventory().offHand.forEach(this::repair);
                         }
+                        DiscoveryHandler.IDiscoveryHandler discoveryHandler = DiscoveryHandler.getHandler(player);
                         BonfireRegistry registry = BonfireHandler.getServerHandler(world.getServer()).getRegistry();
+                        if (registry.getBonfire(te.getID()).isPublic() || registry.getBonfire(te.getID()).getOwner().equals(player.getUuid())) {
+                            discoveryHandler.discover(te.getID());
+                        }
+                        if (Bonfires.CONFIG.common.bonfireDiscoveryMode()) {
+                            registry = registry.getFilteredRegistry(discoveryHandler.getDiscovered().keySet().stream().toList());
+                        }
                         if (registry.getBonfire(te.getID()) != null) {
-                            GameProfile profile;
-                            Optional<GameProfile> cachedProfile = world.getServer().getUserCache().getByUuid(registry.getBonfire(te.getID()).getOwner());
-                            profile = cachedProfile.orElseGet(() -> new GameProfile(registry.getBonfire(te.getID()).getOwner(), "Unknown"));
                             for (int i = 0; i < player.getInventory().main.size(); i++) {
                                 if (!ItemStack.areItemsEqual(player.getInventory().getStack(i), ItemStack.EMPTY)) {
                                     if (player.getInventory().getStack(i).getItem() == ItemSetup.estus_flask) {
@@ -184,7 +186,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                                     }
                                 }
                             }
-                            PacketHandler.sendTo(new OpenBonfireGUI(te, profile.getName(), registry, Bonfires.CONFIG.common.enableReinforcing(), world.getServer()), (ServerPlayerEntity) player);
+                            PacketHandler.sendTo(new OpenBonfireGUI(te, BonfireRegistry.getOwnerNames(world.getServer()), registry, Bonfires.CONFIG.common.enableReinforcing(), world.getServer()), (ServerPlayerEntity) player);
                             player.heal(player.getMaxHealth());
                             ((ServerPlayerEntity) player).setSpawnPoint(te.getWorld().getRegistryKey(), te.getPos(), player.getYaw(), false, true);
                             EstusHandler.getHandler(player).setLastRested(te.getID());
@@ -283,7 +285,13 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                         te.destroyBonfire(te.getID());
                         BonfireHandler.getServerHandler(server).removeBonfire(te.getID());
                         //PacketHandler.sendToAll(new SyncSaveData(BonfireHandler.getServerHandler(server).getRegistry().getBonfires()));
-                        PacketHandler.sendToAll(new SendBonfiresToClient(server), server);
+                        if (Bonfires.CONFIG.common.bonfireDiscoveryMode()) {
+                            server.getPlayerManager().getPlayerList().forEach(serverPlayer ->  {
+                                PacketHandler.sendTo(new SendBonfiresToClient(serverPlayer), serverPlayer);
+                            });
+                        } else {
+                            PacketHandler.sendToAll(new SendBonfiresToClient(server), server);
+                        }
                         PacketHandler.sendToAll(new DeleteScreenshot(te.getID(), destroyed.getName()), server);
                     }
                 }

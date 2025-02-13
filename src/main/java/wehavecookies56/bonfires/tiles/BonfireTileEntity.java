@@ -23,9 +23,6 @@ import wehavecookies56.bonfires.setup.EntitySetup;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class BonfireTileEntity extends BlockEntity {
 
     private boolean bonfire = false;

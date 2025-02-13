@@ -5,10 +5,12 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
@@ -20,17 +22,16 @@ import net.minecraft.util.Uuids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wehavecookies56.bonfires.advancements.BonfireLitTrigger;
+import wehavecookies56.bonfires.bonfire.Bonfire;
+import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.packets.PacketHandler;
 import wehavecookies56.bonfires.setup.*;
 
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class Bonfires implements ModInitializer {
     public static final String modid = "bonfires";
     public static Logger LOGGER = LoggerFactory.getLogger(modid);
@@ -72,6 +73,14 @@ public class Bonfires implements ModInitializer {
                 }
             }
         });
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            if (DiscoveryHandler.getHandler(handler.player).getDiscovered().isEmpty()) {
+                BonfireRegistry registry = BonfireHandler.getServerHandler(server).getRegistry();
+                DiscoveryHandler.IDiscoveryHandler discoveryHandler = DiscoveryHandler.getHandler(handler.player);
+                List<Bonfire> bonfires = registry.getBonfiresByOwner(handler.player.getUuid());
+                bonfires.forEach(bonfire -> discoveryHandler.setDiscovered(bonfire.getId(), bonfire.getTimeCreated()));
+            }
+        });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
             if (!alive) {
                 newPlayer.getInventory().main.forEach(stack -> {
@@ -102,6 +111,25 @@ public class Bonfires implements ModInitializer {
             if (uuid != null) {
                 Uuids.PACKET_CODEC.encode(byteBuf, uuid);
             }
+        }
+    };
+
+    public static final PacketCodec<PacketByteBuf, Map<UUID, String>> OWNER_NAMES = new PacketCodec<>() {
+        @Override
+        public Map<UUID, String> decode(PacketByteBuf buf) {
+            NbtCompound owners = buf.readNbt();
+            Map<UUID, String> ownerNames = new HashMap<>();
+            owners.getKeys().forEach(s -> {
+                ownerNames.put(UUID.fromString(s), owners.getString(s));
+            });
+            return ownerNames;
+        }
+
+        @Override
+        public void encode(PacketByteBuf buf, Map<UUID, String> ownerNames) {
+            NbtCompound owners = new NbtCompound();
+            ownerNames.forEach((uuid, s) -> owners.putString(uuid.toString(), s));
+            buf.writeNbt(owners);
         }
     };
 }

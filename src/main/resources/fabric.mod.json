@@ -21,7 +21,8 @@
 		],
 		"cardinal-components": [
 			"wehavecookies56.bonfires.data.BonfireHandler",
-			"wehavecookies56.bonfires.data.EstusHandler"
+			"wehavecookies56.bonfires.data.EstusHandler",
+			"wehavecookies56.bonfires.data.DiscoveryHandler"
 		],
 		"client": [
 			{
@@ -45,7 +46,8 @@
 	"custom": {
 		"cardinal-components": [
 			"bonfires:bonfires",
-			"bonfires:estus"
+			"bonfires:estus",
+			"bonfires:discovery"
 		]
 	}
 }

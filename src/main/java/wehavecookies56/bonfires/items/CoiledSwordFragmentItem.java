@@ -6,9 +6,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-/**
- * Created by Toby on 16/11/2016.
- */
 public class CoiledSwordFragmentItem extends HomewardBoneItem {
 
     public CoiledSwordFragmentItem() {

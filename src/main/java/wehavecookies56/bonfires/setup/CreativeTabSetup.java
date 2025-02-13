@@ -15,10 +15,6 @@ import wehavecookies56.bonfires.items.EstusFlaskItem;
 
 import java.util.Random;
 
-/**
- * Created by Toby on 05/11/2016.
- */
-
 public class CreativeTabSetup {
 
     public static final ItemGroup tab = FabricItemGroup.builder()

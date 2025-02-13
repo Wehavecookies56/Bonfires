@@ -5,9 +5,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
-/**
- * Created by Toby on 17/12/2016.
- */
 public class BonfirePageButton extends ButtonWidget {
 
     private BonfireScreen parent;

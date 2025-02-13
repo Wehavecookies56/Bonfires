@@ -9,17 +9,21 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.BonfireRegistry;
 import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.data.BonfireHandler;
+import wehavecookies56.bonfires.data.DiscoveryHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-public record SendBonfiresToClient(List<RegistryKey<World>> dimensions, BonfireRegistry registry) implements CustomPayload {
+public record SendBonfiresToClient(List<RegistryKey<World>> dimensions, BonfireRegistry registry, Map<UUID, String> ownerNames) implements CustomPayload {
 
     public static final Id<SendBonfiresToClient> TYPE = new Id<>(new Identifier(Bonfires.modid, "send_bonfires_to_client"));
 
@@ -28,11 +32,17 @@ public record SendBonfiresToClient(List<RegistryKey<World>> dimensions, BonfireR
             SendBonfiresToClient::dimensions,
             BonfireRegistry.STREAM_CODEC,
             SendBonfiresToClient::registry,
+            Bonfires.OWNER_NAMES,
+            SendBonfiresToClient::ownerNames,
             SendBonfiresToClient::new
     );
 
+    public SendBonfiresToClient(ServerPlayerEntity player) {
+        this(new ArrayList<>(player.server.getWorldRegistryKeys()), BonfireHandler.getServerHandler(player.server).getRegistry().getFilteredRegistry(DiscoveryHandler.getHandler(player).getDiscovered().keySet().stream().toList()), BonfireRegistry.getOwnerNames(player.server));
+    }
+
     public SendBonfiresToClient(MinecraftServer server) {
-        this(new ArrayList<>(server.getWorldRegistryKeys()), BonfireHandler.getServerHandler(server).getRegistry());
+        this(new ArrayList<>(server.getWorldRegistryKeys()), BonfireHandler.getServerHandler(server).getRegistry(), BonfireRegistry.getOwnerNames(server));
     }
 
     public void handle() {

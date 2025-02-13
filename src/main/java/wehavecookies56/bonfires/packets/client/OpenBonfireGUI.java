@@ -19,16 +19,18 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-public record OpenBonfireGUI(BlockPos pos, String ownerName, BonfireRegistry registry, boolean canReinforce, List<RegistryKey<World>> dimensions) implements CustomPayload {
+public record OpenBonfireGUI(BlockPos pos, Map<UUID, String> ownerNames, BonfireRegistry registry, boolean canReinforce, List<RegistryKey<World>> dimensions) implements CustomPayload {
 
     public static final Id<OpenBonfireGUI> TYPE = new Id<>(new Identifier(Bonfires.modid, "open_bonfires_gui"));
 
     public static final PacketCodec<PacketByteBuf, OpenBonfireGUI> STREAM_CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC,
             OpenBonfireGUI::pos,
-            PacketCodecs.STRING,
-            OpenBonfireGUI::ownerName,
+            Bonfires.OWNER_NAMES,
+            OpenBonfireGUI::ownerNames,
             BonfireRegistry.STREAM_CODEC,
             OpenBonfireGUI::registry,
             PacketCodecs.BOOL,
@@ -38,8 +40,8 @@ public record OpenBonfireGUI(BlockPos pos, String ownerName, BonfireRegistry reg
             OpenBonfireGUI::new
     );
 
-    public OpenBonfireGUI(BonfireTileEntity bonfire, String ownerName, BonfireRegistry registry, boolean canReinforce, MinecraftServer server) {
-        this(bonfire.getPos(), ownerName, registry, canReinforce, new ArrayList<>(server.getWorldRegistryKeys()));
+    public OpenBonfireGUI(BonfireTileEntity bonfire, Map<UUID, String> ownerNames, BonfireRegistry registry, boolean canReinforce, MinecraftServer server) {
+        this(bonfire.getPos(), ownerNames, registry, canReinforce, new ArrayList<>(server.getWorldRegistryKeys()));
     }
 
     public void handle() {

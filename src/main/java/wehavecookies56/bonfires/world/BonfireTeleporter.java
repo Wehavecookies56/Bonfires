@@ -12,9 +12,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class BonfireTeleporter {
 
     public static Vec3d attemptToPlaceNextToBonfire(BlockPos bonfirePos, World world) {
@@ -23,7 +20,7 @@ public class BonfireTeleporter {
             Direction dir = Direction.fromHorizontal(i);
             BlockPos newPos = bonfirePos.offset(dir);
             BlockState state = world.getBlockState(new BlockPos(newPos));
-            if (state.getBlock().canMobSpawnInside(state)) {
+            if (state.getBlock().canMobSpawnInside(state) && !world.getBlockState(newPos.down()).isReplaceable()) {
                 return new Vec3d(newPos.getX() + 0.5D, newPos.getY() + 0.5, newPos.getZ() + 0.5);
             }
         }
