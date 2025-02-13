@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "bonfires",
+  "key": {
+    "A": {
+      "item": "bonfires:ash_pile"
+    },
+    "B": {
+      "item": "bonfires:homeward_bone"
+    }
+  },
+  "pattern": [
+    "BBB",
+    "AAA"
+  ],
+  "result": {
+    "item": "bonfires:ash_bone_pile"
+  },
+  "show_notification": true
+}

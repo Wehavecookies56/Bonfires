@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "bonfires",
+  "key": {
+    "C": {
+      "item": "bonfires:titanite_chunk"
+    },
+    "E": {
+      "item": "minecraft:end_crystal"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "CEC",
+    "CCC"
+  ],
+  "result": {
+    "item": "bonfires:titanite_slab"
+  },
+  "show_notification": true
+}

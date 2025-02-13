@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bonfires",
+  "ingredients": [
+    {
+      "item": "bonfires:ash_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "bonfires:ash_pile"
+  }
+}

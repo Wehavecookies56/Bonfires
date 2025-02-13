@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "bonfires:coiled_sword_fragment"
+  },
+  "base": {
+    "item": "minecraft:iron_sword"
+  },
+  "result": {
+    "item": "bonfires:coiled_sword"
+  },
+  "template": {
+    "item": "minecraft:fire_charge"
+  }
+}
