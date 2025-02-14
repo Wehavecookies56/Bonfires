@@ -2,11 +2,14 @@ package wehavecookies56.bonfires.items;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.data.EstusHandler;
@@ -17,6 +20,10 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
 import java.util.UUID;
 
 public class HomewardBoneItem extends Item {
+
+    public HomewardBoneItem(String name) {
+        super(new Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Bonfires.modid, name))));
+    }
 
     public HomewardBoneItem(Settings settings) {
         super(settings);
@@ -40,11 +47,11 @@ public class HomewardBoneItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         if (teleport(world, player)) {
             player.getStackInHand(hand).decrement(1);
-            return TypedActionResult.success(player.getStackInHand(hand));
+            return ActionResult.SUCCESS;
         }
-        return TypedActionResult.pass(player.getStackInHand(hand));
+        return ActionResult.PASS;
     }
 }

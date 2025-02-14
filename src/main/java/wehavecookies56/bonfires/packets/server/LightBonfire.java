@@ -30,9 +30,9 @@ public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, bo
             LightBonfire::name,
             BlockPos.PACKET_CODEC,
             LightBonfire::bonfireTE,
-            PacketCodecs.BOOL,
+            PacketCodecs.BOOLEAN,
             LightBonfire::isPublic,
-            PacketCodecs.BOOL,
+            PacketCodecs.BOOLEAN,
             LightBonfire::createScreenshot,
             LightBonfire::new
     );

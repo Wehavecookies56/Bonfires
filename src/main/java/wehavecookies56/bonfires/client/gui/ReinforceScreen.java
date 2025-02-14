@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.Window;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
@@ -151,7 +152,7 @@ public class ReinforceScreen extends Screen {
         Window window = mc.getWindow();
         int centerX = (window.getScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getScaledHeight() / 2) - (texHeight / 2);
-        guiGraphics.drawTexture(texture, centerX, centerY, 0, 0, texWidth, texHeight);
+        guiGraphics.drawTexture(RenderLayer::getGuiTextured, texture, centerX, centerY, 0, 0, texWidth, texHeight, 256, 256);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         int scrollBarHeight = (scrollBar.getBottom()) - (scrollBar.getY());
         int listHeight = (36 * reinforceableItems.size());

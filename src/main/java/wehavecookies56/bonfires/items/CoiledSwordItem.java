@@ -1,55 +1,26 @@
 package wehavecookies56.bonfires.items;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolMaterial;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Identifier;
+import wehavecookies56.bonfires.Bonfires;
 
 public class CoiledSwordItem extends SwordItem {
 
-    static ToolMaterial material = new ToolMaterial() {
-        @Override
-        public int getDurability() {
-            return 105;
-        }
+    static ToolMaterial material = new ToolMaterial(null, 105, 8, 4, 1, null);
 
-        @Override
-        public float getMiningSpeedMultiplier() {
-            return 8;
-        }
-
-        @Override
-        public float getAttackDamage() {
-            return 4;
-        }
-
-        @Override
-        public int getEnchantability() {
-            return 0;
-        }
-
-        @Override
-        public Ingredient getRepairIngredient() {
-            return null;
-        }
-
-        @Override
-        public TagKey<Block> getInverseTag() {
-            return null;
-        }
-    };
-
-    public CoiledSwordItem() {
-        super(material, new Settings().attributeModifiers(SwordItem.createAttributeModifiers(material, 3, -2.4F)).maxCount(1));
+    public CoiledSwordItem(String name) {
+        super(material, 3, -2.4F, new Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Bonfires.modid, name))).maxCount(1));
     }
 
     @Override

@@ -3,21 +3,11 @@
   "category": "misc",
   "group": "bonfires",
   "ingredients": [
-    {
-      "item": "bonfires:titanite_shard"
-    },
-    {
-      "item": "bonfires:titanite_shard"
-    },
-    {
-      "item": "bonfires:titanite_shard"
-    },
-    {
-      "item": "bonfires:titanite_shard"
-    },
-    {
-      "item": "bonfires:titanite_shard"
-    }
+      "bonfires:titanite_shard",
+      "bonfires:titanite_shard",
+      "bonfires:titanite_shard",
+      "bonfires:titanite_shard",
+      "bonfires:titanite_shard"
   ],
   "result": {
     "count": 1,

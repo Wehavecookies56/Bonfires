@@ -2,6 +2,7 @@ package wehavecookies56.bonfires.client.gui.widgets;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -79,14 +80,13 @@ public class DimensionTabButton extends ButtonWidget {
             int tab_height = 30;
             int tab_u = 28;
             int tab_v = parent.travel_height;
-            guiGraphics.setShaderColor(1, 1, 1, 1);
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
-                guiGraphics.drawTexture(parent.TRAVEL_TEX, getX(), getY(), tab_u, tab_v, tab_width, tab_height);
+                guiGraphics.drawTexture(RenderLayer::getGuiTextured, parent.TRAVEL_TEX, getX(), getY(), tab_u, tab_v, tab_width, tab_height, 256, 256);
                 guiGraphics.drawItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8);
             } else {
-                guiGraphics.drawTexture(parent.TRAVEL_TEX, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height);
+                guiGraphics.drawTexture(RenderLayer::getGuiTextured, parent.TRAVEL_TEX, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height, 256, 256);
                 guiGraphics.drawItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8 -1);
             }
         }

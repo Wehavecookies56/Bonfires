@@ -7,6 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -210,7 +211,7 @@ public class BonfireScreen extends Screen {
         if (bonfire.isRemoved()) {
             close();
         }
-        if (bonfire.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > client.player.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE)+3) {
+        if (bonfire.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > client.player.getAttributeValue(EntityAttributes.BLOCK_INTERACTION_RANGE)+3) {
             close();
         }
     }
@@ -227,7 +228,6 @@ public class BonfireScreen extends Screen {
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!ScreenshotUtils.isTakingScreenshot()) {
             renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
-            guiGraphics.setShaderColor(1, 1, 1, 1);
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
             if (travelOpen) {
                 drawTravelMenu(guiGraphics, mouseX, mouseY, partialTicks);
@@ -282,7 +282,7 @@ public class BonfireScreen extends Screen {
                 guiGraphics.drawText(font, pages, xZero + (55 / 2) - font.getWidth(pages) / 2, yZero + (14 / 2) - font.fontHeight / 2, 0xFFFFFF, true);
             } else {
                 int tex_width = 90;
-                guiGraphics.drawTexture(MENU, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
+                guiGraphics.drawTexture(RenderLayer::getGuiTextured, MENU, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height, 256, 256);
                 super.render(guiGraphics, mouseX, mouseY, partialTicks);
                 String name = "";
                 Bonfire currentBonfire = registry.getBonfire(bonfire.getID());
@@ -314,7 +314,7 @@ public class BonfireScreen extends Screen {
             int nameX = (width / 2) - 10 + 12;
             int nameY = (height / 2) - 45;
             if (Bonfires.CONFIG.client.renderScreenshotsInGui() && screenshotImage != null && screenshotImage.textureLocation() != null && !noScreenshot) {
-                guiGraphics.drawTexture(screenshotImage.textureLocation(), nameX-3, nameY-5, (float) ScreenshotUtils.width /2, 0, ScreenshotUtils.width, ScreenshotUtils.height, ScreenshotUtils.width*2, ScreenshotUtils.height);
+                guiGraphics.drawTexture(RenderLayer::getGuiTextured, screenshotImage.textureLocation(), nameX-3, nameY-5, (float) ScreenshotUtils.width /2, 0, ScreenshotUtils.width, ScreenshotUtils.height, ScreenshotUtils.width*2, ScreenshotUtils.height);
             }
 
             if (showInfo) {
@@ -352,7 +352,7 @@ public class BonfireScreen extends Screen {
         for (DimensionTabButton tab : tabs) {
             tab.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
-        guiGraphics.drawTexture(TRAVEL_TEX, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height);
+        guiGraphics.drawTexture(RenderLayer::getGuiTextured, TRAVEL_TEX, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height, 256, 256);
     }
 
     public void action(int id) {

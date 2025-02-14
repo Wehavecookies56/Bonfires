@@ -3,18 +3,10 @@
   "category": "misc",
   "group": "bonfires",
   "ingredients": [
-    {
-      "tag": "c:gems/diamond"
-    },
-    {
-      "item": "minecraft:blaze_powder"
-    },
-    {
-      "item": "minecraft:golden_apple"
-    },
-    {
-      "item": "minecraft:gold_nugget"
-    }
+      "#c:gems/diamond",
+      "minecraft:blaze_powder",
+      "minecraft:golden_apple",
+      "minecraft:gold_nugget"
   ],
   "result": {
     "count": 1,

@@ -3,21 +3,11 @@
   "category": "equipment",
   "group": "bonfires",
   "key": {
-    "A": {
-      "item": "bonfires:ash_pile"
-    },
-    "F": {
-      "item": "minecraft:fire_charge"
-    },
-    "L": {
-      "item": "minecraft:lava_bucket"
-    },
-    "O": {
-      "item": "minecraft:obsidian"
-    },
-    "S": {
-      "item": "minecraft:diamond_sword"
-    }
+    "A": "bonfires:ash_pile",
+    "F": "minecraft:fire_charge",
+    "L": "minecraft:lava_bucket",
+    "O": "minecraft:obsidian",
+    "S": "minecraft:diamond_sword"
   },
   "pattern": [
     "OLO",

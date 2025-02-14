@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.6-SNAPSHOT'
+	id 'fabric-loom' version '1.9-SNAPSHOT'
 	id 'maven-publish'
 	id 'org.ajoberstar.grgit' version '5.2.0'
 }
@@ -52,12 +52,12 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.terraformersmc:modmenu:11.0.3"
+	modImplementation "com.terraformersmc:modmenu:13.0.2"
 
-	annotationProcessor modImplementation("io.wispforest:owo-lib:0.12.15+1.21")
-	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:6.1.1")
-	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-world:6.1.1")
-	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:6.1.1")
+	annotationProcessor modImplementation("io.wispforest:owo-lib:0.12.20+1.21.4")
+	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:6.2.2")
+	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-world:6.2.2")
+	include modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:6.2.2")
 }
 
 processResources {

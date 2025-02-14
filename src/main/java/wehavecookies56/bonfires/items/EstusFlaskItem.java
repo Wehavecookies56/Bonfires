@@ -1,20 +1,29 @@
 package wehavecookies56.bonfires.items;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.render.item.property.numeric.NumericProperty;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.UseAction;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
@@ -43,8 +52,8 @@ public class EstusFlaskItem extends Item {
         }
     }
 
-    public EstusFlaskItem() {
-        super(new Settings().maxCount(1).food(new FoodComponent.Builder().alwaysEdible().nutrition(0).saturationModifier(0).build()));
+    public EstusFlaskItem(String name) {
+        super(new Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Bonfires.modid, name))).maxCount(1).food(new FoodComponent.Builder().alwaysEdible().nutrition(0).saturationModifier(0).build(), ConsumableComponent.builder().sound(SoundEvents.ENTITY_GENERIC_DRINK).consumeParticles(false).useAction(UseAction.DRINK).build()));
     }
 
     @Override
@@ -118,6 +127,21 @@ public class EstusFlaskItem extends Item {
         if (stack.get(ComponentSetup.ESTUS) != null) {
             Estus estus = stack.get(ComponentSetup.ESTUS);
             tooltip.add(Text.translatable("Uses: " + estus.uses + "/" + estus.maxUses));
+        }
+    }
+
+    public record FlaskUses() implements NumericProperty {
+
+        public static final MapCodec<FlaskUses> MAP_CODEC = MapCodec.unit(new FlaskUses());
+
+        @Override
+        public float getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
+            return entity != null && stack.get(ComponentSetup.ESTUS) != null ? (float) stack.get(ComponentSetup.ESTUS).uses() / (float) stack.get(ComponentSetup.ESTUS).maxUses() : 0.0F;
+        }
+
+        @Override
+        public MapCodec<? extends NumericProperty> getCodec() {
+            return MAP_CODEC;
         }
     }
 }

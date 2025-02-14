@@ -15,6 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
@@ -69,7 +70,7 @@ public class Bonfires implements ModInitializer {
                 Random r = new Random();
                 double percent = r.nextDouble() * 100;
                 if (percent > 65) {
-                    entity.dropStack(new ItemStack(ItemSetup.ash_pile));
+                    entity.dropStack((ServerWorld) entity.getWorld(), new ItemStack(ItemSetup.ash_pile));
                 }
             }
         });

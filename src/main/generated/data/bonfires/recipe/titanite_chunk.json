@@ -3,18 +3,10 @@
   "category": "misc",
   "group": "bonfires",
   "ingredients": [
-    {
-      "item": "bonfires:large_titanite_shard"
-    },
-    {
-      "item": "bonfires:large_titanite_shard"
-    },
-    {
-      "item": "bonfires:large_titanite_shard"
-    },
-    {
-      "item": "minecraft:netherite_scrap"
-    }
+      "bonfires:large_titanite_shard",
+      "bonfires:large_titanite_shard",
+      "bonfires:large_titanite_shard",
+      "minecraft:netherite_scrap"
   ],
   "result": {
     "count": 1,

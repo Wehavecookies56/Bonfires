@@ -92,7 +92,7 @@ public class CreateBonfireScreen extends Screen {
 
     @Override
     public void tick() {
-        if (te.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > client.player.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE)+3) {
+        if (te.getPos().getManhattanDistance(new Vec3i((int) client.player.getPos().x, (int) client.player.getPos().y, (int) client.player.getPos().z)) > client.player.getAttributeValue(EntityAttributes.BLOCK_INTERACTION_RANGE)+3) {
             close();
         }
         if (nameBox != null) {

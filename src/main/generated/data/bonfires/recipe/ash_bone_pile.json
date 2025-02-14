@@ -3,12 +3,12 @@
   "category": "building",
   "group": "bonfires",
   "key": {
-    "A": {
-      "item": "bonfires:ash_pile"
-    },
-    "B": {
-      "item": "bonfires:homeward_bone"
-    }
+    "A": [
+      "bonfires:ash_pile"
+    ],
+    "B": [
+      "bonfires:homeward_bone"
+    ]
   },
   "pattern": [
     "BBB",

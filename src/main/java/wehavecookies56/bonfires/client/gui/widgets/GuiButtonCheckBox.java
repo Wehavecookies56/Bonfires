@@ -5,6 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
@@ -31,9 +32,9 @@ public class GuiButtonCheckBox extends PressableWidget {
     @Override
     public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            guiGraphics.drawTexture(TEXTURE, getX(), getY(), 0, 0, 10, 10);
+            guiGraphics.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), 0, 0, 10, 10, 256, 256);
             if (checked) {
-                guiGraphics.drawTexture(TEXTURE, getX(), getY(), 10, 0, 10, 10);
+                guiGraphics.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), 10, 0, 10, 10, 256, 256);
             }
             guiGraphics.drawText(MinecraftClient.getInstance().textRenderer, getMessage().getString(), getX() + width + 3, getY() + 2, new Color(255, 255, 255).hashCode(), true);
         }

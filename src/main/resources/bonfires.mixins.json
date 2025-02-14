@@ -10,7 +10,8 @@
     "ServerPlayerMixin"
   ],
   "client": [
-    "ScreenMixin"
+    "ScreenMixin",
+    "DrawContextMixin"
   ],
   "server": [],
   "injectors": {

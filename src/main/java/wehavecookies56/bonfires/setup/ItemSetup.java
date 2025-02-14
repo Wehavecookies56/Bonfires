@@ -9,17 +9,17 @@ import wehavecookies56.bonfires.items.*;
 
 public class ItemSetup {
     public static final Item
-        ash_pile = new AshPileItem(),
-        coiled_sword = new CoiledSwordItem(),
-        estus_flask = new EstusFlaskItem(),
-        homeward_bone = new HomewardBoneItem(new Item.Settings()),
-        coiled_sword_fragment = new CoiledSwordFragmentItem(),
-        estus_shard = new EstusShardItem(),
-        titanite_shard = new TitaniteShardItem(),
-        large_titanite_shard = new LargeTitaniteShardItem(),
-        titanite_chunk = new TitaniteChunkItem(),
-        titanite_slab = new TitaniteSlabItem(),
-        undead_bone_shard = new UndeadBoneShardItem();
+        ash_pile = new AshPileItem("ash_pile"),
+        coiled_sword = new CoiledSwordItem("coiled_sword"),
+        estus_flask = new EstusFlaskItem("estus_flask"),
+        homeward_bone = new HomewardBoneItem("homeward_bone"),
+        coiled_sword_fragment = new CoiledSwordFragmentItem("coiled_sword_fragment"),
+        estus_shard = new EstusShardItem("estus_shard"),
+        titanite_shard = new TitaniteShardItem("titanite_shard"),
+        large_titanite_shard = new LargeTitaniteShardItem("large_titanite_shard"),
+        titanite_chunk = new TitaniteChunkItem("titanite_chunk"),
+        titanite_slab = new TitaniteSlabItem("titanite_slab"),
+        undead_bone_shard = new UndeadBoneShardItem("undead_bone_shard");
 
     public static void init() {
         create("ash_pile", ash_pile);

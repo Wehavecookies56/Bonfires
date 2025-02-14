@@ -35,13 +35,13 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.21.1",
+		"minecraft": "~1.21.4",
 		"java": ">=21",
 		"fabric-api": "*",
-		"owo-lib": ">=0.12.15+1.21",
-		"cardinal-components-base": ">=6.1.1",
-		"cardinal-components-world": ">=6.1.1",
-		"cardinal-components-entity": ">=6.1.1"
+		"owo-lib": ">=0.12.20+1.21.4",
+		"cardinal-components-base": ">=6.2.2",
+		"cardinal-components-world": ">=6.2.2",
+		"cardinal-components-entity": ">=6.2.2"
 	},
 	"suggests": {
 		"another-mod": "*"

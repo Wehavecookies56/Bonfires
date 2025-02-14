@@ -5,8 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolItem;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -31,7 +31,7 @@ public class ReinforceHandler {
                 Bonfires.LOGGER.info("Unable to find blacklisted item '" + s + "' in the registry");
             }
         }
-        return i instanceof ToolItem || i instanceof SwordItem || i instanceof EstusFlaskItem;
+        return i instanceof MiningToolItem || i instanceof SwordItem || i instanceof EstusFlaskItem;
     }
 
     public record ReinforceLevel(int level, int maxLevel) {

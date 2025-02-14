@@ -6,18 +6,18 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import org.joml.Matrix4f;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.client.gui.ReinforceScreen;
 import wehavecookies56.bonfires.data.ReinforceHandler;
+import wehavecookies56.bonfires.client.IDrawContextExtensions;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
 import java.awt.*;
@@ -33,19 +33,20 @@ public class ReinforceItemButton extends ButtonWidget {
 
     public void drawItem(ItemStack istack, DrawContext guiGraphics, int x, int y, int scale) {
         if (!istack.isEmpty()) {
-            BakedModel bakedmodel = MinecraftClient.getInstance().getItemRenderer().getModel(istack, MinecraftClient.getInstance().world, MinecraftClient.getInstance().player, 0);
+            ItemRenderState itemRenderState = new ItemRenderState();
+            MinecraftClient.getInstance().getItemModelManager().update(itemRenderState, istack, ModelTransformationMode.GUI, false, MinecraftClient.getInstance().world, MinecraftClient.getInstance().player, 0);
             guiGraphics.getMatrices().push();
-            guiGraphics.getMatrices().translate((float)(x + 16), (float)(y + 16), (float)(150));
+            guiGraphics.getMatrices().translate((float)(x + (8 * scale)), (float)(y + (8 * scale)), (float)(150));
 
             try {
-                guiGraphics.getMatrices().multiplyPositionMatrix((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
                 guiGraphics.getMatrices().scale(16.0F * scale, 16.0F * scale, 16.0F * scale);
-                boolean flag = !bakedmodel.isSideLit();
+                boolean flag = !itemRenderState.isSideLit();
                 if (flag) {
+                    guiGraphics.draw();
                     DiffuseLighting.disableGuiDepthLighting();
                 }
 
-                MinecraftClient.getInstance().getItemRenderer().renderItem(istack, ModelTransformationMode.GUI, false, guiGraphics.getMatrices(), guiGraphics.getVertexConsumers(), 0xF000F0, OverlayTexture.DEFAULT_UV, bakedmodel);
+                itemRenderState.render(guiGraphics.getMatrices(), ((IDrawContextExtensions)guiGraphics).getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV);
                 guiGraphics.draw();
                 if (flag) {
                     DiffuseLighting.enableGuiDepthLighting();
@@ -76,9 +77,7 @@ public class ReinforceItemButton extends ButtonWidget {
             int elementHeight = 36;
             for (int i = 0; i < parent.reinforceableItems.size(); i++) {
                 if (i % 2 != 0) {
-                    guiGraphics.setShaderColor(1, 1, 1, 0.5F);
-                    guiGraphics.fill(getX(), getY() - (int) scrollOffset + (elementHeight * i), insideWidth, (int) (getY() - scrollOffset + elementHeight + (elementHeight * i)), new Color(44, 49, 43).getRGB());
-                    guiGraphics.setShaderColor(1, 1, 1, 1);
+                    guiGraphics.fill(getX(), getY() - (int) scrollOffset + (elementHeight * i), insideWidth, (int) (getY() - scrollOffset + elementHeight + (elementHeight * i)), new Color(44, 49, 43, 128).getRGB());
                 }
             }
             if (parent.itemSelected != -1 ) {

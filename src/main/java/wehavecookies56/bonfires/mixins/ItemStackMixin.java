@@ -21,7 +21,7 @@ public class ItemStackMixin {
         if (ReinforceHandler.canReinforce(instance)) {
             ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(instance);
             if (rlevel != null && rlevel.level() > 0) {
-                return instance.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT).with(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(Bonfires.reinforceDamageModifier, Bonfires.CONFIG.common.reinforceDamagePerLevel() * rlevel.level(), EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
+                return instance.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT).with(EntityAttributes.ATTACK_DAMAGE, new EntityAttributeModifier(Bonfires.reinforceDamageModifier, Bonfires.CONFIG.common.reinforceDamagePerLevel() * rlevel.level(), EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND);
             }
         }
         return instance.getOrDefault(dataComponentType, o);

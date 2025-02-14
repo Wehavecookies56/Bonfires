@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
@@ -38,13 +39,12 @@ public class BonfireCustomButton extends ButtonWidget {
     @Override
     public void renderWidget(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            guiGraphics.setShaderColor(1, 1, 1, 1);
             if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
                 RenderSystem.setShaderColor(1, 1, 1, 1);
             } else {
                 RenderSystem.setShaderColor(0.8F, 0.8F, 0.8F, 1F);
             }
-            guiGraphics.drawTexture(TRAVEL_TEX, getX(), getY(), type.u, type.v, width, height);
+            guiGraphics.drawTexture(RenderLayer::getGuiTextured, TRAVEL_TEX, getX(), getY(), type.u, type.v, width, height, 256, 256);
             if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
                 List<Text> lines = new ArrayList<>();
                 lines.add(Text.translatable(type.translationKey));

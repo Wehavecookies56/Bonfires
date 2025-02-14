@@ -3,20 +3,24 @@ package wehavecookies56.bonfires.items;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.setup.ComponentSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
 public class EstusShardItem extends Item {
 
-    public EstusShardItem() {
-        super(new Settings());
+    public EstusShardItem(String name) {
+        super(new Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Bonfires.modid, name))));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         if (!world.isClient) {
             for (int i = 0; i < player.getInventory().main.size(); ++i) {
                 if (!ItemStack.areItemsEqual(player.getStackInHand(hand), ItemStack.EMPTY)) {
@@ -28,12 +32,12 @@ public class EstusShardItem extends Item {
                                 if (estus.maxUses() + player.getStackInHand(hand).getCount() <= 15) {
                                     stack.set(ComponentSetup.ESTUS, new EstusFlaskItem.Estus(estus.uses(), estus.maxUses() + player.getStackInHand(hand).getCount()));
                                     player.setStackInHand(hand, ItemStack.EMPTY);
-                                    return TypedActionResult.success(player.getStackInHand(hand));
+                                    return ActionResult.SUCCESS;
                                 } else if (estus.maxUses() < 15) {
                                     int remaining = player.getStackInHand(hand).getCount() - (15 - estus.maxUses());
                                     player.setStackInHand(hand, new ItemStack(this, remaining));
                                     stack.set(ComponentSetup.ESTUS, new EstusFlaskItem.Estus(estus.uses(), 15));
-                                    return TypedActionResult.success(player.getStackInHand(hand));
+                                    return ActionResult.SUCCESS;
                                 }
                             }
                         }

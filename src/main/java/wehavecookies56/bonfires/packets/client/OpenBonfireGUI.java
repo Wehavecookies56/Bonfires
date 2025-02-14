@@ -33,7 +33,7 @@ public record OpenBonfireGUI(BlockPos pos, Map<UUID, String> ownerNames, Bonfire
             OpenBonfireGUI::ownerNames,
             BonfireRegistry.STREAM_CODEC,
             OpenBonfireGUI::registry,
-            PacketCodecs.BOOL,
+            PacketCodecs.BOOLEAN,
             OpenBonfireGUI::canReinforce,
             PacketCodecs.collection(ArrayList::new, RegistryKey.createPacketCodec(RegistryKeys.WORLD)),
             OpenBonfireGUI::dimensions,

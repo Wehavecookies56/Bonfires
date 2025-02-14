@@ -19,19 +19,23 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
@@ -69,7 +73,7 @@ import java.util.function.BiConsumer;
 
 public class AshBonePileBlock extends Block implements BlockEntityProvider {
 
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BooleanProperty.of("lit");
 
     public static final BooleanProperty EXPLODED = BooleanProperty.of("exploded");
@@ -84,14 +88,14 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
         public static final PacketCodec<PacketByteBuf, BonfireData> STREAM_CODEC = PacketCodec.tuple(
                 PacketCodecs.STRING,
                 BonfireData::name,
-                PacketCodecs.BOOL,
+                PacketCodecs.BOOLEAN,
                 BonfireData::privateBonfire,
                 BonfireData::new
         );
     }
 
-    public AshBonePileBlock() {
-        super(AbstractBlock.Settings.create().sounds(BlockSoundGroup.SAND).nonOpaque().strength(0.8F).luminance(AshBonePileBlock::getLightValue));
+    public AshBonePileBlock(String name) {
+        super(AbstractBlock.Settings.create().registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(Bonfires.modid, name))).sounds(BlockSoundGroup.SAND).nonOpaque().strength(0.8F).luminance(AshBonePileBlock::getLightValue));
         setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(LIT, false).with(EXPLODED, false));
     }
 
@@ -128,7 +132,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
             if (te.isBonfire()) {
                 if (!te.isLit()) {
@@ -138,27 +142,27 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                                 PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayerEntity) player);
                                 world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                             }
-                            return ItemActionResult.SUCCESS;
+                            return ActionResult.SUCCESS;
                         }
                     } else {
                         if (te.hasUnlitName()) {
                             PacketHandler.sendToServer(new LightBonfire(te.getUnlitName(), te, !te.isUnlitPrivate(), Bonfires.CONFIG.client.enableAutomaticScreenshotOnCreation()));
                         }
-                        return ItemActionResult.SUCCESS;
+                        return ActionResult.SUCCESS;
                     }
                 } else {
                     if (!world.isClient) {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
-                            return ItemActionResult.SUCCESS;
+                            return ActionResult.SUCCESS;
                         }
                         if (Bonfires.CONFIG.common.bonfireMonsterCheckRadius() > 0.0) {
                             Vec3d vec3 = Vec3d.ofBottomCenter(new Vec3i(pos.getX(), pos.getY(), pos.getZ()));
                             double r = Bonfires.CONFIG.common.bonfireMonsterCheckRadius();
-                            List<HostileEntity> list = world.getEntitiesByClass(HostileEntity.class, new Box(vec3.x - r, vec3.y - r, vec3.z - r, vec3.x + r, vec3.y + r, vec3.z + r), p_9062_ -> p_9062_.isAngryAt(player));
+                            List<HostileEntity> list = world.getEntitiesByClass(HostileEntity.class, new Box(vec3.x - r, vec3.y - r, vec3.z - r, vec3.x + r, vec3.y + r, vec3.z + r), p_9062_ -> p_9062_.isAngryAt((ServerWorld) world, player));
                             if (!list.isEmpty()) {
-                                player.sendMessage(Text.translatable(LocalStrings.TEXT_ENEMY_NEARBY));
-                                return ItemActionResult.SUCCESS;
+                                player.sendMessage(Text.translatable(LocalStrings.TEXT_ENEMY_NEARBY), false);
+                                return ActionResult.SUCCESS;
                             }
                         }
                         if (Bonfires.CONFIG.common.repairEquipment()) {
@@ -196,7 +200,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                         }
                         world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     }
-                    return ItemActionResult.SUCCESS;
+                    return ActionResult.SUCCESS;
                 }
             } else {
                 if (player.getStackInHand(hand) != ItemStack.EMPTY) {
@@ -206,7 +210,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                         placeItem(world, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
                     }*/
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
-                    return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
                 }
             }
         }
@@ -214,7 +218,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
         if (state.getBlock() instanceof AshBonePileBlock block) {
             block.wasDestroyedByExplosion(world, pos);
         }
@@ -379,7 +383,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
             ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile);
             if (te.isBonfire()) {
@@ -391,7 +395,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
             }
             return stack;
         }
-        return super.getPickStack(world, pos, state);
+        return super.getPickStack(world, pos, state, includeData);
     }
 
     @Nullable

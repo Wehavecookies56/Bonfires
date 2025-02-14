@@ -3,8 +3,8 @@ package wehavecookies56.bonfires.setup;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.render.item.property.numeric.NumericProperties;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -17,6 +17,7 @@ import wehavecookies56.bonfires.client.ClientPacketHandler;
 import wehavecookies56.bonfires.client.ScreenshotUtils;
 import wehavecookies56.bonfires.client.tiles.BonfireRenderer;
 import wehavecookies56.bonfires.data.ReinforceHandler;
+import wehavecookies56.bonfires.items.EstusFlaskItem;
 
 import java.util.List;
 
@@ -39,9 +40,10 @@ public class ClientSetup implements ClientModInitializer {
     public void onInitializeClient() {
         WorldRenderEvents.END.register(ScreenshotUtils::clientTick);
         ItemTooltipCallback.EVENT.register(ClientSetup::tooltipEvent);
-        ModelPredicateProviderRegistry.register(ItemSetup.estus_flask, Identifier.of(Bonfires.modid, "uses"), (stack, world, entity, seed) -> {
-            return entity != null && stack.get(ComponentSetup.ESTUS) != null ? (float) stack.get(ComponentSetup.ESTUS).uses() / (float) stack.get(ComponentSetup.ESTUS).maxUses() : 0.0F;
-        });
+        NumericProperties.ID_MAPPER.put(
+                Identifier.of(Bonfires.modid, "uses"),
+                EstusFlaskItem.FlaskUses.MAP_CODEC
+        );
         BlockEntityRendererFactories.register(EntitySetup.BONFIRE, BonfireRenderer::new);
         ClientPacketHandler.init();
     }

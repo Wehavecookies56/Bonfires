@@ -12,12 +12,14 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Set;
+
 public class BonfireTeleporter {
 
     public static Vec3d attemptToPlaceNextToBonfire(BlockPos bonfirePos, World world) {
         Vec3d centre = new Vec3d((bonfirePos.getX()) + 0.5, (bonfirePos.getY()) + 0.5, (bonfirePos.getZ()) + 0.5);
         for (int i = 0; i <= 3; i++) {
-            Direction dir = Direction.fromHorizontal(i);
+            Direction dir = Direction.fromHorizontalQuarterTurns(i);
             BlockPos newPos = bonfirePos.offset(dir);
             BlockState state = world.getBlockState(new BlockPos(newPos));
             if (state.getBlock().canMobSpawnInside(state) && !world.getBlockState(newPos.down()).isReplaceable()) {
@@ -31,7 +33,7 @@ public class BonfireTeleporter {
         if (entity instanceof ServerPlayerEntity playerMP) {
             playerMP.setVelocity(0, 0, 0);
             Vec3d destination = attemptToPlaceNextToBonfire(pos, destWorld);
-            playerMP.teleport(destWorld, destination.x, destination.y, destination.z, playerMP.getYaw(), playerMP.getPitch());
+            playerMP.teleport(destWorld, destination.x, destination.y, destination.z, Set.of(),  playerMP.getYaw(), playerMP.getPitch(), false);
         }
     }
 
@@ -40,7 +42,7 @@ public class BonfireTeleporter {
         ServerWorld destinationWorld = player.getServerWorld();
         if (!player.getWorld().getRegistryKey().getValue().equals(dimension.getValue())) {
             destinationWorld = player.getServerWorld().getServer().getWorld(dimension);
-            player.teleport(destinationWorld, destination.getX(), destination.getY(), destination.getZ(), player.getYaw(), player.getPitch());
+            player.teleport(destinationWorld, destination.getX(), destination.getY(), destination.getZ(), Set.of(), player.getYaw(), player.getPitch(), false);
         } else {
             placeEntity(player, destination, destinationWorld);
         }
