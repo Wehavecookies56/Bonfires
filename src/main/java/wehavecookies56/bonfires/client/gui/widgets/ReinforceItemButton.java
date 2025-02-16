@@ -1,15 +1,14 @@
 package wehavecookies56.bonfires.client.gui.widgets;
 
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -33,19 +32,20 @@ public class ReinforceItemButton extends Button {
 
     public void drawItem(ItemStack istack, GuiGraphics guiGraphics, int x, int y, int scale) {
         if (!istack.isEmpty()) {
-            BakedModel bakedmodel = Minecraft.getInstance().getItemRenderer().getModel(istack, Minecraft.getInstance().level, Minecraft.getInstance().player, 0);
+            ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
+            Minecraft.getInstance().getItemModelResolver().updateForTopItem(itemStackRenderState, istack, ItemDisplayContext.GUI, false, Minecraft.getInstance().level, Minecraft.getInstance().player, 0);
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate((float)(x + 16), (float)(y + 16), (float)(150));
 
             try {
                 guiGraphics.pose().mulPose((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
                 guiGraphics.pose().scale(16.0F * scale, 16.0F * scale, 16.0F * scale);
-                boolean flag = !bakedmodel.usesBlockLight();
+                boolean flag = !itemStackRenderState.usesBlockLight();
                 if (flag) {
                     Lighting.setupForFlatItems();
                 }
 
-                Minecraft.getInstance().getItemRenderer().render(istack, ItemDisplayContext.GUI, false, guiGraphics.pose(), guiGraphics.bufferSource(), 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+                itemStackRenderState.render(guiGraphics.pose(), guiGraphics.bufferSource, 15728880, OverlayTexture.NO_OVERLAY);
                 guiGraphics.flush();
                 if (flag) {
                     Lighting.setupFor3DItems();
@@ -68,7 +68,7 @@ public class ReinforceItemButton extends Button {
             Minecraft mc = Minecraft.getInstance();
             double scale = mc.getWindow().getGuiScale();
             int scissorX = getX(), scissorY = getY(), scissorWidth = 239, scissorHeight = 171;
-            RenderSystem.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
+            guiGraphics.enableScissor(0, scissorY, mc.getWindow().getWidth(), scissorY + scissorHeight);
             int insideWidth = getX() + width;
             if (parent.scrollBar.visible) {
                 insideWidth -= 8;
@@ -76,9 +76,7 @@ public class ReinforceItemButton extends Button {
             int elementHeight = 36;
             for (int i = 0; i < parent.reinforceableItems.size(); i++) {
                 if (i % 2 != 0) {
-                    guiGraphics.setColor(1, 1, 1, 0.5F);
-                    guiGraphics.fill(getX(), getY() - (int) scrollOffset + (elementHeight * i), insideWidth, (int) (getY() - scrollOffset + elementHeight + (elementHeight * i)), new Color(44, 49, 43).getRGB());
-                    guiGraphics.setColor(1, 1, 1, 1);
+                    guiGraphics.fill(getX(), getY() - (int) scrollOffset + (elementHeight * i), insideWidth, (int) (getY() - scrollOffset + elementHeight + (elementHeight * i)), new Color(44, 49, 43, 128).getRGB());
                 }
             }
             if (parent.itemSelected != -1 ) {
@@ -118,7 +116,7 @@ public class ReinforceItemButton extends Button {
                 guiGraphics.drawCenteredString(mc.font,  upgradeText, insideWidth - 35, ((int)yPos+8) - (mc.font.lineHeight / 2), new Color(255, 255, 255).getRGB());
                 guiGraphics.drawString(mc.font,  "+" + currentDamage + " > " + damageText.getString(), insideWidth - 60, ((int)yPos+24) - (mc.font.lineHeight / 2), new Color(255, 255, 255).getRGB());
             }
-            RenderSystem.disableScissor();
+            guiGraphics.disableScissor();
         }
     }
 

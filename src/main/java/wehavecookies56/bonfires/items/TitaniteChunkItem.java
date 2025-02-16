@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 
 public class TitaniteChunkItem extends Item {
 
-    public TitaniteChunkItem() {
-        super(new Properties());
+    public TitaniteChunkItem(Properties properties) {
+        super(properties);
     }
 }

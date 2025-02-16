@@ -1,19 +1,24 @@
 package wehavecookies56.bonfires.items;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
@@ -21,6 +26,7 @@ import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.setup.ComponentSetup;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class EstusFlaskItem extends Item {
 
@@ -43,8 +49,8 @@ public class EstusFlaskItem extends Item {
         }
     }
 
-    public EstusFlaskItem() {
-        super(new Properties().stacksTo(1).food(new FoodProperties.Builder().alwaysEdible().nutrition(0).saturationModifier(0).build()));
+    public EstusFlaskItem(Properties properties) {
+        super(properties.stacksTo(1).food(new FoodProperties.Builder().alwaysEdible().nutrition(0).saturationModifier(0).build(), Consumable.builder().sound(SoundEvents.GENERIC_DRINK).hasConsumeParticles(false).animation(ItemUseAnimation.DRINK).build()));
     }
 
     @Override
@@ -56,8 +62,8 @@ public class EstusFlaskItem extends Item {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack p_77661_1_) {
-        return UseAnim.DRINK;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.DRINK;
     }
 
     @Override
@@ -118,6 +124,21 @@ public class EstusFlaskItem extends Item {
         if (stack.has(ComponentSetup.ESTUS)) {
             Estus estus = stack.get(ComponentSetup.ESTUS);
             tooltip.add(Component.translatable("Uses: " + estus.uses + "/" + estus.maxUses));
+        }
+    }
+
+    public record FlaskUses() implements RangeSelectItemModelProperty {
+
+        public static final MapCodec<FlaskUses> MAP_CODEC = MapCodec.unit(new FlaskUses());
+
+        @Override
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+            return entity != null && stack.get(ComponentSetup.ESTUS) != null ? (float) stack.get(ComponentSetup.ESTUS).uses() / (float) stack.get(ComponentSetup.ESTUS).maxUses() : 0.0F;
+        }
+
+        @Override
+        public MapCodec<? extends RangeSelectItemModelProperty> type() {
+            return MAP_CODEC;
         }
     }
 }

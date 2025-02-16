@@ -1,22 +1,21 @@
 package wehavecookies56.bonfires.items;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class CoiledSwordFragmentItem extends HomewardBoneItem {
 
-    public CoiledSwordFragmentItem() {
-        super(new Properties().stacksTo(1));
+    public CoiledSwordFragmentItem(Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         if (teleport(world, player)) {
-            return InteractionResultHolder.success(player.getItemInHand(hand));
+            return InteractionResult.SUCCESS;
         }
-        return InteractionResultHolder.pass(player.getItemInHand(hand));
+        return InteractionResult.PASS;
     }
 }

@@ -2,6 +2,7 @@ package wehavecookies56.bonfires.client.gui.widgets;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -41,7 +42,7 @@ public class DimensionTabButton extends Button {
                     String item = split[1];
                     if (dimID.equals(dimension.location().toString())) {
                         if (BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item))) {
-                            return icon = BuiltInRegistries.ITEM.get(ResourceLocation.parse(item));
+                            return icon = BuiltInRegistries.ITEM.get(ResourceLocation.parse(item)).get().value();
                         } else {
                             return icon;
                         }
@@ -80,14 +81,13 @@ public class DimensionTabButton extends Button {
             int tab_height = 30;
             int tab_u = 28;
             int tab_v = parent.travel_height;
-            guiGraphics.setColor(1, 1, 1, 1);
             if (parent.dimTabSelected == id) {
                 tab_v = parent.travel_height + 30;
                 tab_height = 32;
-                guiGraphics.blit(parent.TRAVEL_TEX, getX(), getY(), tab_u, tab_v, tab_width, tab_height);
+                guiGraphics.blit(RenderType::guiTextured, parent.TRAVEL_TEX, getX(), getY(), tab_u, tab_v, tab_width, tab_height, 256, 256);
                 guiGraphics.renderFakeItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8);
             } else {
-                guiGraphics.blit(parent.TRAVEL_TEX, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height);
+                guiGraphics.blit(RenderType::guiTextured, parent.TRAVEL_TEX, getX(), getY() - 1, tab_u, tab_v, tab_width, tab_height, 256, 256);
                 guiGraphics.renderFakeItem(new ItemStack(getIcon(), 1), getX() + (tab_width / 2) - 8, getY() + (tab_height / 2) - 8 -1);
             }
         }

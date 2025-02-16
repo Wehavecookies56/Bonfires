@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -145,7 +146,7 @@ public class ReinforceScreen extends Screen {
         Window window = mc.getWindow();
         int centerX = (window.getGuiScaledWidth() / 2) - (texWidth / 2);
         int centerY = (window.getGuiScaledHeight() / 2) - (texHeight / 2);
-        guiGraphics.blit(texture, centerX, centerY, 0, 0, texWidth, texHeight);
+        guiGraphics.blit(RenderType::guiTextured, texture, centerX, centerY, 0, 0, texWidth, texHeight, 256, 256);
         for(Renderable renderable : this.renderables) {
             renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
         }

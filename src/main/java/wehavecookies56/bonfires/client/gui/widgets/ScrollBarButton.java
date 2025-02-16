@@ -70,9 +70,7 @@ public class ScrollBarButton extends Button {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            guiGraphics.setColor(1, 1, 1, 0.5F);
             guiGraphics.fill(getX(), getY(), getX() + width, getBottom(), new Color(0, 0, 0, 0.5F).hashCode());
-            guiGraphics.setColor(1, 1, 1, 1);
             guiGraphics.fill(getX(), handleY, getX()+8, handleY+handleHeight, new Color(81, 86, 71).hashCode());
             guiGraphics.fill(getX()+1, handleY+1, getX()+1+6, handleY+1+(handleHeight-2), new Color(114, 118, 95).hashCode());
         }

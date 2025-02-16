@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.language.I18n;
@@ -230,7 +231,6 @@ public class BonfireScreen extends Screen {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!ScreenshotUtils.isTakingScreenshot()) {
             renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
-            guiGraphics.setColor(1, 1, 1, 1);
             Font font = Minecraft.getInstance().font;
             if (travelOpen) {
                 drawTravelMenu(guiGraphics, mouseX, mouseY, partialTicks);
@@ -288,7 +288,7 @@ public class BonfireScreen extends Screen {
                 guiGraphics.drawString(font, pages, xZero + (55 / 2) - font.width(pages) / 2, yZero + (14 / 2) - font.lineHeight / 2, 0xFFFFFF);
             } else {
                 int tex_width = 90;
-                guiGraphics.blit(MENU, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height);
+                guiGraphics.blit(RenderType::guiTextured, MENU, (width / 4) - (tex_width / 2), (height / 2) - (tex_height / 2), 0, 0, tex_width, tex_height, 256, 256);
                 for(Renderable renderable : this.renderables) {
                     renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
                 }
@@ -322,7 +322,7 @@ public class BonfireScreen extends Screen {
             int nameX = (width / 2) - 10 + 12;
             int nameY = (height / 2) - 45;
             if (BonfiresConfig.Client.renderScreenshotsInGui && screenshotImage != null && screenshotImage.textureLocation() != null && !noScreenshot) {
-                guiGraphics.blit(screenshotImage.textureLocation(), nameX-3, nameY-5, (float) ScreenshotUtils.width /2, 0, ScreenshotUtils.width, ScreenshotUtils.height, ScreenshotUtils.width*2, ScreenshotUtils.height);
+                guiGraphics.blit(RenderType::guiTextured, screenshotImage.textureLocation(), nameX-3, nameY-5, (float) ScreenshotUtils.width /2, 0, ScreenshotUtils.width, ScreenshotUtils.height, ScreenshotUtils.width*2, ScreenshotUtils.height);
             }
 
             if (showInfo) {
@@ -361,7 +361,7 @@ public class BonfireScreen extends Screen {
         for (DimensionTabButton tab : tabs) {
             tab.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
-        guiGraphics.blit(TRAVEL_TEX, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height);
+        guiGraphics.blit(RenderType::guiTextured, TRAVEL_TEX, (width / 2) - (trueWidth / 2), (height / 2) - (travel_height / 2), 0, 0, trueWidth, travel_height, 256, 256);
     }
 
     public void action(int id) {

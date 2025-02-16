@@ -2,6 +2,7 @@ package wehavecookies56.bonfires.client.gui.widgets;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
@@ -36,8 +37,7 @@ public class BonfirePageButton extends Button {
             if (!active) {
                 v = texHeight * 2;
             }
-            guiGraphics.setColor(1, 1, 1, 1);
-            guiGraphics.blit(parent.TRAVEL_TEX, getX(), getY(), u, v, width, height);
+            guiGraphics.blit(RenderType::guiTextured, parent.TRAVEL_TEX, getX(), getY(), u, v, width, height, 256, 256);
         }
     }
 }

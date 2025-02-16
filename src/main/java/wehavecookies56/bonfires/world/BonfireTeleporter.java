@@ -10,8 +10,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Set;
 import java.util.function.Function;
 
 public class BonfireTeleporter {
@@ -52,7 +53,7 @@ public class BonfireTeleporter {
         player.level().playSound(null, destination, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
         if (!player.level().dimension().location().equals(dimension.location())) {
             destinationWorld = player.level().getServer().getLevel(dimension);
-            player.changeDimension(new DimensionTransition(destinationWorld, new Vec3(destination.getX(), destination.getY(), destination.getZ()), Vec3.ZERO, player.getYRot(), player.getXRot(), false, p_352279_ -> {}));
+            player.teleportTo(destinationWorld, destination.getX(), destination.getY(), destination.getZ(), Set.of(), player.getYRot(), player.getXRot(), false);
         }
         tp.placeEntity(player, (ServerLevel) player.level(), destinationWorld, 0, (portal) -> player);
     }

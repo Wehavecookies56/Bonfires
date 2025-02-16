@@ -1,0 +1,33 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "bonfires:uses",
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "bonfires:item/estus_flask"
+    },
+    "entries": [
+      {
+        "threshold": 0.01,
+        "model": {
+          "type": "minecraft:model",
+          "model": "bonfires:item/estus_flask_quarter"
+        }
+      },
+      {
+        "threshold": 0.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "bonfires:item/estus_flask_half"
+        }
+      },
+      {
+        "threshold": 0.99,
+        "model": {
+          "type": "minecraft:model",
+          "model": "bonfires:item/estus_flask_full"
+        }
+      }
+    ]
+  }
+}

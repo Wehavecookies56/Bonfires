@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.180'
+    id 'net.neoforged.gradle.userdev' version '7.0.181'
     id 'org.ajoberstar.grgit' version '5.2.0'
 }
 
@@ -48,7 +48,7 @@ runs {
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
     }
 
-    data {
+    clientData {
         programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
@@ -57,6 +57,12 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
+}
+
+minecraft {
+    accessTransformers {
+        file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
 }
 
 tasks.withType(ProcessResources).configureEach {

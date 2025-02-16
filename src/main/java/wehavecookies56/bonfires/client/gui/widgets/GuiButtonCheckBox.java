@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import wehavecookies56.bonfires.Bonfires;
@@ -31,9 +32,9 @@ public class GuiButtonCheckBox extends AbstractButton {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            guiGraphics.blit(TEXTURE, getX(), getY(), 0, 0, 10, 10);
+            guiGraphics.blit(RenderType::guiTextured, TEXTURE, getX(), getY(), 0, 0, 10, 10, 256, 256);
             if (checked) {
-                guiGraphics.blit(TEXTURE, getX(), getY(), 10, 0, 10, 10);
+                guiGraphics.blit(RenderType::guiTextured, TEXTURE, getX(), getY(), 10, 0, 10, 10, 256, 256);
             }
             guiGraphics.drawString(Minecraft.getInstance().font, getMessage().getString(), getX() + width + 3, getY() + 2, new Color(255, 255, 255).hashCode());
         }

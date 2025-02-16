@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 
 public class TitaniteSlabItem extends Item {
 
-    public TitaniteSlabItem() {
-        super(new Properties());
+    public TitaniteSlabItem(Properties properties) {
+        super(properties);
     }
 }

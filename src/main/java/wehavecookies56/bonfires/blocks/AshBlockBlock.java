@@ -8,12 +8,8 @@ public class AshBlockBlock extends FallingBlock {
 
     private static final MapCodec<AshBlockBlock> CODEC = simpleCodec(AshBlockBlock::new);
 
-    public AshBlockBlock() {
-        this(Properties.of().sound(SoundType.SAND).strength(0.25F));
-    }
-
     public AshBlockBlock(Properties properties) {
-        super(properties);
+        super(properties.sound(SoundType.SAND).strength(0.25F));
     }
 
     @Override

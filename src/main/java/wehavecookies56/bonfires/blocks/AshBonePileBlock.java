@@ -13,12 +13,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -37,15 +38,13 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -76,13 +75,13 @@ import javax.annotation.Nullable;
 
 public class AshBonePileBlock extends Block implements EntityBlock {
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
     public static final BooleanProperty EXPLODED = BooleanProperty.create("exploded");
 
-    public AshBonePileBlock() {
-        super(BlockBehaviour.Properties.of().sound(SoundType.SAND).noOcclusion().strength(0.8F).lightLevel(AshBonePileBlock::getLightValue));
+    public AshBonePileBlock(Properties properties) {
+        super(properties.sound(SoundType.SAND).noOcclusion().strength(0.8F).lightLevel(AshBonePileBlock::getLightValue));
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(LIT, false).setValue(EXPLODED, false));
     }
 
@@ -125,7 +124,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof BonfireTileEntity te) {
             if (te.isBonfire()) {
                 if (!te.isLit()) {
@@ -135,27 +134,27 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                                 PacketHandler.sendTo(new OpenCreateScreen(te), (ServerPlayer) player);
                                 world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
                             }
-                            return ItemInteractionResult.SUCCESS;
+                            return InteractionResult.SUCCESS;
                         }
                     } else {
                         if (te.hasUnlitName()) {
                             PacketHandler.sendToServer(new LightBonfire(te.getUnlitName(), te, !te.isUnlitPrivate(), BonfiresConfig.Client.enableAutomaticScreenshotOnCreation));
                         }
-                        return ItemInteractionResult.SUCCESS;
+                        return InteractionResult.SUCCESS;
                     }
                 } else {
                     if (!world.isClientSide) {
                         if (te.hasUnlitName()) {
                             te.setUnlitName("");
-                            return ItemInteractionResult.SUCCESS;
+                            return InteractionResult.SUCCESS;
                         }
                         if (BonfiresConfig.Common.bonfireMonsterCheckRadius > 0.0) {
                             Vec3 vec3 = Vec3.atBottomCenterOf(new Vec3i(pos.getX(), pos.getY(), pos.getZ()));
                             double r = BonfiresConfig.Common.bonfireMonsterCheckRadius;
-                            List<Monster> list = world.getEntitiesOfClass(Monster.class, new AABB(vec3.x() - r, vec3.y() - r, vec3.z() - r, vec3.x() + r, vec3.y() + r, vec3.z() + r), p_9062_ -> p_9062_.isPreventingPlayerRest(player));
+                            List<Monster> list = world.getEntitiesOfClass(Monster.class, new AABB(vec3.x() - r, vec3.y() - r, vec3.z() - r, vec3.x() + r, vec3.y() + r, vec3.z() + r), p_9062_ -> p_9062_.isPreventingPlayerRest((ServerLevel) world, player));
                             if (!list.isEmpty()) {
-                                player.sendSystemMessage(Component.translatable(LocalStrings.TEXT_ENEMY_NEARBY));
-                                return ItemInteractionResult.SUCCESS;
+                                player.displayClientMessage(Component.translatable(LocalStrings.TEXT_ENEMY_NEARBY), false);
+                                return InteractionResult.SUCCESS;
                             }
                         }
                         if (BonfiresConfig.Common.repairEquipment) {
@@ -194,7 +193,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         }
                         world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
                     }
-                    return ItemInteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             } else {
                 if (stack != ItemStack.EMPTY) {
@@ -204,7 +203,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                         placeItem(world, te, pos, playerIn, TileEntityBonfire.BonfireType.PRIMAL);
                     }*/
                     world.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
-                    return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    return InteractionResult.PASS;
                 }
             }
         }
@@ -307,7 +306,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
 
 
     @Override
-    public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion) {
+    public void onBlockExploded(BlockState state, ServerLevel world, BlockPos pos, Explosion explosion) {
         if (BonfiresConfig.Common.enableUBSBonfire) {
             if (!world.isClientSide) {
                 ItemEntity shard = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ItemSetup.undead_bone_shard.get()));
@@ -368,7 +367,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
         if (level.getBlockEntity(pos) instanceof BonfireTileEntity te) {
             ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile.get());
             if (!player.isCrouching() && te.isBonfire()) {
@@ -383,7 +382,7 @@ public class AshBonePileBlock extends Block implements EntityBlock {
             }
             return stack;
         }
-        return super.getCloneItemStack(state, target, level, pos, player);
+        return super.getCloneItemStack(level, pos, state, includeData, player);
     }
 
     @Nullable

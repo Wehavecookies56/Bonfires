@@ -8,15 +8,17 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.TieredItem;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.setup.ComponentSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ReinforceHandler {
 
@@ -24,15 +26,18 @@ public class ReinforceHandler {
         Item i = stack.getItem();
         for (String s : BonfiresConfig.Common.reinforceBlacklist) {
             if (BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(s))) {
-                Item blacklistedItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse(s));
-                if (i == blacklistedItem) {
-                    return false;
-                }
+                AtomicBoolean canReinforce = new AtomicBoolean(true);
+                BuiltInRegistries.ITEM.get(ResourceLocation.parse(s)).ifPresent(itemReference -> {
+                    if (i == itemReference.value()) {
+                        canReinforce.set(false);
+                    }
+                });
+                return canReinforce.get();
             } else {
                 Bonfires.LOGGER.info("Unable to find blacklisted item '" + s + "' in the registry");
             }
         }
-        return i instanceof TieredItem || i instanceof SwordItem || i instanceof EstusFlaskItem;
+        return i instanceof DiggerItem || i instanceof SwordItem || i instanceof EstusFlaskItem;
     }
 
     public record ReinforceLevel(int level, int maxLevel) {

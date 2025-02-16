@@ -2,51 +2,18 @@ package wehavecookies56.bonfires.items;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.ToolMaterial;
 
 public class CoiledSwordItem extends SwordItem {
 
-    static Tier material = new Tier() {
-        @Override
-        public int getUses() {
-            return 105;
-        }
+    static ToolMaterial material = new ToolMaterial(null, 105, 8, 4, 1, null);
 
-        @Override
-        public float getSpeed() {
-            return 8;
-        }
-
-        @Override
-        public float getAttackDamageBonus() {
-            return 4;
-        }
-
-        @Override
-        public TagKey<Block> getIncorrectBlocksForDrops() {
-            return null;
-        }
-
-        @Override
-        public int getEnchantmentValue() {
-            return 0;
-        }
-
-        @Override
-        public Ingredient getRepairIngredient() {
-            return null;
-        }
-    };
-
-    public CoiledSwordItem() {
-        super(material, new Properties().attributes(SwordItem.createAttributes(material, 3, -2.4F)).stacksTo(1));
+    public CoiledSwordItem(Properties properties) {
+        super(material, 3, -2.4F, properties.stacksTo(1));
     }
 
     @Override

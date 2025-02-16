@@ -2,10 +2,9 @@ package wehavecookies56.bonfires.items;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
@@ -18,7 +17,7 @@ import java.util.UUID;
 
 public class HomewardBoneItem extends Item {
 
-    public HomewardBoneItem(Item.Properties properties) {
+    public HomewardBoneItem(Properties properties) {
         super(properties);
     }
 
@@ -40,11 +39,11 @@ public class HomewardBoneItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         if (teleport(world, player)) {
             player.getItemInHand(hand).shrink(1);
-            return InteractionResultHolder.success(player.getItemInHand(hand));
+            return InteractionResult.SUCCESS;
         }
-        return InteractionResultHolder.pass(player.getItemInHand(hand));
+        return InteractionResult.PASS;
     }
 }
