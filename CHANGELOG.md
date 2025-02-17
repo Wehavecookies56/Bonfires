@@ -1,0 +1,2 @@
+* Added bonfire discovery mode, can be disabled in the common config. With this enabled only bonfires created by you or bonfires you have found will show in the menu
+* Fixed teleporting on air when a bonfire is on an edge
