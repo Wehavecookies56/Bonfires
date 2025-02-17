@@ -53,8 +53,8 @@ jobs:
           modrinth-id: amg8VIPH
           modrinth-token: "${{env.MODRINTH_TOKEN}}"
 
-          name: "${{env.RELEASE_NAME}} v${{steps.mod_version.outputs.mod_version}}"
-          version: "${{steps.mod_version.outputs.mod_version}}-${{env.MC_VERSION}}"
+          name: "${{env.RELEASE_NAME}} v${{steps.mod_version.outputs.mod_version}}-neoforge"
+          version: "${{steps.mod_version.outputs.mod_version}}-${{env.MC_VERSION}}-neoforge"
           version-type: release
           changelog-file: CHANGELOG.md
           loaders: neoforge
