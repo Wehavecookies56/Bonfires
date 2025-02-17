@@ -45,6 +45,7 @@ public class BonfireCustomButton extends ButtonWidget {
                 RenderSystem.setShaderColor(0.8F, 0.8F, 0.8F, 1F);
             }
             guiGraphics.drawTexture(RenderLayer::getGuiTextured, TRAVEL_TEX, getX(), getY(), type.u, type.v, width, height, 256, 256);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
             if (mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height) {
                 List<Text> lines = new ArrayList<>();
                 lines.add(Text.translatable(type.translationKey));

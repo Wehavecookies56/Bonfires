@@ -39,7 +39,7 @@ public class ReinforceItemButton extends ButtonWidget {
             guiGraphics.getMatrices().translate((float)(x + (8 * scale)), (float)(y + (8 * scale)), (float)(150));
 
             try {
-                guiGraphics.getMatrices().scale(16.0F * scale, 16.0F * scale, 16.0F * scale);
+                guiGraphics.getMatrices().scale(16.0F * scale, -16.0F * scale, 16.0F * scale);
                 boolean flag = !itemRenderState.isSideLit();
                 if (flag) {
                     guiGraphics.draw();
@@ -69,7 +69,7 @@ public class ReinforceItemButton extends ButtonWidget {
             MinecraftClient mc = MinecraftClient.getInstance();
             double scale = mc.getWindow().getScaleFactor();
             int scissorX = getX(), scissorY = getY(), scissorWidth = 239, scissorHeight = 171;
-            RenderSystem.enableScissor(0, mc.getWindow().getHeight() - (int)((scissorY + scissorHeight) * scale), mc.getWindow().getWidth(), (int) (scissorHeight * scale));
+            guiGraphics.enableScissor(0, scissorY, mc.getWindow().getWidth(), scissorY + scissorHeight);
             int insideWidth = getX() + width;
             if (parent.scrollBar.visible) {
                 insideWidth -= 8;
@@ -117,7 +117,7 @@ public class ReinforceItemButton extends ButtonWidget {
                 guiGraphics.drawCenteredTextWithShadow(mc.textRenderer,  upgradeText, insideWidth - 35, ((int)yPos+8) - (mc.textRenderer.fontHeight / 2), new Color(255, 255, 255).getRGB());
                 guiGraphics.drawText(mc.textRenderer,  "+" + currentDamage + " > " + damageText.getString(), insideWidth - 60, ((int)yPos+24) - (mc.textRenderer.fontHeight / 2), new Color(255, 255, 255).getRGB(), true);
             }
-            RenderSystem.disableScissor();
+            guiGraphics.disableScissor();
         }
     }
 
