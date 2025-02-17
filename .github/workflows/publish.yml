@@ -1,0 +1,64 @@
+name: Publish on CurseForge & Modrinth
+
+on: [ workflow_dispatch ]
+
+env:
+  JAVA_VERSION: 21
+  MC_VERSION: 1.21.1
+  RELEASE_NAME: Bonfires
+  MODRINTH_TOKEN: ${{ secrets.PUBLISH_MODRINTH_TOKEN }}
+  CURSEFORGE_TOKEN: ${{ secrets.PUBLISH_CURSEFORGE_TOKEN }}
+  LOADER: neoforge
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Environment Variables
+        run: env
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "temurin"
+          java-version: "${{env.JAVA_VERSION}}"
+
+      - name: Make Gradle Wrapper Executable
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew clean build --stacktrace
+
+      - name: Get version number
+        uses: BrycensRanch/read-properties-action@v1.0.4
+        id: mod_version
+        with:
+          file: gradle.properties
+          property: mod_version
+
+      - name: Publish (CurseForge/Modrinth)
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: 255347
+          curseforge-token: "${{env.CURSEFORGE_TOKEN}}"
+
+          modrinth-id: amg8VIPH
+          modrinth-token: "${{env.MODRINTH_TOKEN}}"
+
+          name: "${{env.RELEASE_NAME}} v${{steps.mod_version.outputs.mod_version}}-${{env.LOADER}}"
+          version: "${{steps.mod_version.outputs.mod_version}}-${{env.MC_VERSION}}-${{env.LOADER}}"
+          version-type: release
+          changelog-file: CHANGELOG.md
+          loaders: "${{env.LOADER}}"
+          game-versions: "${{env.MC_VERSION}}"
+
+          java: "${{env.JAVA_VERSION}}"
