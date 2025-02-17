@@ -60,5 +60,9 @@ jobs:
           changelog-file: CHANGELOG.md
           loaders: "${{env.LOADER}}"
           game-versions: "${{env.MC_VERSION}}"
+          dependencies: |
+            fabric-api(required)
+            owo-lib(required)
+            cardinal-components-api(required)
 
           java: "${{env.JAVA_VERSION}}"
