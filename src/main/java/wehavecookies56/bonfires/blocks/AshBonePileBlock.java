@@ -110,7 +110,7 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
         return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(LIT, false).with(EXPLODED, false);
     }
 
-    public Optional<Vec3d> getRespawnPosition(BlockPos pos, World world) {
+    public Optional<ServerPlayerEntity.RespawnPos> getRespawnPosition(BlockPos pos, World world) {
         return Optional.of(BonfireTeleporter.attemptToPlaceNextToBonfire(pos, world));
     }
 

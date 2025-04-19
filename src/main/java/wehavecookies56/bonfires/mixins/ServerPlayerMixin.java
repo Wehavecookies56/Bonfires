@@ -4,7 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +17,7 @@ import java.util.Optional;
 public class ServerPlayerMixin {
 
     @Inject(at=@At(value = "RETURN", ordinal = 2), method = "findRespawnPosition", cancellable = true)
-    private static void respawn(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive, CallbackInfoReturnable<Optional<Vec3d>> cir) {
+    private static void respawn(ServerWorld world, BlockPos pos, float spawnAngle, boolean spawnForced, boolean alive, CallbackInfoReturnable<Optional<ServerPlayerEntity.RespawnPos>> cir) {
         Block block = world.getBlockState(pos).getBlock();
         if (block == BlockSetup.ash_bone_pile) {
             AshBonePileBlock bonfire = (AshBonePileBlock) block;

@@ -52,5 +52,6 @@
 			"bonfires:estus",
 			"bonfires:discovery"
 		]
-	}
+	},
+	"accessWidener": "bonfires.accesswidener"
 }

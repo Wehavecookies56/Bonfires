@@ -28,11 +28,11 @@ public class CreativeTabSetup {
                         pOutput.add(stack);
                     }
                     ItemStack stack = new ItemStack(BlockSetup.ash_bone_pile);
-                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData(null, false));
+                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData("", false));
                     stack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(LocalStrings.TOOLTIP_UNLIT));
                     pOutput.add(stack);
                     stack = stack.copy();
-                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData(null, true));
+                    stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData("", true));
                     int[] random = new Random().ints(2,0, 9999).toArray();
                     stack.set(ComponentSetup.BONFIRE_DATA, new AshBonePileBlock.BonfireData("Bonfire" + random[0], true));
                     pOutput.add(stack);
