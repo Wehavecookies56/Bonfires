@@ -3,18 +3,10 @@
   "category": "equipment",
   "group": "bonfires",
   "ingredients": [
-    {
-      "item": "bonfires:estus_shard"
-    },
-    {
-      "item": "bonfires:estus_shard"
-    },
-    {
-      "item": "bonfires:estus_shard"
-    },
-    {
-      "item": "minecraft:glass_bottle"
-    }
+    "bonfires:estus_shard",
+    "bonfires:estus_shard",
+    "bonfires:estus_shard",
+    "minecraft:glass_bottle"
   ],
   "result": {
     "count": 1,

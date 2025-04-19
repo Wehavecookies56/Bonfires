@@ -3,9 +3,7 @@
   "category": "misc",
   "group": "bonfires",
   "ingredients": [
-    {
-      "item": "bonfires:ash_block"
-    }
+    "bonfires:ash_block"
   ],
   "result": {
     "count": 9,

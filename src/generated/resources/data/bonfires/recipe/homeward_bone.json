@@ -3,15 +3,9 @@
   "category": "equipment",
   "group": "bonfires",
   "ingredients": [
-    {
-      "tag": "c:rods/blaze"
-    },
-    {
-      "tag": "c:ender_pearls"
-    },
-    {
-      "tag": "c:bones"
-    }
+    "#c:rods/blaze",
+    "#c:ender_pearls",
+    "#c:bones"
   ],
   "result": {
     "count": 1,

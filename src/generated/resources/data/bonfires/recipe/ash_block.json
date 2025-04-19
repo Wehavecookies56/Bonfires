@@ -3,33 +3,15 @@
   "category": "building",
   "group": "bonfires",
   "ingredients": [
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    },
-    {
-      "item": "bonfires:ash_pile"
-    }
+    "bonfires:ash_pile",
+    "bonfires:ash_pile",
+    "bonfires:ash_pile",
+    "bonfires:ash_pile",
+    "bonfires:ash_pile",
+    "bonfires:ash_pile",
+    "bonfires:ash_pile",
+    "bonfires:ash_pile",
+    "bonfires:ash_pile"
   ],
   "result": {
     "count": 1,

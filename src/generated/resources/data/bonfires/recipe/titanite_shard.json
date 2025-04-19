@@ -3,9 +3,7 @@
   "category": "misc",
   "cookingtime": 1000,
   "experience": 0.25,
-  "ingredient": {
-    "tag": "c:obsidians"
-  },
+  "ingredient": "#c:obsidians",
   "result": {
     "count": 1,
     "id": "bonfires:titanite_shard"
