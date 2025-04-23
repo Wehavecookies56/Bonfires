@@ -43,6 +43,10 @@ fabricApi {
 	configureDataGeneration()
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/bonfires.accesswidener")
+}
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"

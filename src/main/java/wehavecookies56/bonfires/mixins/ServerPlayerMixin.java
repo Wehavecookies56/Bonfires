@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ServerPlayerMixin {
 
     @Inject(at=@At(value = "RETURN", ordinal = 2), method = "findRespawnPosition", cancellable = true)
-    private static void respawn(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive, CallbackInfoReturnable<Optional<Vec3d>> cir) {
+    private static void respawn(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive, CallbackInfoReturnable<Optional<ServerPlayerEntity.RespawnPos>> cir) {
         Block block = world.getBlockState(pos).getBlock();
         if (block == BlockSetup.ash_bone_pile) {
             AshBonePileBlock bonfire = (AshBonePileBlock) block;

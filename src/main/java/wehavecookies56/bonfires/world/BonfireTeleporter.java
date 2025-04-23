@@ -14,24 +14,24 @@ import net.minecraft.world.World;
 
 public class BonfireTeleporter {
 
-    public static Vec3d attemptToPlaceNextToBonfire(BlockPos bonfirePos, World world) {
+    public static ServerPlayerEntity.RespawnPos attemptToPlaceNextToBonfire(BlockPos bonfirePos, World world) {
         Vec3d centre = new Vec3d((bonfirePos.getX()) + 0.5, (bonfirePos.getY()) + 0.5, (bonfirePos.getZ()) + 0.5);
         for (int i = 0; i <= 3; i++) {
             Direction dir = Direction.fromHorizontal(i);
             BlockPos newPos = bonfirePos.offset(dir);
             BlockState state = world.getBlockState(new BlockPos(newPos));
             if (state.getBlock().canMobSpawnInside(state) && !world.getBlockState(newPos.down()).isReplaceable()) {
-                return new Vec3d(newPos.getX() + 0.5D, newPos.getY() + 0.5, newPos.getZ() + 0.5);
+                return ServerPlayerEntity.RespawnPos.fromCurrentPos(new Vec3d(newPos.getX() + 0.5D, newPos.getY() + 0.5, newPos.getZ() + 0.5), bonfirePos);
             }
         }
-        return centre;
+        return ServerPlayerEntity.RespawnPos.fromCurrentPos(centre, bonfirePos);
     }
 
     public static void placeEntity(Entity entity, BlockPos pos, ServerWorld destWorld) {
         if (entity instanceof ServerPlayerEntity playerMP) {
             playerMP.setVelocity(0, 0, 0);
-            Vec3d destination = attemptToPlaceNextToBonfire(pos, destWorld);
-            playerMP.teleport(destWorld, destination.x, destination.y, destination.z, playerMP.getYaw(), playerMP.getPitch());
+            ServerPlayerEntity.RespawnPos destination = attemptToPlaceNextToBonfire(pos, destWorld);
+            playerMP.teleport(destWorld, destination.pos().x, destination.pos().y, destination.pos().z, playerMP.getYaw(), playerMP.getPitch());
         }
     }
 
