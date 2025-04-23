@@ -1,1 +1,1 @@
-* Fixed unable to respawn
+* Fix crashes when teleporting and respawning
