@@ -1,1 +1,1 @@
-* Fix recipes not working
+* Fix incompatibility with Create (and other mods) causing swords to deal no damage

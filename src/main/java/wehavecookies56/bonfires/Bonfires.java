@@ -25,7 +25,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -103,18 +102,6 @@ public class Bonfires {
                     DiscoveryHandler.IDiscoveryHandler discoveryHandler = DiscoveryHandler.getHandler(player);
                     List<Bonfire> bonfires = registry.getBonfiresByOwner(player.getUUID());
                     bonfires.forEach(bonfire -> discoveryHandler.setDiscovered(bonfire.getId(), bonfire.getTimeCreated()));
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void livingHurt(LivingDamageEvent.Pre event) {
-        if (event.getSource().getDirectEntity() instanceof Player player) {
-            if (ReinforceHandler.canReinforce(player.getMainHandItem())) {
-                ReinforceHandler.ReinforceLevel rlevel = ReinforceHandler.getReinforceLevel(player.getMainHandItem());
-                if (rlevel != null) {
-                    event.setNewDamage((float) ((event.getOriginalDamage() + (BonfiresConfig.Server.reinforceDamagePerLevel * rlevel.level())) * player.getAttackStrengthScale(0)));
                 }
             }
         }
