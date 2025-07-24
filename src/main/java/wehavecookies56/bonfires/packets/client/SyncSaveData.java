@@ -18,9 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class SyncSaveData extends Packet<SyncSaveData> {
 
     public Map<UUID, Bonfire> bonfires;

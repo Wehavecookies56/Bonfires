@@ -20,9 +20,6 @@ import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class BonfireRenderer implements BlockEntityRenderer<BonfireTileEntity> {
 
     BlockEntityRendererProvider.Context context;

@@ -11,9 +11,6 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class SyncBonfire extends Packet<SyncBonfire> {
 
     public boolean bonfire;

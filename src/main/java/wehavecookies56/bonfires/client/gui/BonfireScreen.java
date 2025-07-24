@@ -45,9 +45,6 @@ import java.util.List;
 import java.util.*;
 import javax.annotation.Nullable;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class BonfireScreen extends Screen {
 
     private final ResourceLocation MENU = new ResourceLocation(Bonfires.modid, "textures/gui/bonfire_menu.png");

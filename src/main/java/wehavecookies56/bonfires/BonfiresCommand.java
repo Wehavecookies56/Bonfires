@@ -30,9 +30,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by Toby on 17/12/2016.
- */
 public class BonfiresCommand {
 
     public static SuggestionProvider<CommandSourceStack> SUGGEST_DIMENSIONS = (context, builder) -> {

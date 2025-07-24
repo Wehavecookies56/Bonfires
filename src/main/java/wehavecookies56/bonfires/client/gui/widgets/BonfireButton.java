@@ -10,9 +10,6 @@ import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
 import java.awt.*;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class BonfireButton extends ExtendedButton {
 
     private BonfireScreen parent;

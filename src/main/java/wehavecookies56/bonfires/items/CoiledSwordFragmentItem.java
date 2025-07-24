@@ -19,9 +19,6 @@ import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 import java.util.UUID;
 
-/**
- * Created by Toby on 16/11/2016.
- */
 public class CoiledSwordFragmentItem extends Item {
 
     public CoiledSwordFragmentItem() {

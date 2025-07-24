@@ -3,9 +3,6 @@ package wehavecookies56.bonfires;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
-/**
- * Created by Toby on 15/11/2016.
- */
 public class LocalStrings {
 
     public static final String

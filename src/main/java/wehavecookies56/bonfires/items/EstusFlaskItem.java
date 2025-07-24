@@ -13,12 +13,9 @@ import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.LocalStrings;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class EstusFlaskItem extends Item {
 
     public EstusFlaskItem() {

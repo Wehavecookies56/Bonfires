@@ -16,13 +16,10 @@ import wehavecookies56.bonfires.bonfire.Bonfire;
 import wehavecookies56.bonfires.data.BonfireHandler;
 import wehavecookies56.bonfires.setup.EntitySetup;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class BonfireTileEntity extends BlockEntity {
 
     private boolean bonfire = false;

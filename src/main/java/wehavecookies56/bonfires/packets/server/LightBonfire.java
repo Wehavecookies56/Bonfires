@@ -19,9 +19,6 @@ import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 
 import java.util.UUID;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class LightBonfire extends Packet<LightBonfire> {
 
     private String name;
@@ -73,7 +70,9 @@ public class LightBonfire extends Packet<LightBonfire> {
                 te.createBonfire(name, id, player.getUUID(), isPublic);
                 te.setID(id);
                 player.level().setBlock(pos, player.level().getBlockState(pos).setValue(AshBonePileBlock.LIT, true), 2);
-                player.setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
+                if (!BonfiresConfig.Common.disableBonfireRespawn) {
+                    player.setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
+                }
                 EstusHandler.getHandler(player).setLastRested(te.getID());
                 DiscoveryHandler.getHandler(player).discover(id);
                 BonfireLitTrigger.TRIGGER_BONFIRE_LIT.trigger(player);

@@ -15,9 +15,6 @@ import net.minecraftforge.common.util.ITeleporter;
 
 import java.util.function.Function;
 
-/**
- * Created by Toby on 10/11/2016.
- */
 public class BonfireTeleporter implements ITeleporter {
 
     BlockPos pos;

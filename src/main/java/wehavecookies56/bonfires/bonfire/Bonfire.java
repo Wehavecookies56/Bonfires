@@ -11,9 +11,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * Created by Toby on 07/11/2016.
- */
 public class Bonfire implements INBTSerializable<CompoundTag> {
 
     private String name;

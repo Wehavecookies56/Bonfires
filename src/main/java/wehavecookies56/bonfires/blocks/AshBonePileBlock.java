@@ -7,8 +7,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -66,9 +68,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class AshBonePileBlock extends Block implements EntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -178,7 +177,9 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                             }
                             PacketHandler.sendTo(new OpenBonfireGUI(te, BonfireRegistry.getOwnerNames(world.getServer()), registry, BonfiresConfig.Common.enableReinforcing), (ServerPlayer) player);
                             player.heal(player.getMaxHealth());
-                            ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
+                            if (!BonfiresConfig.Common.disableBonfireRespawn) {
+                                ((ServerPlayer) player).setRespawnPosition(te.getLevel().dimension(), te.getBlockPos(), player.getYRot(), false, true);
+                            }
                             EstusHandler.getHandler(player).setLastRested(te.getID());
                             PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), (ServerPlayer) player);
                             PacketHandler.sendTo(new SyncDiscoveryData(DiscoveryHandler.getHandler(player)), (ServerPlayer) player);
@@ -335,8 +336,14 @@ public class AshBonePileBlock extends Block implements EntityBlock {
                 double d4 = random.nextDouble() * 0.6D - 0.3D;
                 double d5 = random.nextDouble() * 0.6D - 0.3D;
 
-                if (random.nextDouble() < 0.1D) {
-                    world.playLocalSound((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS, 0.5F, 1.0F, false);
+                ResourceLocation sound = null;
+                if (!BonfiresConfig.Client.bonfireAmbientSound.isEmpty()) {
+                    sound = ResourceLocation.tryParse(BonfiresConfig.Client.bonfireAmbientSound);
+                }
+                if (sound != null) {
+                    if (random.nextDouble() < 0.1D) {
+                        world.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvent.createVariableRangeEvent(sound), SoundSource.BLOCKS, 0.5F, 1.0F, false);
+                    }
                 }
                 //worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
                 world.addParticle(ParticleTypes.FLAME, d0 + d5, d1, d2 + d4, 0.0D, 0.05D, 0.0D);

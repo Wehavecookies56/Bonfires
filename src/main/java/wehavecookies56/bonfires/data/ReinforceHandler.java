@@ -1,8 +1,6 @@
 package wehavecookies56.bonfires.data;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -15,10 +13,6 @@ import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.items.EstusFlaskItem;
 import wehavecookies56.bonfires.setup.ItemSetup;
-
-/**
- * Created by Toby on 05/11/2016.
- */
 
 public class ReinforceHandler {
 

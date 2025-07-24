@@ -21,9 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by Toby on 17/12/2016.
- */
 class TravelCommand {
 
     public static SuggestionProvider<CommandSourceStack> SUGGEST_BONFIRES = (p_198296_0_, p_198296_1_) -> {

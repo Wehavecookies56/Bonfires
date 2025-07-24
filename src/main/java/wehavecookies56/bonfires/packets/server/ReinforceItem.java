@@ -7,9 +7,6 @@ import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.data.ReinforceHandler;
 import wehavecookies56.bonfires.packets.Packet;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class ReinforceItem extends Packet<ReinforceItem> {
 
     private int slot;

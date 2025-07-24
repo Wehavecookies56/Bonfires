@@ -14,9 +14,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Toby on 07/11/2016.
- */
 public class BonfireRegistry {
 
     private Map<UUID, Bonfire> bonfires;

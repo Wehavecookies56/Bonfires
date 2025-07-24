@@ -27,9 +27,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Created by Toby on 07/11/2016.
- */
 public class ClientPacketHandler {
 
     public static DistExecutor.SafeRunnable openBonfire(OpenBonfireGUI packet) {

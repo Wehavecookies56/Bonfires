@@ -9,9 +9,6 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 
-/**
- * Created by Toby on 05/11/2016.
- */
 public class CoiledSwordItem extends SwordItem {
 
     public CoiledSwordItem() {

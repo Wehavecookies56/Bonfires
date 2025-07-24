@@ -16,9 +16,6 @@ import wehavecookies56.bonfires.client.gui.BonfireScreen;
 
 import java.util.List;
 
-/**
- * Created by Toby on 14/11/2016.
- */
 public class DimensionTabButton extends Button {
 
     private BonfireScreen parent;

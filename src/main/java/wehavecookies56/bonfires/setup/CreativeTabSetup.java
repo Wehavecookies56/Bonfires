@@ -12,10 +12,6 @@ import wehavecookies56.bonfires.LocalStrings;
 
 import java.util.Random;
 
-/**
- * Created by Toby on 05/11/2016.
- */
-
 public class CreativeTabSetup {
 
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Bonfires.modid);

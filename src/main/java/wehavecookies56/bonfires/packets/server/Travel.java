@@ -8,13 +8,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.bonfire.Bonfire;
+import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.Packet;
+import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
-/**
- * Created by Toby on 06/11/2016.
- */
 public class Travel extends Packet<Travel> {
 
     private int x;
@@ -53,7 +53,11 @@ public class Travel extends Packet<Travel> {
     public void handle(NetworkEvent.Context context) {
         ServerPlayer player = context.getSender();
         BlockPos pos = new BlockPos(x, y, z);
+        BonfireTileEntity te = (BonfireTileEntity) player.level().getBlockEntity(pos);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
-        player.setRespawnPosition(dim, pos, player.getYRot(), false, true);
+        if (!BonfiresConfig.Common.disableBonfireRespawn) {
+            player.setRespawnPosition(dim, pos, player.getYRot(), false, true);
+        }
+        EstusHandler.getHandler(player).setLastRested(te.getID());
     }
 }

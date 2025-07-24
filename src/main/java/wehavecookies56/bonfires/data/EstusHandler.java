@@ -14,13 +14,9 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import wehavecookies56.bonfires.Bonfires;
 
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.UUID;
-
-/**
- * Created by Toby on 05/11/2016.
- */
 
 public class EstusHandler {
 
