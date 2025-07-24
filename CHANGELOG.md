@@ -1,1 +1,1 @@
-* Fixed missing data files
+* Fixed conflict with Cobblemon
