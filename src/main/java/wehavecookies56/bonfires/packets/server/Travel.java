@@ -11,8 +11,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import wehavecookies56.bonfires.Bonfires;
+import wehavecookies56.bonfires.BonfiresConfig;
 import wehavecookies56.bonfires.bonfire.Bonfire;
+import wehavecookies56.bonfires.data.EstusHandler;
 import wehavecookies56.bonfires.packets.Packet;
+import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 public record Travel(BlockPos pos, ResourceKey<Level> dim) implements Packet {
@@ -34,8 +37,12 @@ public record Travel(BlockPos pos, ResourceKey<Level> dim) implements Packet {
     @Override
     public void handle(IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
+        BonfireTileEntity te = (BonfireTileEntity) player.level().getBlockEntity(pos);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
-        player.setRespawnPosition(dim, pos, player.getYRot(), false, true);
+        if (!BonfiresConfig.Common.disableBonfireRespawn) {
+            player.setRespawnPosition(dim, pos, player.getYRot(), false, true);
+        }
+        EstusHandler.getHandler(player).setLastRested(te.getID());
     }
 
     @Override

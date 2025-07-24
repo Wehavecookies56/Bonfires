@@ -81,11 +81,13 @@ public class Bonfires {
 
     @SubscribeEvent
     public void entityDeath(LivingDropsEvent event) {
-        if (event.getSource().is(DamageTypes.IN_FIRE) || event.getEntity().isOnFire() || (event.getSource().getEntity() instanceof Player && ((Player) event.getSource().getEntity()).getMainHandItem().getItem() == ItemSetup.coiled_sword.get())) {
-            Random r = new Random();
-            double percent = r.nextDouble() * 100;
-            if (percent > 65) {
-                event.getDrops().add(new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), new ItemStack(ItemSetup.ash_pile.get())));
+        if (!BonfiresConfig.Common.disableAshDrops) {
+            if (event.getSource().is(DamageTypes.IN_FIRE) || event.getEntity().isOnFire() || (event.getSource().getEntity() instanceof Player && ((Player) event.getSource().getEntity()).getMainHandItem().getItem() == ItemSetup.coiled_sword.get())) {
+                Random r = new Random();
+                double percent = r.nextDouble() * 100;
+                if (percent > 65) {
+                    event.getDrops().add(new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), new ItemStack(ItemSetup.ash_pile.get())));
+                }
             }
         }
     }

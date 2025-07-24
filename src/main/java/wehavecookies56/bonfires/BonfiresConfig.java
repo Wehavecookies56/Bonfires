@@ -1,5 +1,6 @@
 package wehavecookies56.bonfires;
 
+import net.minecraft.sounds.SoundEvents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -21,16 +22,22 @@ public class BonfiresConfig {
         public final ModConfigSpec.ConfigValue<List<? extends String>> tabIconsConfig;
 
         public static boolean renderScreenshotsInGui = true;
-        public final ModConfigSpec.ConfigValue<Boolean> renderScreenshotsInGuiConfig;
+        public final ModConfigSpec.BooleanValue renderScreenshotsInGuiConfig;
 
         public static boolean enableAutomaticScreenshotOnCreation = true;
-        public final ModConfigSpec.ConfigValue<Boolean> enableAutomaticScreenshotOnCreationConfig;
+        public final ModConfigSpec.BooleanValue enableAutomaticScreenshotOnCreationConfig;
 
         public static boolean deleteScreenshotsOnDestroyed = true;
-        public final ModConfigSpec.ConfigValue<Boolean> deleteScreenshotsOnDestroyedConfig;
+        public final ModConfigSpec.BooleanValue deleteScreenshotsOnDestroyedConfig;
 
         public static List<String> hiddenDimensions = new ArrayList<>();
         public final ModConfigSpec.ConfigValue<List<? extends String>> hiddenDimensionsConfig;
+
+        public static boolean disableBonfireParticles = false;
+        public final ModConfigSpec.BooleanValue disableBonfireParticlesConfig;
+
+        public static String bonfireAmbientSound = SoundEvents.CAMPFIRE_CRACKLE.getLocation().toString();
+        public final ModConfigSpec.ConfigValue<String> bonfireAmbientSoundConfig;
 
         public Client(ModConfigSpec.Builder builder) {
             this.renderTextAboveBonfireConfig = builder.comment("Whether to Render the name of the Bonfire above the Bonfire, default:true").define("Render Text Above Bonfire", renderTextAboveBonfire);
@@ -39,6 +46,8 @@ public class BonfiresConfig {
             this.enableAutomaticScreenshotOnCreationConfig = builder.comment("Enables creating a screenshot of a Bonfire when it is created, default:true").define("Enable Automatic Screenshot on Creation", enableAutomaticScreenshotOnCreation);
             this.deleteScreenshotsOnDestroyedConfig = builder.comment("Whether to delete Bonfire screenshots when the Bonfire is destroyed, default:true").define("Delete Screenshots on Destroyed", deleteScreenshotsOnDestroyed);
             this.hiddenDimensionsConfig = builder.comment("List of dimensions to hide from the Bonfire GUI useful if you can't place a bonfire in the dimension, mod:dimensionname").defineList("Hidden Dimensions in GUI", hiddenDimensions, input -> ((String)input).contains(":"));
+            this.disableBonfireParticlesConfig = builder.comment("Disable particles from lit Bonfires, default:false").define("Disable Bonfire Particles", disableBonfireParticles);
+            this.bonfireAmbientSoundConfig = builder.comment("Sound to use when a Bonfire is lit, set to empty string to disable, default:\"minecraft:block.campfire.crackle\"").define("Bonfire Ambient Sound", bonfireAmbientSound);
         }
 
         public boolean validateIcon(String input) {
@@ -66,7 +75,7 @@ public class BonfiresConfig {
         public final ModConfigSpec.ConfigValue<List<? extends String>> reinforceBlacklistConfig;
 
         public static double bonfireMonsterCheckRadius = 8.0D;
-        public final ModConfigSpec.ConfigValue<Double> bonfireMonsterCheckRadiusConfig;
+        public final ModConfigSpec.DoubleValue bonfireMonsterCheckRadiusConfig;
 
         public static boolean repairEquipment = false;
         public final ModConfigSpec.BooleanValue repairEquipmentConfig;
@@ -74,13 +83,21 @@ public class BonfiresConfig {
         public static boolean bonfireDiscoveryMode = true;
         public final ModConfigSpec.BooleanValue bonfireDiscoveryModeConfig;
 
+        public static boolean disableAshDrops = false;
+        public final ModConfigSpec.BooleanValue disableAshDropsConfig;
+
+        public static boolean disableBonfireRespawn = false;
+        public final ModConfigSpec.BooleanValue disableBonfireRespawnConfig;
+
         public Common(ModConfigSpec.Builder builder) {
             this.enableUBSBonfireConfig = builder.comment("Enable undead bone shard drops from blowing up a bonfire, default:true").define("Enable Undead Bone Shard drops", enableUBSBonfire);
             this.enableReinforcingConfig = builder.comment("Enable weapon/tool reinforcing, default:true").define("Enable reinforcing", enableReinforcing);
             this.reinforceBlacklistConfig = builder.worldRestart().comment("Disable specific items from being able to reinforce them").defineList("Reinforce item blacklist", reinforceBlacklist, input -> validateBlacklist((String) input));
-            this.bonfireMonsterCheckRadiusConfig = builder.comment("The radius to check for Monsters around the Bonfire, set to 0 to disable, default:8.0").define("Bonfire Monster Check Radius", bonfireMonsterCheckRadius);
+            this.bonfireMonsterCheckRadiusConfig = builder.comment("The radius to check for Monsters around the Bonfire, set to 0 to disable, default:8.0").defineInRange("Bonfire Monster Check Radius", bonfireMonsterCheckRadius, 0, Double.MAX_VALUE);
             this.repairEquipmentConfig = builder.comment("Repair tools and armour when using a Bonfire, default:false").define("Repair equipment", repairEquipment);
             this.bonfireDiscoveryModeConfig = builder.comment("Bonfire menu will only display Bonfires that the player has discovered, default:true").define("Enable Bonfire Discovery Mode", bonfireDiscoveryMode);
+            this.disableAshDropsConfig = builder.comment("Disable Ash drops from mobs killed with fire, default:false").define("Disable Ash Drops", disableAshDrops);
+            this.disableBonfireRespawnConfig = builder.comment("Disable Bonfires setting your respawn point when using them or travelling to them, default:false").define("Disable Bonfire Respawn", disableBonfireRespawn);
         }
 
         public boolean validateBlacklist(String input) {
@@ -134,6 +151,8 @@ public class BonfiresConfig {
             Client.enableAutomaticScreenshotOnCreation = CLIENT.enableAutomaticScreenshotOnCreationConfig.get();
             Client.deleteScreenshotsOnDestroyed = CLIENT.deleteScreenshotsOnDestroyedConfig.get();
             Client.hiddenDimensions = (List<String>) CLIENT.hiddenDimensionsConfig.get();
+            Client.disableBonfireParticles = CLIENT.disableBonfireParticlesConfig.get();
+            Client.bonfireAmbientSound = CLIENT.bonfireAmbientSoundConfig.get();
         } else if (event.getConfig().getSpec() == COMMON_SPEC) {
             Common.enableReinforcing = COMMON.enableReinforcingConfig.get();
             Common.enableUBSBonfire = COMMON.enableUBSBonfireConfig.get();
@@ -141,6 +160,8 @@ public class BonfiresConfig {
             Common.bonfireMonsterCheckRadius = COMMON.bonfireMonsterCheckRadiusConfig.get();
             Common.repairEquipment = COMMON.repairEquipmentConfig.get();
             Common.bonfireDiscoveryMode = COMMON.bonfireDiscoveryModeConfig.get();
+            Common.disableAshDrops = COMMON.disableAshDropsConfig.get();
+            Common.disableBonfireRespawn = COMMON.disableBonfireRespawnConfig.get();
         } else if (event.getConfig().getSpec() == SERVER_SPEC) {
             if (event.getConfig().getLoadedConfig() != null) {
                 Server.estusFlaskBaseHeal = SERVER.estusFlaskBaseHealConfig.get();
