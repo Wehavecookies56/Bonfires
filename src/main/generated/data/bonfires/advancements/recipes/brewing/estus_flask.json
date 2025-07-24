@@ -1,11 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_obsidian": {
+    "has_estus_shard": {
       "conditions": {
         "items": [
           {
-            "item": "minecraft:obsidian"
+            "items": [
+              "bonfires:estus_shard"
+            ]
           }
         ]
       },
@@ -13,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "bonfires:titanite_shard"
+        "recipe": "bonfires:estus_flask"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_obsidian",
+      "has_estus_shard",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "bonfires:titanite_shard"
+      "bonfires:estus_flask"
     ]
   },
   "sends_telemetry_event": false

@@ -16,6 +16,9 @@
 	"icon": "bonfires.png",
 	"environment": "*",
 	"entrypoints": {
+		"fabric-datagen": [
+			"wehavecookies56.bonfires.datagen.BonfiresDataGen"
+		],
 		"main": [
 			"wehavecookies56.bonfires.Bonfires"
 		],

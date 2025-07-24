@@ -1,11 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_ender_pearl": {
+    "has_obsidian": {
       "conditions": {
         "items": [
           {
-            "item": "minecraft:ender_pearl"
+            "items": [
+              "minecraft:obsidian"
+            ]
           }
         ]
       },
@@ -13,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "bonfires:homeward_bone"
+        "recipe": "minecraft:titanite_shard_from_smelting_obsidian"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_ender_pearl",
+      "has_obsidian",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "bonfires:homeward_bone"
+      "minecraft:titanite_shard_from_smelting_obsidian"
     ]
   },
   "sends_telemetry_event": false

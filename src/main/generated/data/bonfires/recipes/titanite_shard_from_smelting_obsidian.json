@@ -3,6 +3,7 @@
   "category": "misc",
   "cookingtime": 1000,
   "experience": 0.25,
+  "group": "bonfires",
   "ingredient": {
     "item": "minecraft:obsidian"
   },

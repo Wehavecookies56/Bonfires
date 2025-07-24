@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "group": "bonfires",
+  "category": "misc",
   "ingredients": [
     {
       "item": "minecraft:glass_bottle"
