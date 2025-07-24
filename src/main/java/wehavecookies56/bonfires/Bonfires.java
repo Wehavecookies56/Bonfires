@@ -67,11 +67,13 @@ public class Bonfires implements ModInitializer {
             BonfireHandler.getServerHandler(server).loadOldBonfireData(server);
         });
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-            if (damageSource.isOf(DamageTypes.IN_FIRE) || entity.isOnFire() || damageSource.getSource() instanceof PlayerEntity && ((PlayerEntity) damageSource.getSource()).getMainHandStack().getItem() == ItemSetup.coiled_sword) {
-                Random r = new Random();
-                double percent = r.nextDouble() * 100;
-                if (percent > 65) {
-                    entity.dropStack(new ItemStack(ItemSetup.ash_pile));
+            if (!Bonfires.CONFIG.common.disableAshDrops()) {
+                if (damageSource.isOf(DamageTypes.IN_FIRE) || entity.isOnFire() || damageSource.getSource() instanceof PlayerEntity && ((PlayerEntity) damageSource.getSource()).getMainHandStack().getItem() == ItemSetup.coiled_sword) {
+                    Random r = new Random();
+                    double percent = r.nextDouble() * 100;
+                    if (percent > 65) {
+                        entity.dropStack(new ItemStack(ItemSetup.ash_pile));
+                    }
                 }
             }
         });

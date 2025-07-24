@@ -17,6 +17,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -26,6 +27,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
@@ -161,7 +163,9 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                             }
                             PacketHandler.sendTo(new OpenBonfireGUI(te, BonfireRegistry.getOwnerNames(world.getServer()), registry, Bonfires.CONFIG.common.enableReinforcing(), world.getServer()), (ServerPlayerEntity) player);
                             player.heal(player.getMaxHealth());
-                            ((ServerPlayerEntity) player).setSpawnPoint(te.getWorld().getRegistryKey(), te.getPos(), player.getYaw(), false, true);
+                            if (!Bonfires.CONFIG.common.disableBonfireRespawn()) {
+                                ((ServerPlayerEntity) player).setSpawnPoint(te.getWorld().getRegistryKey(), te.getPos(), player.getYaw(), false, true);
+                            }
                             EstusHandler.getHandler(player).setLastRested(te.getID());
                             //PacketHandler.sendTo(new SyncEstusData(EstusHandler.getHandler(player)), (ServerPlayerEntity) player);
                         } else {
@@ -315,12 +319,21 @@ public class AshBonePileBlock extends Block implements BlockEntityProvider {
                 double d4 = random.nextDouble() * 0.6D - 0.3D;
                 double d5 = random.nextDouble() * 0.6D - 0.3D;
 
-                if (random.nextDouble() < 0.1D) {
-                    world.playSound((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, SoundEvents.BLOCK_CAMPFIRE_CRACKLE, SoundCategory.BLOCKS, 0.5F, 1.0F, false);
+                Identifier sound = null;
+                if (!Bonfires.CONFIG.client.bonfireAmbientSound().isEmpty()) {
+                    sound = Identifier.tryParse(Bonfires.CONFIG.client.bonfireAmbientSound());
+                }
+
+                if (sound != null) {
+                    if (random.nextDouble() < 0.1D) {
+                        world.playSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvent.of(sound), SoundCategory.BLOCKS, 0.5F, 1.0F, false);
+                    }
                 }
                 //worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-                world.addParticle(ParticleTypes.FLAME, d0 + d5, d1, d2 + d4, 0.0D, 0.05D, 0.0D);
-                world.addParticle(ParticleTypes.FLAME, d0 + d5, d1, d2 + d4, 0.0D, 0.0D, 0.0D);
+                if (!Bonfires.CONFIG.client.disableBonfireParticles()) {
+                    world.addParticle(ParticleTypes.FLAME, d0 + d5, d1, d2 + d4, 0.0D, 0.05D, 0.0D);
+                    world.addParticle(ParticleTypes.FLAME, d0 + d5, d1, d2 + d4, 0.0D, 0.0D, 0.0D);
+                }
             }
         }
         super.randomDisplayTick(state, world, pos, random);
