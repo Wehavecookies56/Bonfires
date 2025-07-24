@@ -50,7 +50,9 @@ public record LightBonfire(String name, BlockPos bonfireTE, boolean isPublic, bo
                 te.createBonfire(name, id, player.getUuid(), isPublic);
                 te.setID(id);
                 player.getWorld().setBlockState(bonfireTE, player.getWorld().getBlockState(bonfireTE).with(AshBonePileBlock.LIT, true), 2);
-                player.setSpawnPoint(te.getWorld().getRegistryKey(), te.getPos(), player.getYaw(), false, true);
+                if (!Bonfires.CONFIG.common.disableBonfireRespawn()) {
+                    player.setSpawnPoint(te.getWorld().getRegistryKey(), te.getPos(), player.getYaw(), false, true);
+                }
                 EstusHandler.getHandler(player).setLastRested(te.getID());
                 DiscoveryHandler.getHandler(player).discover(id);
                 BonfireLitTrigger.INSTANCE.trigger(player);

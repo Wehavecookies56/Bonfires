@@ -1,113 +1,114 @@
 package wehavecookies56.bonfires.datagen;
-//TODO port datagen to fabric
-/*
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.Tags;
+
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.minecraft.block.Blocks;
+import net.minecraft.data.server.recipe.*;
+import net.minecraft.item.Items;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Identifier;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.setup.BlockSetup;
 import wehavecookies56.bonfires.setup.ItemSetup;
 
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class Recipes extends RecipeProvider {
+public class Recipes extends FabricRecipeProvider {
 
-    DataGenerator generator;
-
-    public Recipes(DataGenerator generator) {
-        super(generator.getPackOutput());
-        this.generator = generator;
+    public Recipes(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+        super(output, registriesFuture);
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
-
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, BlockSetup.ash_block.get())
-                .requires(ItemSetup.ash_pile.get(), 9)
+    public void generate(RecipeExporter recipeConsumer) {
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, BlockSetup.ash_block)
+                .input(ItemSetup.ash_pile, 9)
                 .group(Bonfires.modid)
-                .unlockedBy("has_ash_pile", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.ash_pile.get()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(ItemSetup.ash_pile), FabricRecipeProvider.conditionsFromItem(ItemSetup.ash_pile))
+                .offerTo(recipeConsumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, BlockSetup.ash_bone_pile.get())
+        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, BlockSetup.ash_bone_pile)
                 .pattern("BBB")
                 .pattern("AAA")
-                .define('A', ItemSetup.ash_pile.get())
-                .define('B', ItemSetup.homeward_bone.get())
+                .input('A', ItemSetup.ash_pile)
+                .input('B', ItemSetup.homeward_bone)
                 .group(Bonfires.modid)
-                .unlockedBy("has_ash_pile", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.ash_pile.get()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(ItemSetup.ash_pile), FabricRecipeProvider.conditionsFromItem(ItemSetup.ash_pile))
+                .offerTo(recipeConsumer);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemSetup.ash_pile.get(), 9)
-                .requires(BlockSetup.ash_block.get())
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ItemSetup.ash_pile, 9)
+                .input(BlockSetup.ash_block)
                 .group(Bonfires.modid)
-                .unlockedBy("has_ash_block", InventoryChangeTrigger.TriggerInstance.hasItems(BlockSetup.ash_block.get()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(BlockSetup.ash_block), FabricRecipeProvider.conditionsFromItem(BlockSetup.ash_block))
+                .offerTo(recipeConsumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ItemSetup.coiled_sword.get())
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ItemSetup.coiled_sword)
                 .pattern("OLO")
                 .pattern("FSF")
                 .pattern("OAO")
-                .define('O', Tags.Items.OBSIDIAN)
-                .define('L', Items.LAVA_BUCKET)
-                .define('F', Items.FIRE_CHARGE)
-                .define('S', Items.DIAMOND_SWORD)
-                .define('A', ItemSetup.ash_pile.get())
+                .input('O', ConventionalItemTags.OBSIDIANS)
+                .input('L', Items.LAVA_BUCKET)
+                .input('F', Items.FIRE_CHARGE)
+                .input('S', Items.DIAMOND_SWORD)
+                .input('A', ItemSetup.ash_pile)
                 .group(Bonfires.modid)
-                .unlockedBy("has_ash_bone_pile", InventoryChangeTrigger.TriggerInstance.hasItems(BlockSetup.ash_bone_pile.get()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(BlockSetup.ash_bone_pile), FabricRecipeProvider.conditionsFromItem(BlockSetup.ash_bone_pile))
+                .offerTo(recipeConsumer);
 
-        SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.FIRE_CHARGE), Ingredient.of(Items.IRON_SWORD), Ingredient.of(ItemSetup.coiled_sword_fragment.get()), RecipeCategory.COMBAT, ItemSetup.coiled_sword.get())
-                .unlocks("has_coiled_sword_fragment", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.coiled_sword_fragment.get()))
-                .save(recipeConsumer, new ResourceLocation(Bonfires.modid, "coiled_sword_smithing"));
+        SmithingTransformRecipeJsonBuilder.create(Ingredient.ofItems(Items.FIRE_CHARGE), Ingredient.ofItems(Items.IRON_SWORD), Ingredient.ofItems(ItemSetup.coiled_sword_fragment), RecipeCategory.COMBAT, ItemSetup.coiled_sword)
+                .criterion(FabricRecipeProvider.hasItem(ItemSetup.coiled_sword_fragment), FabricRecipeProvider.conditionsFromItem(ItemSetup.coiled_sword_fragment))
+                .offerTo(recipeConsumer, Identifier.of(Bonfires.modid, "coiled_sword_smithing"));
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.BREWING, ItemSetup.estus_shard.get())
-                .requires(Tags.Items.GEMS_DIAMOND)
-                .requires(Items.BLAZE_POWDER)
-                .requires(Items.GOLDEN_APPLE)
-                .requires(Tags.Items.NUGGETS_GOLD)
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.BREWING, ItemSetup.estus_flask)
+                .input(Items.GLASS_BOTTLE)
+                .input(ItemSetup.estus_shard, 3)
+                .criterion(FabricRecipeProvider.hasItem(ItemSetup.estus_shard), FabricRecipeProvider.conditionsFromItem(ItemSetup.estus_shard))
+                .offerTo(recipeConsumer);
+
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.BREWING, ItemSetup.estus_shard)
+                .input(ConventionalItemTags.DIAMOND_GEMS)
+                .input(Items.BLAZE_POWDER)
+                .input(Items.GOLDEN_APPLE)
+                .input(Items.GOLD_NUGGET)
                 .group(Bonfires.modid)
-                .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(Tags.Items.GEMS_DIAMOND).build()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(Items.DIAMOND), FabricRecipeProvider.conditionsFromTag(ConventionalItemTags.DIAMOND_GEMS))
+                .offerTo(recipeConsumer);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ItemSetup.homeward_bone.get())
-                .requires(Tags.Items.RODS_BLAZE)
-                .requires(Tags.Items.ENDER_PEARLS)
-                .requires(Tags.Items.BONES)
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, ItemSetup.homeward_bone)
+                .input(ConventionalItemTags.BLAZE_RODS)
+                .input(ConventionalItemTags.ENDER_PEARLS)
+                .input(ConventionalItemTags.BONES)
                 .group(Bonfires.modid)
-                .unlockedBy("has_ender_pearl", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(Tags.Items.ENDER_PEARLS).build()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(Items.ENDER_PEARL), FabricRecipeProvider.conditionsFromTag(ConventionalItemTags.ENDER_PEARLS))
+                .offerTo(recipeConsumer);
 
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(Tags.Items.OBSIDIAN), RecipeCategory.MISC, ItemSetup.titanite_shard.get(), 0.25F, 1000)
-                .unlockedBy("has_obsidian", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(Tags.Items.OBSIDIAN).build()))
-                .save(recipeConsumer);
+        RecipeProvider.offerSmelting(recipeConsumer, List.of(Blocks.OBSIDIAN), RecipeCategory.MISC, ItemSetup.titanite_shard, 0.25F, 1000, Bonfires.modid);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemSetup.large_titanite_shard.get())
-                .requires(ItemSetup.titanite_shard.get(), 5)
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ItemSetup.large_titanite_shard)
+                .input(ItemSetup.titanite_shard, 5)
                 .group(Bonfires.modid)
-                .unlockedBy("has_titanite_shard", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.titanite_shard.get()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(ItemSetup.titanite_shard), FabricRecipeProvider.conditionsFromItem(ItemSetup.titanite_shard))
+                .offerTo(recipeConsumer);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemSetup.titanite_chunk.get())
-                .requires(ItemSetup.large_titanite_shard.get(), 3)
-                .requires(Items.NETHERITE_SCRAP)
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ItemSetup.titanite_chunk)
+                .input(ItemSetup.large_titanite_shard, 3)
+                .input(Items.NETHERITE_SCRAP)
                 .group(Bonfires.modid)
-                .unlockedBy("has_large_titanite_shard", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.large_titanite_shard.get()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(ItemSetup.large_titanite_shard), FabricRecipeProvider.conditionsFromItem(ItemSetup.large_titanite_shard))
+                .offerTo(recipeConsumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemSetup.titanite_slab.get())
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ItemSetup.titanite_slab)
                 .pattern("CCC")
                 .pattern("CEC")
                 .pattern("CCC")
-                .define('C', ItemSetup.titanite_chunk.get())
-                .define('E', Items.END_CRYSTAL)
+                .input('C', ItemSetup.titanite_chunk)
+                .input('E', Items.END_CRYSTAL)
                 .group(Bonfires.modid)
-                .unlockedBy("has_titanite_chunk", InventoryChangeTrigger.TriggerInstance.hasItems(ItemSetup.titanite_chunk.get()))
-                .save(recipeConsumer);
+                .criterion(FabricRecipeProvider.hasItem(ItemSetup.titanite_chunk), FabricRecipeProvider.conditionsFromItem(ItemSetup.titanite_chunk))
+                .offerTo(recipeConsumer);
     }
 }
- */

@@ -11,6 +11,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import wehavecookies56.bonfires.Bonfires;
 import wehavecookies56.bonfires.bonfire.Bonfire;
+import wehavecookies56.bonfires.data.EstusHandler;
+import wehavecookies56.bonfires.tiles.BonfireTileEntity;
 import wehavecookies56.bonfires.world.BonfireTeleporter;
 
 public record Travel(BlockPos pos, RegistryKey<World> dim) implements CustomPayload {
@@ -31,8 +33,12 @@ public record Travel(BlockPos pos, RegistryKey<World> dim) implements CustomPayl
 
     public void handle(ServerPlayerEntity player) {
         player.incrementStat(Bonfires.TIMES_TRAVELLED);
+        BonfireTileEntity te = (BonfireTileEntity) player.getWorld().getBlockEntity(pos);
         BonfireTeleporter.travelToBonfire(player, pos, dim);
-        player.setSpawnPoint(dim, pos, player.getYaw(), false, true);
+        if (!Bonfires.CONFIG.common.disableBonfireRespawn()) {
+            player.setSpawnPoint(dim, pos, player.getYaw(), false, true);
+        }
+        EstusHandler.getHandler(player).setLastRested(te.getID());
     }
 
     @Override

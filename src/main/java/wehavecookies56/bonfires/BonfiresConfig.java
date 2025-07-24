@@ -2,6 +2,7 @@ package wehavecookies56.bonfires;
 
 import io.wispforest.owo.config.Option;
 import io.wispforest.owo.config.annotation.*;
+import net.minecraft.sound.SoundEvents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,8 @@ public class BonfiresConfig {
         public boolean deleteScreenshotsOnDestroyed = true;
         @PredicateConstraint("validateRegistryKey")
         public List<String> hiddenDimensions = new ArrayList<>();
+        public boolean disableBonfireParticles = false;
+        public String bonfireAmbientSound = SoundEvents.BLOCK_CAMPFIRE_CRACKLE.getId().toString();
 
         public static boolean validateRegistryKey(List<String> input) {
             for (String entry : input) {
@@ -71,6 +74,9 @@ public class BonfiresConfig {
         public double reinforceDamagePerLevel = 0.5;
 
         public boolean bonfireDiscoveryMode = true;
+
+        public boolean disableAshDrops = false;
+        public boolean disableBonfireRespawn = false;
 
         public static boolean validateRegistryKey(List<String> input) {
             for (String entry : input) {
