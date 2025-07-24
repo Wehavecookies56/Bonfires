@@ -5,3 +5,4 @@
 * * **Common config**
 * * * disable setting the respawn point when using a Bonfire
 * * * disable Ash dropping from mobs
+* Japanese translation by Mohuzato
