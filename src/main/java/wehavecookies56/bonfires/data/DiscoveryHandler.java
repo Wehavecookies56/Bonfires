@@ -41,6 +41,8 @@ public class DiscoveryHandler {
         final IDiscoveryHandler original = getHandler(event.getOriginal());
         final IDiscoveryHandler clone = getHandler(event.getEntity());
 
+        original.getDiscovered().forEach(clone::setDiscovered);
+
         event.getOriginal().invalidateCaps();
     }
 

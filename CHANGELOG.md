@@ -1,1 +1,1 @@
-* fix particle config option
+* fix bonfires not showing after death in bonfire discovery mode
