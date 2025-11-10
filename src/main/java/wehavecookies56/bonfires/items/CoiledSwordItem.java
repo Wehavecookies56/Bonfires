@@ -11,6 +11,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ClickType;
+import wehavecookies56.bonfires.setup.ItemSetup;
 
 public class CoiledSwordItem extends SwordItem {
 
@@ -43,7 +44,7 @@ public class CoiledSwordItem extends SwordItem {
 
             @Override
             public Ingredient getRepairIngredient() {
-                return null;
+                return Ingredient.ofItems(ItemSetup.titanite_shard);
             }
         }, 3, -2.4F, new Settings().maxCount(1));
     }

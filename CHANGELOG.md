@@ -1,1 +1,1 @@
-* Fix missing recipes
+* fix crash when using an anvil with the coiled sword
