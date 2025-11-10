@@ -1,1 +1,1 @@
-* fix bonfires not showing after death in bonfire discovery mode
+* fix crash when using an anvil with the coiled sword

@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
+import wehavecookies56.bonfires.setup.ItemSetup;
 
 public class CoiledSwordItem extends SwordItem {
 
@@ -40,7 +41,7 @@ public class CoiledSwordItem extends SwordItem {
 
             @Override
             public Ingredient getRepairIngredient() {
-                return null;
+                return Ingredient.of(ItemSetup.titanite_shard.get());
             }
         }, 3, -2.4F, new Properties().stacksTo(1));
     }
